@@ -210,12 +210,6 @@
     <ClCompile Include="Source\Framework.cpp">
       <Filter>ソース</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Gimmick.cpp">
-      <Filter>ソース</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Item.cpp">
-      <Filter>ソース</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Main.cpp">
       <Filter>ソース</Filter>
     </ClCompile>
@@ -238,15 +232,6 @@
       <Filter>ソース</Filter>
     </ClCompile>
     <ClCompile Include="Source\SceneTitle.cpp">
-      <Filter>ソース</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ItemManager.cpp">
-      <Filter>ソース</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GimmickManager.cpp">
-      <Filter>ソース</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SoundSource.cpp">
       <Filter>ソース</Filter>
     </ClCompile>
     <ClCompile Include="Source\Animation.cpp">
@@ -300,12 +285,6 @@
       <Filter>ヘッダー</Filter>
     </ClInclude>
     <ClInclude Include="Source\Framework.h">
-      <Filter>ヘッダー</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Gimmick.h">
-      <Filter>ヘッダー</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Item.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
     <ClInclude Include="Source\Player.h">
@@ -449,12 +428,6 @@
     <ClInclude Include="Source\TransformUtils.h">
       <Filter>System</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GimmickManager.h">
-      <Filter>ヘッダー</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ItemManager.h">
-      <Filter>ヘッダー</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Object.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
@@ -462,9 +435,6 @@
       <Filter>ヘッダー</Filter>
     </ClInclude>
     <ClInclude Include="Source\AudioResource.h">
-      <Filter>ヘッダー</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\SoundSource.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
     <ClInclude Include="Source\Animation.h">

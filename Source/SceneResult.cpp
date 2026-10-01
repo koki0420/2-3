@@ -9,7 +9,6 @@
 
 SceneResult::SceneResult()
 {
-	Result = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/GAMECLEAR.png");
 
 }
 
@@ -36,7 +35,6 @@ void SceneResult::Update(float elapsedTime)
 }
 void SceneResult::Render(float elapsedTime)
 {
-	Result->Render(Graphics::Instance().GetDeviceContext(), 0, 0, 0, Graphics::Instance().GetScreenWidth(), Graphics::Instance().GetScreenHeight(), 0, 1, 1, 1, 1);
 
 }
 

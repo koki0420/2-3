@@ -18,5 +18,4 @@ public:
 	void Update(float elapsedTime);
 	void Render(float elapsedTime);
 private:
-	std::unique_ptr<Sprite> Result;
 };

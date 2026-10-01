@@ -16,18 +16,8 @@ public:
 
 	void Update(float elapsedTime)override;
 	void Render(float elapsedTime)override;
-	//bool GetFinish() { return FINISH; }
 
 private:
-	std::unique_ptr<Sprite> Title;
 
-	std::unique_ptr<Sprite> GameSprite;
-	float game_alpha = 0.4f;
-	std::unique_ptr<Sprite> FinishSprite;
-	float finish_alpha = 0.4f;
-
-	bool title_game = false;
-	bool finish_game = false;
-	//bool FINISH = false;
 
 };
