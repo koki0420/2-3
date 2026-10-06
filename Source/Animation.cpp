@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include "Animation.h"
 //a
+//a
 
 // コンストラクタ
 Animation::Animation(Model& M)
