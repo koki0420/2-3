@@ -25,7 +25,7 @@ SceneGame::SceneGame()
 	stage.scale.y = 0.1f;
 	stage.scale.z = 0.1f;
 	// ���f��
-	stage.model = std::make_unique<Model>("Data/Model/Stage/map(comp).mdl");
+	stage.model = std::make_unique<Model>("Data/Model/Stage/stage5.mdl");
 
 }
 
