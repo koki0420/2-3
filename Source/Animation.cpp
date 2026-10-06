@@ -3,9 +3,7 @@
 #include "Graphics.h"
 #include "Animation.h"
 //a
-//a
-//a
-//a
+
 
 // コンストラクタ
 Animation::Animation(Model& M)
