@@ -5,6 +5,7 @@
 //a
 //a
 //a
+//a
 
 // コンストラクタ
 Animation::Animation(Model& M)
