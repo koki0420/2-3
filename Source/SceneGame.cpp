@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "SceneGame.h"
 #include <imgui.h>
@@ -16,10 +16,16 @@
 #include "audio.h"
 #include "AudioResource.h"
 
+//a
 
 SceneGame::SceneGame()
 {
 
+	stage.scale.x = 0.1f;
+	stage.scale.y = 0.1f;
+	stage.scale.z = 0.1f;
+	// ���f��
+	stage.model = std::make_unique<Model>("Data/Model/Stage/stage5.mdl");
 
 }
 
@@ -50,6 +56,13 @@ void SceneGame::Render(float elapsedTime)
 	ModelRenderer* modelRenderer = Graphics::Instance().GetModelRenderer();
 
 	ShapeRenderer* shapeRenderer = Graphics::Instance().GetShapeRenderer();
+
+	RenderContext rc;
+	rc.deviceContext = dc;
+	rc.renderState = renderState;
+	rc.camera = &camera;
+
+	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
 
 }
 

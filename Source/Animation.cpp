@@ -4,6 +4,7 @@
 #include "Animation.h"
 //a
 
+
 // コンストラクタ
 Animation::Animation(Model& M)
 {
