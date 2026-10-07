@@ -69,7 +69,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;xinput.lib;xaudio2.lib;winmm.lib;DirectXTK.lib;Effekseer.lib;EffekseerRendererDX11.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\External\SphereCast\lib\vs2019\$(PlatformTarget)\MD\$(Configuration);$(ProjectDir)External\DirectXTK-master\Bin\Desktop_2019\x64\Debug;.\External\Effekseer170e\lib\vs2022\MD\$(PlatformTarget)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\External\DirectXTK-master\Bin\Desktop_2019\x64\Debug;.\External\SphereCast\lib\vs2019\$(PlatformTarget)\MD\$(Configuration);.\External\Effekseer170e\lib\vs2022\MD\x64\Debug</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
@@ -103,7 +103,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;xinput.lib;xaudio2.lib;winmm.lib;DirectXTK.lib;Effekseer.lib;EffekseerRendererDX11.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>.\External\SphereCast\lib\vs2019\$(PlatformTarget)\MD\$(Configuration);.\External\DirectXTK-master\Bin\Desktop_2019\x64\Release;.\External\Effekseer170e\lib\vs2022\MD\$(PlatformTarget)\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>.\External\DirectXTK-master\Bin\Desktop_2019\x64\Debug;.\External\SphereCast\lib\vs2019\$(PlatformTarget)\MD\$(Configuration);"C:\Users\.\External\DirectXTK-master\Bin\Desktop_2019\x64\Debug.\External\DirectXTex\Bin\Desctop2022\x64\Debug.\External\DirectXTK-master\Bin\Desktop_2019\x64\Release;.\External\Effekseer170e\lib\vs2022\MD\$(PlatformTarget)\$(Configuration);%(AdditionalLibraryDirectories);.\External\DirectXTex\Bin\Desktop_2022\x64\Debug;;.\External\DirectXTK-master\Bin\Desktop_2019\x64\Debug;.\External\SphereCast\lib\vs2019\$(PlatformTarget)\MD\$(Configuration)
+C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019\x64\Debug</AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
