@@ -21,12 +21,11 @@
 SceneGame::SceneGame()
 {
 
-	stage.scale.x = 0.1f;
-	stage.scale.y = 0.1f;
-	stage.scale.z = 0.1f;
-	// ���f��
-	stage.model = std::make_unique<Model>("Data/Model/Stage/stage5.mdl");
-
+	stage.scale.x = 1;
+	stage.scale.y = 1;
+	stage.scale.z = 1;
+	
+	stage.model = std::make_unique<Model>("Data/Model/Stage/stage.mdl");
 }
 
 SceneGame::~SceneGame()
@@ -59,6 +58,7 @@ void SceneGame::Render(float elapsedTime)
 
 	RenderContext rc;
 	rc.deviceContext = dc;
+
 	rc.renderState = renderState;
 	rc.camera = &camera;
 
@@ -77,7 +77,6 @@ void SceneGame::DrawGUI()
 
 	if (ImGui::Begin("SceneGame"))
 	{
-		
 	}
 	ImGui::End();
 	
