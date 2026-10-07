@@ -45,7 +45,7 @@ void SceneGame::Finalize()
 
 void SceneGame::Update(float elapsedTime)
 {
-
+	camera.Update();
 }
 
 void SceneGame::Render(float elapsedTime)

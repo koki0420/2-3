@@ -14,13 +14,15 @@ Camera::Camera()
 		1000.0f								// ファークリップ
 	);
 
+	eye = { 0,0,-1 };
+	focus = { 0,0,0 };
 
 	// ★ 最初だけ向きを逆にしたいならここで 180° 回す ★
 	angleY = DirectX::XM_PI*1.5f;   // ← これだけで前後反転
 
 	SetLookAt(
-		{ 0, 0, -5 },		// 視点
-		{ 0, 0, 0 },		// 注視点
+		{ eye.x, eye.y, eye.z },		// 視点
+		{ focus.x, focus.y,focus.z },		// 注視点
 		{ 0, 1, 0 }			// 上ベクトル
 	);
 }
@@ -59,52 +61,9 @@ void Camera::SetLookAt(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& fo
 }
 
 
-void Camera::Update(DirectX::XMFLOAT3 pos,bool player)
+void Camera::Update()
 {
-	//頭
-	pos.y += 1.6f;
 	
-
-	// --- マウス中央固定 + 相対移動量取得 ---
-	HWND hwnd = GetActiveWindow();
-
-	RECT rc;
-	GetClientRect(hwnd, &rc);
-
-	POINT center;
-	center.x = (rc.right - rc.left) / 2;
-	center.y = (rc.bottom - rc.top) / 2;
-
-	// 中央のスクリーン座標
-	POINT screenCenter = center;
-	ClientToScreen(hwnd, &screenCenter);
-
-	// 現在のマウス位置
-	POINT mouse;
-	GetCursorPos(&mouse);
-
-	// 中央との差分（FPS カメラの回転量）
-	float dx = float(mouse.x - screenCenter.x);
-	float dy = float(mouse.y - screenCenter.y);
-
-	
-	// 中央に戻す
-	
-	SetCursorPos(screenCenter.x, screenCenter.y);
-	if (player)
-	{
-		// 感度
-		float sensitivity = 0.002f;
-
-		angleY += dx * sensitivity;
-		angleX -= dy * sensitivity;
-
-		// ピッチ制限（上下向きすぎ防止）
-		constexpr float limit = DirectX::XMConvertToRadians(5.0f);
-		if (angleX > limit) angleX = limit;
-		if (angleX < -limit) angleX = -limit;
-	}
-	// forward 再計算
 	float sx = sinf(angleX);
 	float cx = cosf(angleX);
 	float sy = sinf(angleY);
@@ -116,13 +75,32 @@ void Camera::Update(DirectX::XMFLOAT3 pos,bool player)
 		cx * cy
 	};
 
-	DirectX::XMFLOAT3 target = {
-		pos.x + forward.x,
-		pos.y + forward.y,
-		pos.z + forward.z
+	focus = {
+		eye.x + forward.x,
+		eye.y + forward.y,
+		eye.z + forward.z
 	};
 
-	SetLookAt(pos, target, { 0,1,0 });
+	if (ImGui::Begin("Camera"))
+	{
+		// カメラ位置
+		ImGui::DragFloat3("Eye", &eye.x, 0.1f);
+
+		// カメラ角度（ラジアン）
+		ImGui::DragFloat("Pitch (X)", &angleX, 0.01f);
+		ImGui::DragFloat("Yaw (Y)", &angleY, 0.01f);
+
+		// 角度を度数法で表示したい場合
+		float degX = DirectX::XMConvertToDegrees(angleX);
+		float degY = DirectX::XMConvertToDegrees(angleY);
+		ImGui::Text("Pitch(deg): %.1f", degX);
+		ImGui::Text("Yaw(deg): %.1f", degY);
+	}
+	ImGui::End();
+
+	SetLookAt(eye, focus, { 0,1,0 });
+	
+
 }
 
 
