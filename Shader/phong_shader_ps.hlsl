@@ -144,10 +144,10 @@ float4 main(VS_OUT pin) : SV_TARGET
         lightColor.rgb *
         (ambient + diffuse);
 
-    lighting += pointDiffuse;
+    //lighting += pointDiffuse;
 
    
-     color.rgb *= pointDiffuse;
+     //color.rgb *= pointDiffuse;
     color.rgb *= lighting;
     
     color.rgb *= (ambient + pointDiffuse);
