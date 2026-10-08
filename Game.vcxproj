@@ -136,6 +136,7 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
     <ClInclude Include="Source\AudioResource.h" />
     <ClInclude Include="Source\BasicShader.h" />
     <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\SceneCameraTest.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Dialog.h" />
     <ClInclude Include="Source\Effect.h" />
@@ -218,6 +219,7 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
     <ClCompile Include="Source\ModelResource.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
+    <ClCompile Include="Source\SceneCameraTest.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\SceneLoading.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
