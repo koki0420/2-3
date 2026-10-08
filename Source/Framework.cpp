@@ -18,18 +18,18 @@
 #include "texture.h"
 #include <static_mesh.h>
 
-// ���������Ԋu�ݒ�
+// 同期間隔設定
 static const int syncInterval = 1;
 
 //#define LIGHT 12
 
-// �R���X�g���N�^
+// コンストラクタ
 Framework::Framework(HWND hWnd)
 	: hWnd(hWnd)
 {
 	Graphics::Instance().Initialize(hWnd);
 
-	// IMGUI������
+	// ImGuiの初期化
 	ImGuiRenderer::Initialize(hWnd, Graphics::Instance().GetDevice(), Graphics::Instance().GetDeviceContext());
 
 	SceneManager::Instance().ChangeScene(new SceneTitle);
@@ -56,85 +56,6 @@ Framework::Framework(HWND hWnd)
 		point_light[0].color = { 1,1,1,1 };
 		point_light[0].range = 10000.0f;
 
-		//point_light[1].position = { 12,5,32,0 };
-		//point_light[1].color = { 1,1,1,1 };
-		//point_light[1].range = 18;
-		//			
-		////橋のギミック
-		//point_light[2].position = { 11,7,3,0 };
-		//point_light[2].color = { 1,1,1,1 };
-		//point_light[2].range = 30;
-
-		//point_light[13].position = { 11,7,-8,0 };
-		//point_light[13].color = { 1,1,1,1 };
-		//point_light[13].range = 30;
-
-		//point_light[14].position = { 11,7,15,0 };
-		//point_light[14].color = { 1,1,1,1 };
-		//point_light[14].range = 15;
-
-		////コンテナ
-		//point_light[3].position = { 8,5,-18,0 };
-		//point_light[3].color = { 1,1,1,1 };
-		//point_light[3].range = 15;
-
-		////広間
-		//point_light[4].position = { -2,floalightY,-15,0 };
-		//point_light[4].color = { 1,1,1,1 };
-		//point_light[4].range = floaLight;
-		//			
-		//point_light[5].position = { -4,floalightY,12,0 };
-		//point_light[5].color = { 1,1,1,1 };
-		//point_light[5].range = floaLight;
-
-
-		//point_light[6].position = { -14,floalightY,10,0 };
-		//point_light[6].color = { 1,1,1,1 };
-		//point_light[6].range = floaLight;
-
-		//point_light[7].position = { -14,floalightY,20,0 };
-		//point_light[7].color = { 1,1,1,1 };
-		//point_light[7].range = floaLight;
-
-		//point_light[8].position = { -14,floalightY,0,0 };
-		//point_light[8].color = { 1,1,1,1 };
-		//point_light[8].range = floaLight;
-
-		//point_light[9].position = { -14,floalightY,-10,0 };
-		//point_light[9].color = { 1,1,1,1 };
-		//point_light[9].range = floaLight;
-	 //  
-		//point_light[10].position = { -7,floalightY,-5,0 };
-		//point_light[10].color = { 1,1,1,1 };
-		//point_light[10].range =floaLight;
-
-		//point_light[11].position = { 0,floalightY,0,0 };
-		//point_light[11].color = { 1,1,1,1 };
-		//point_light[11].range = floaLight;
-
-		//point_light[12].position = { 2,floalightY,20,0 };
-		//point_light[12].color = { 1,1,1,1 };
-		//point_light[12].range = floaLight;
-
-
-		////横穴
-		//point_light[15].position = { -23,5.5f,5.5f,0 };
-		//point_light[15].color = { 1,1,1,1 };
-		//point_light[15].range = 10.0f;
-
-		//point_light[16].position = { -12,5.0f,-18,0 };
-		//point_light[16].color = { 1,1,1,1 };
-		//point_light[16].range = 15.0f;
-
-
-		//point_light[17].position = { -9,6,38,0 };
-		//point_light[17].color = { 1,1,1,1 };
-		//point_light[17].range = 20.0f;
-
-		////ゴールの光
-		//point_light[18].position = { -11,3,40,0 };
-		//point_light[18].color = { 1,1,1,1 };
-		//point_light[18].range = 35.0f;
 
 	}
 
@@ -158,7 +79,7 @@ bool Framework::initialize()
 
 	
 
-	// �f�o�C�X���X���b�v�`�F�[�����
+	// デバイスとスワップチェインの生成
 	{
 		UINT create_device_flags{ 0 };
 #ifdef _DEBUG
@@ -190,7 +111,7 @@ bool Framework::initialize()
 
 
 	}
-	// �����_�[�^�[�Q�b�g�r���[�̐���
+	// レンダーターゲットビューの生成
 	{
 		/*	Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer{};
 			hr = swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(back_buffer.GetAddressOf()));
@@ -199,7 +120,7 @@ bool Framework::initialize()
 			hr = device->CreateRenderTargetView(back_buffer.Get(), NULL, render_target_view.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));*/
 	}
-	// �f�v�X�X�e���V���r���[�̐���
+	// デプスティンシルビューの生成
 	{
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> depth_stencil_buffer{};
 		D3D11_TEXTURE2D_DESC texture2d_desc{};
@@ -224,7 +145,7 @@ bool Framework::initialize()
 		hr = device->CreateDepthStencilView(depth_stencil_buffer.Get(), &depth_stencil_view_desc, depth_stencil_view.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-	// �T���v���X�e�[�g�̐���
+	// サンプラーステートの生成
 	{
 		D3D11_SAMPLER_DESC sampler_desc{};
 		sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -242,7 +163,7 @@ bool Framework::initialize()
 		sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 		hr = device->CreateSamplerState(&sampler_desc, sampler_state.GetAddressOf());
 	}
-	// �[�x�X�e���V���X�e�[�g�̐���
+	// デプステンシルステートの生成
 	{
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
 		depth_stencil_desc.DepthEnable = TRUE;
@@ -251,9 +172,9 @@ bool Framework::initialize()
 		hr = device->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_state.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-	// �u�����h�X�e�[�g�̐���
+	// ブレンドステートの生成
 	{
-		// �A���t�@�u�����h
+		// アルファブレンド
 		D3D11_BLEND_DESC blend_desc{};
 		blend_desc.AlphaToCoverageEnable = FALSE;
 		blend_desc.IndependentBlendEnable = FALSE;
@@ -268,7 +189,7 @@ bool Framework::initialize()
 		hr = device->CreateBlendState(&blend_desc, blend_state.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-	// ���X�^���C�U�[�X�e�[�g�̐���
+	// ラスタライザーステートの生成
 	{
 		D3D11_RASTERIZER_DESC rasterizer_desc{};
 		rasterizer_desc.FillMode = D3D11_FILL_SOLID;
@@ -284,7 +205,7 @@ bool Framework::initialize()
 		hr = device->CreateRasterizerState(&rasterizer_desc, rasterizer_state.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-	// �萔�o�b�t�@�̐���
+	// 定数バッファの生成
 	{
 		D3D11_BUFFER_DESC buffer_desc{};
 		buffer_desc.Usage = D3D11_USAGE_DEFAULT;
@@ -309,9 +230,14 @@ bool Framework::initialize()
 			hr = device->CreateBuffer(&buffer_desc, nullptr, shadowmap_constant_buffer.GetAddressOf());
 			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 		}
+		{
+			buffer_desc.ByteWidth = sizeof(skymap_constants);
+			hr = device->CreateBuffer(&buffer_desc, nullptr, skymap_constant_buffer.GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+		}
 
 	}
-	//�V�[���`��p�̃o�b�t�@����
+	//　シーン描画用のカラーバッファの生成
 	{
 		Microsoft::WRL::ComPtr<ID3D11Texture2D>color_buffer{};
 		D3D11_TEXTURE2D_DESC texture2d_desc{};
@@ -329,15 +255,15 @@ bool Framework::initialize()
 		hr = device->CreateTexture2D(&texture2d_desc, NULL, color_buffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-		//�����_�[�^�[�Q�b�g�r���[����
+		//レンダーターゲットビューの生成
 		hr = device->CreateRenderTargetView(color_buffer.Get(), NULL, scene_render_target_view.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-		//�V�F�[�_�[���\�[�X�r���[����
+		// シェーダーリソースビューの生成
 		hr = device->CreateShaderResourceView(color_buffer.Get(), NULL, scene_shader_resource_view.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
-	//���C�g���猩���V�[���̐[�x�`��p�̃o�b�t�@����
+	// サンプラーステートの生成
 	{
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> depth_buffer{};
 		D3D11_TEXTURE2D_DESC texture2d_desc{};
@@ -355,7 +281,7 @@ bool Framework::initialize()
 		hr = device->CreateTexture2D(&texture2d_desc, NULL, depth_buffer.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-		//�@�[�x�X�e���V���r���[
+		//デプステンシルビューの生成
 		D3D11_DEPTH_STENCIL_VIEW_DESC depth_stencil_view_desc{};
 		depth_stencil_view_desc.Format = DXGI_FORMAT_D32_FLOAT;
 		depth_stencil_view_desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
@@ -364,7 +290,7 @@ bool Framework::initialize()
 			shadowmap_depth_stencil_view.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-		//�V�F�[�_�[���\�[�X�r���[����
+		//シェーダーリソースビューの生成
 		D3D11_SHADER_RESOURCE_VIEW_DESC shader_resource_view_desc{};
 		shader_resource_view_desc.Format = DXGI_FORMAT_R32_FLOAT;
 		shader_resource_view_desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -374,7 +300,7 @@ bool Framework::initialize()
 			shadowmap_shader_resource_view.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
-		//�T���v���[�X�e�[�g�̐���
+		//　サンプラーステートの生成
 		{
 			D3D11_SAMPLER_DESC sampler_desc{};
 			sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -396,7 +322,7 @@ bool Framework::initialize()
 	}
 
 
-	// �`��I�u�W�F�N�g�̓ǂݍ���
+	// 描画オブジェクトの生成
 	{
 		//dummy_static_mesh = std::make_unique<static_mesh>(device.Get(), L".\\resources\\ball\\ball.obj", true);
 		/*dummy_static_meshes.push_back(std::make_unique<static_mesh>(Graphics::Instance().GetDevice(), L".\\Data\\Model\\Cube\\ball.obj",
@@ -412,7 +338,7 @@ bool Framework::initialize()
 
 
 
-		//�T���v���X�e�[�g����
+		//サンプラーステートの生成
 		D3D11_SAMPLER_DESC sampler_desc{};
 		sampler_desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 		sampler_desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -423,10 +349,26 @@ bool Framework::initialize()
 		sampler_desc.MinLOD = 0;
 		sampler_desc.MaxLOD = D3D11_FLOAT32_MAX;
 
+		// スカイマップ用に深度値を書き込まない深度ステンシルステートの生成 
+		{
+			D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
+			depth_stencil_desc.DepthEnable = TRUE;
+			depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+			depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+			hr = device->CreateDepthStencilState(&depth_stencil_desc,
+				skymap_depth_stencil_state.GetAddressOf());
+			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+		}
+
+		// スカイマップ用のテクスチャ及びスプライトを準備 
+		load_texture_from_file(Graphics::Instance().GetDevice(), L".\\Data\\Sprite\\skybox/earth.jpg",
+			skymap_shader_resource_view.GetAddressOf(), &skymap_texture2d_desc);
+		skymap_sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), skymap_shader_resource_view);
+
 	}
-	// �V�F�[�_�[�̓ǂݍ���
+	// シェーダーの読み込み
 	{
-		// static_mesh�p�f�t�H���g�`��V�F�[�_�[
+		// static_mesh用デフォルト描画シェーダーの読み込み
 		{
 			D3D11_INPUT_ELEMENT_DESC input_element_desc[]
 
@@ -442,7 +384,7 @@ bool Framework::initialize()
 
 
 
-			//���C�e�B���O
+			//ライティング
 			create_vs_from_cso(Graphics::Instance().GetDevice(),
 				"Data/Shader/LambertVS.cso",
 				mesh_vertex_shader.GetAddressOf(),
@@ -455,7 +397,7 @@ bool Framework::initialize()
 
 			
 
-			//		////�V���h�E�}�b�v�����p�V�F�[�_�[
+			//		シャドウマップ生成
 			//create_vs_from_cso(device.Get(), "shadowmap_caster_vs.cso",
 			//	shadowmap_caster_vertex_shader.GetAddressOf(),
 			//	shadowmap_caster_input_layout.GetAddressOf(),
@@ -463,7 +405,7 @@ bool Framework::initialize()
 
 
 		}
-		// sprite�p�f�t�H���g�`��V�F�[�_�[
+		// sprite用デフォルト描画シェーダーの読み込み
 		{
 			D3D11_INPUT_ELEMENT_DESC input_element_desc[]
 			{
@@ -480,6 +422,10 @@ bool Framework::initialize()
 			create_ps_from_cso(Graphics::Instance().GetDevice(),
 				"Data/Shader/SpritePS.cso",
 				sprite_pixel_shader.GetAddressOf());
+
+			create_vs_from_cso(Graphics::Instance().GetDevice(), "skymap_vs.cso", skymap_vertex_shader.GetAddressOf(),
+				skymap_input_layout.GetAddressOf(), input_element_desc, _countof(input_element_desc));
+			create_ps_from_cso(Graphics::Instance().GetDevice(), "skymap_ps.cso", skymap_pixel_shader.GetAddressOf());
 
 
 
@@ -504,7 +450,7 @@ bool Framework::initialize()
 			//	sprite_pixel_shader.GetAddressOf());
 
 
-			////�J���[�t�B���^�[
+			////　カラーフィルター
 			//create_vs_from_cso(device.Get(),
 			//	"color_filter_vs.cso",
 			//	sprite_vertex_shader.GetAddressOf(),
@@ -519,24 +465,24 @@ bool Framework::initialize()
 	EffectManager::Instance().Initialize();
 	return true;
 }
-//�V���h�E�}�b�v����
+//シャドウマップ描画
 void Framework::RenderShadowMap()
 {
 }
 
-// �X�V����
+// 更新処理
 void Framework::Update(float elapsedTime)
 {
-	// IMGUI�t���[���J�n����	
+	// IMGUIフレーム開始
 	ImGuiRenderer::NewFrame();
 
-	// �V�[���X�V����
+	// シーン更新
 	SceneManager::Instance().Update(elapsedTime);
 
 	EffectManager::Instance().Update(elapsedTime);
 }
 
-// �`�揈��
+// 描画処理
 void Framework::Render(float elapsedTime)
 {
 	/*assert(
@@ -558,28 +504,27 @@ void Framework::Render(float elapsedTime)
 
 
 
-	// ��ʃN���A
-		// ��ʃN���A
+	// 画面クリア
 	Graphics::Instance().Clear(0.1f, 0.1f, 0.1f, 1);
 
-	// �����_�[�^�[�Q�b�g�ݒ�
+	// レンダーターゲット
 	Graphics::Instance().SetRenderTargets();
 
-	// �V�[���`�揈��
+	// シーン描画
 	SceneManager::Instance().Render(elapsedTime);
 
-	// �V�[��GUI�`�揈��
+	// 
 #ifndef DEBUG
 
-	// �V�[��GUI�`�揈��
+	// シーンGUI描画
 	SceneManager::Instance().DrawGUI();
 
-	// �V�[���؂�ւ�GUI
+	// シーン切り替えGUI
 	SceneSelectGUI();
 #endif
 
 
-	//�^�[�Q�b�g�ݒ�
+	//レンダーターゲット設定
 	FLOAT color[]{ 0.2f, 0.2f, 0.2f, 1.0f };
 
 	//immediate_context->ClearRenderTargetView(
@@ -610,7 +555,7 @@ void Framework::Render(float elapsedTime)
 
 		//immediate_context->RSSetViewports(1, &viewport);
 
-		//�r���[�s��
+		//ビュー行列
 	DirectX::XMMATRIX V;
 	{
 		DirectX::XMVECTOR up =
@@ -660,7 +605,31 @@ void Framework::Render(float elapsedTime)
 			0.1f,
 			100.0f);
 
-	//scene_constants�X�V
+	skymap_constants skymap{};
+	DirectX::XMStoreFloat4x4(&skymap.inverse_view_ptojection, DirectX::XMMatrixInverse(nullptr, V*
+		P));
+	immediate_context->UpdateSubresource(skymap_constant_buffer.Get(), 0, 0, &skymap, 0, 0);
+	immediate_context->VSSetConstantBuffers(7, 1, skymap_constant_buffer.GetAddressOf());
+	immediate_context->PSSetConstantBuffers(7, 1, skymap_constant_buffer.GetAddressOf());
+ 
+
+ // 空描画 
+if (skymap_sprite)
+{
+	immediate_context->IASetInputLayout(skymap_input_layout.Get());
+	immediate_context->VSSetShader(skymap_vertex_shader.Get(), nullptr, 0);
+	immediate_context->PSSetShader(skymap_pixel_shader.Get(), nullptr, 0);
+	immediate_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
+	immediate_context->OMSetDepthStencilState(skymap_depth_stencil_state.Get(), 0);
+
+	skymap_sprite->P_Render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	immediate_context->OMSetDepthStencilState(depth_stencil_state.Get(), 0);
+}
+
+
+
+	//scene_constants更新
 	scene_constants scene_data{};
 
 	scene_data.camera_position.x = camera_position.x;
@@ -676,7 +645,7 @@ void Framework::Render(float elapsedTime)
 	immediate_context->PSSetConstantBuffers(1, 1, scene_constant_buffer.GetAddressOf());
 
 
-	//���C�g
+	//ライト
 	light_constants lights{};
 
 	lights.ambient_color =
@@ -709,7 +678,7 @@ void Framework::Render(float elapsedTime)
 	immediate_context->PSSetConstantBuffers(2, 1,
 		light_constant_buffer.GetAddressOf());
 
-	//�V�F�[�_�[�ݒ�
+	//シェーダー設定
 
 	immediate_context->IASetInputLayout(
 		mesh_input_layout.Get());
@@ -740,7 +709,7 @@ void Framework::Render(float elapsedTime)
 
 
 #if 0
-	// IMGUI�f���E�C���h�E�`��iIMGUI�@�\�e�X�g�p�j
+	// 
 	ImGui::ShowDemoWindow();
 #endif
 
@@ -761,16 +730,16 @@ void Framework::Render(float elapsedTime)
 
 
 
-	// �V�[���`�揈��
+	// シーン描画
 	//scene->Render(elapsedTime);
 
-	// �V�[��GUI�`�揈��
+	//　シーンGUI描画
 	//scene->DrawGUI();
 
-	// IMGUI�`��
+	// IMGUI描画
 	ImGuiRenderer::Render(immediate_context);
 
-	// ��ʕ\��
+	// 画面表示
 	Graphics::Instance().Present(syncInterval);
 
 }
@@ -784,7 +753,7 @@ void Framework::ChangeSceneButtonGUI(const char* name)
 	}
 }
 
-// �V�[���؂�ւ�GUI
+// シーン切り替えGUI
 void Framework::SceneSelectGUI()
 {
 	ImVec2 displaySize = ImGui::GetIO().DisplaySize;
@@ -819,7 +788,7 @@ void Framework::SceneSelectGUI()
 #endif
 }
 
-// �t���[�����[�g�v�Z
+// フレームレート計算
 void Framework::CalculateFrameStats()
 {
 	// Code computes the average frames per second, and also the 
@@ -846,7 +815,7 @@ void Framework::CalculateFrameStats()
 	}
 }
 
-// �A�v���P�[�V�������[�v
+// アプリケーションループ
 int Framework::Run()
 {
 	if (!initialize())
@@ -881,7 +850,7 @@ int Framework::Run()
 	return static_cast<int>(msg.wParam);
 }
 
-// ���b�Z�[�W�n���h��
+// メッセージハンドラ
 LRESULT CALLBACK Framework::HandleMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	if (ImGuiRenderer::HandleMessage(hWnd, msg, wParam, lParam))
@@ -959,7 +928,7 @@ void Framework::ToggleFullscreen()
 		isFullscreen = false;
 	}
 
-	// �� �t���X�N���[����Ƀo�b�N�o�b�t�@�����T�C�Y ��
+	// フルスクリーン切り替え後にレンダーターゲットのサイズを更新
 	RECT rc;
 	GetClientRect(hWnd, &rc);
 	UINT w = rc.right - rc.left;
