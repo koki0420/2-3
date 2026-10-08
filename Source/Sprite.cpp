@@ -3,6 +3,7 @@
 #include "Misc.h"
 #include "GpuResourceUtils.h"
 #include <Graphics.h>
+#include "sprite.h"
 
 // コンストラクタ
 Sprite::Sprite(ID3D11Device* device)
@@ -238,3 +239,5 @@ void Sprite::P_Render(
 		angle,
 		r, g, b, a);
 }
+
+

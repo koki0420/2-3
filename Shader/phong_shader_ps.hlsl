@@ -64,63 +64,63 @@ float4 main(VS_OUT pin) : SV_TARGET
   
     
     
-    for (int i = 0; i < 19; i++)
-    {
+    //for (int i = 0; i < 19; i++)
+    //{
         
 
        
-        float3 LP =
-            point_light[i].position.xyz -
-            pin.position;
+    //    float3 LP =
+    //        point_light[i].position.xyz -
+    //        pin.position;
         
           
-       float len = length(LP);
+    //   float len = length(LP);
         
      
       
         
        
-        if (len >= point_light[i].range)
-            continue;
+    //    if (len >= point_light[i].range)
+    //        continue;
 
-        LP /= len;
+    //    LP /= len;
 
-        float attenuation =
-            saturate(
-                1.0f -
-                len / point_light[i].range);
+    //    float attenuation =
+    //        saturate(
+    //            1.0f -
+    //            len / point_light[i].range);
       
 
-        attenuation *= attenuation;
+    //    attenuation *= attenuation;
         
 
-        float pd =
-            max(0.0f, dot(N, LP));
+    //    float pd =
+    //        max(0.0f, dot(N, LP));
 
        
         
 
         
-        pointDiffuse +=
-         point_light[i].color.rgb *
-         (0.3f + pd) *
-         attenuation;
+    //    pointDiffuse +=
+    //     point_light[i].color.rgb *
+    //     (0.3f + pd) *
+    //     attenuation;
 
 
-        float3 PR =
-            reflect(-LP, N);
+    //    float3 PR =
+    //        reflect(-LP, N);
 
-        float ps =
-            pow(
-                max(
-                    0.0f,
-                    dot(V, PR)),
-                32.0f);
+    //    float ps =
+    //        pow(
+    //            max(
+    //                0.0f,
+    //                dot(V, PR)),
+    //            32.0f);
 
-        pointSpecular +=
-            point_light[i].color.rgb *
-            ps *
-            attenuation;
+    //    pointSpecular +=
+    //        point_light[i].color.rgb *
+    //        ps *
+    //        attenuation;
         
         
       
@@ -128,7 +128,7 @@ float4 main(VS_OUT pin) : SV_TARGET
 
        
     
-    }
+    //}
 
     
     
@@ -138,7 +138,7 @@ float4 main(VS_OUT pin) : SV_TARGET
     
   
  
-    float ambient = 0.6f;
+    float ambient = 0.1f;
 
     float3 lighting =
         lightColor.rgb *
@@ -150,7 +150,7 @@ float4 main(VS_OUT pin) : SV_TARGET
      //color.rgb *= pointDiffuse;
     color.rgb *= lighting;
     
-    color.rgb *= (ambient + pointDiffuse);
+    //color.rgb *= (ambient + pointDiffuse);
    // color.rgb += pointSpecular;
 
      

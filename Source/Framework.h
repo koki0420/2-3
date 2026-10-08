@@ -9,6 +9,9 @@
 #include <imgui_impl_win32.h>
 #include<sstream>
 
+
+
+
 #define LIGHT_MAX 20
 
 const LONG SCREEN_WIDTH = 1280;
@@ -141,6 +144,24 @@ public:
 	DirectX::XMFLOAT4X4 light_view_projection;
 	float               shadow_bias{ 0.008f };
 	DirectX::XMFLOAT3   shadow_color{ 0.3f,0.3f,0.3f };
+
+
+
+	//スカイマッピング
+	struct skymap_constants
+	{
+		DirectX::XMFLOAT4X4 inverse_view_ptojection;
+	};
+	Microsoft::WRL::ComPtr<ID3D11Buffer> skymap_constant_buffer;
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> skymap_vertex_shader;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> skymap_input_layout;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> skymap_pixel_shader;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> skymap_depth_stencil_state;
+	D3D11_TEXTURE2D_DESC skymap_texture2d_desc;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> skymap_shader_resource_view;
+	std::unique_ptr<Sprite> skymap_sprite;
+
+
 
 
 	std::vector<std::unique_ptr<static_mesh>>dummy_static_meshes;
