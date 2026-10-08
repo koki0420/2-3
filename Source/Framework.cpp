@@ -48,93 +48,93 @@ Framework::Framework(HWND hWnd)
 		{
 			point_light[i].position = { 0,0,0,0 };
 			point_light[i].color = { 0,0,0,0 };
-			point_light[i].range = 0.0f;
+			point_light[i].range =0;
 		}
 
 		//初期
 		point_light[0].position = { 12,5,42,0 };
 		point_light[0].color = { 1,1,1,1 };
-		point_light[0].range = 18.0f;
+		point_light[0].range = 10000.0f;
 
-		point_light[1].position = { 12,5,32,0 };
-		point_light[1].color = { 1,1,1,1 };
-		point_light[1].range = 18;
-					
-		//橋のギミック
-		point_light[2].position = { 11,7,3,0 };
-		point_light[2].color = { 1,1,1,1 };
-		point_light[2].range = 30;
+		//point_light[1].position = { 12,5,32,0 };
+		//point_light[1].color = { 1,1,1,1 };
+		//point_light[1].range = 18;
+		//			
+		////橋のギミック
+		//point_light[2].position = { 11,7,3,0 };
+		//point_light[2].color = { 1,1,1,1 };
+		//point_light[2].range = 30;
 
-		point_light[13].position = { 11,7,-8,0 };
-		point_light[13].color = { 1,1,1,1 };
-		point_light[13].range = 30;
+		//point_light[13].position = { 11,7,-8,0 };
+		//point_light[13].color = { 1,1,1,1 };
+		//point_light[13].range = 30;
 
-		point_light[14].position = { 11,7,15,0 };
-		point_light[14].color = { 1,1,1,1 };
-		point_light[14].range = 15;
+		//point_light[14].position = { 11,7,15,0 };
+		//point_light[14].color = { 1,1,1,1 };
+		//point_light[14].range = 15;
 
-		//コンテナ
-		point_light[3].position = { 8,5,-18,0 };
-		point_light[3].color = { 1,1,1,1 };
-		point_light[3].range = 15;
+		////コンテナ
+		//point_light[3].position = { 8,5,-18,0 };
+		//point_light[3].color = { 1,1,1,1 };
+		//point_light[3].range = 15;
 
-		//広間
-		point_light[4].position = { -2,floalightY,-15,0 };
-		point_light[4].color = { 1,1,1,1 };
-		point_light[4].range = floaLight;
-					
-		point_light[5].position = { -4,floalightY,12,0 };
-		point_light[5].color = { 1,1,1,1 };
-		point_light[5].range = floaLight;
-
-
-		point_light[6].position = { -14,floalightY,10,0 };
-		point_light[6].color = { 1,1,1,1 };
-		point_light[6].range = floaLight;
-
-		point_light[7].position = { -14,floalightY,20,0 };
-		point_light[7].color = { 1,1,1,1 };
-		point_light[7].range = floaLight;
-
-		point_light[8].position = { -14,floalightY,0,0 };
-		point_light[8].color = { 1,1,1,1 };
-		point_light[8].range = floaLight;
-
-		point_light[9].position = { -14,floalightY,-10,0 };
-		point_light[9].color = { 1,1,1,1 };
-		point_light[9].range = floaLight;
-	   
-		point_light[10].position = { -7,floalightY,-5,0 };
-		point_light[10].color = { 1,1,1,1 };
-		point_light[10].range =floaLight;
-
-		point_light[11].position = { 0,floalightY,0,0 };
-		point_light[11].color = { 1,1,1,1 };
-		point_light[11].range = floaLight;
-
-		point_light[12].position = { 2,floalightY,20,0 };
-		point_light[12].color = { 1,1,1,1 };
-		point_light[12].range = floaLight;
+		////広間
+		//point_light[4].position = { -2,floalightY,-15,0 };
+		//point_light[4].color = { 1,1,1,1 };
+		//point_light[4].range = floaLight;
+		//			
+		//point_light[5].position = { -4,floalightY,12,0 };
+		//point_light[5].color = { 1,1,1,1 };
+		//point_light[5].range = floaLight;
 
 
-		//横穴
-		point_light[15].position = { -23,5.5f,5.5f,0 };
-		point_light[15].color = { 1,1,1,1 };
-		point_light[15].range = 10.0f;
+		//point_light[6].position = { -14,floalightY,10,0 };
+		//point_light[6].color = { 1,1,1,1 };
+		//point_light[6].range = floaLight;
 
-		point_light[16].position = { -12,5.0f,-18,0 };
-		point_light[16].color = { 1,1,1,1 };
-		point_light[16].range = 15.0f;
+		//point_light[7].position = { -14,floalightY,20,0 };
+		//point_light[7].color = { 1,1,1,1 };
+		//point_light[7].range = floaLight;
+
+		//point_light[8].position = { -14,floalightY,0,0 };
+		//point_light[8].color = { 1,1,1,1 };
+		//point_light[8].range = floaLight;
+
+		//point_light[9].position = { -14,floalightY,-10,0 };
+		//point_light[9].color = { 1,1,1,1 };
+		//point_light[9].range = floaLight;
+	 //  
+		//point_light[10].position = { -7,floalightY,-5,0 };
+		//point_light[10].color = { 1,1,1,1 };
+		//point_light[10].range =floaLight;
+
+		//point_light[11].position = { 0,floalightY,0,0 };
+		//point_light[11].color = { 1,1,1,1 };
+		//point_light[11].range = floaLight;
+
+		//point_light[12].position = { 2,floalightY,20,0 };
+		//point_light[12].color = { 1,1,1,1 };
+		//point_light[12].range = floaLight;
 
 
-		point_light[17].position = { -9,6,38,0 };
-		point_light[17].color = { 1,1,1,1 };
-		point_light[17].range = 20.0f;
+		////横穴
+		//point_light[15].position = { -23,5.5f,5.5f,0 };
+		//point_light[15].color = { 1,1,1,1 };
+		//point_light[15].range = 10.0f;
 
-		//ゴールの光
-		point_light[18].position = { -11,3,40,0 };
-		point_light[18].color = { 1,1,1,1 };
-		point_light[18].range = 35.0f;
+		//point_light[16].position = { -12,5.0f,-18,0 };
+		//point_light[16].color = { 1,1,1,1 };
+		//point_light[16].range = 15.0f;
+
+
+		//point_light[17].position = { -9,6,38,0 };
+		//point_light[17].color = { 1,1,1,1 };
+		//point_light[17].range = 20.0f;
+
+		////ゴールの光
+		//point_light[18].position = { -11,3,40,0 };
+		//point_light[18].color = { 1,1,1,1 };
+		//point_light[18].range = 35.0f;
 
 	}
 
@@ -453,6 +453,7 @@ bool Framework::initialize()
 				"Data/Shader/phong_shader_ps.cso",
 				mesh_pixel_shader.GetAddressOf());
 
+			
 
 			//		////�V���h�E�}�b�v�����p�V�F�[�_�[
 			//create_vs_from_cso(device.Get(), "shadowmap_caster_vs.cso",
@@ -479,6 +480,8 @@ bool Framework::initialize()
 			create_ps_from_cso(Graphics::Instance().GetDevice(),
 				"Data/Shader/SpritePS.cso",
 				sprite_pixel_shader.GetAddressOf());
+
+
 
 			//create_vs_from_cso(device.Get(),
 			//	"UVScroll_vs.cso",
@@ -808,18 +811,6 @@ void Framework::SceneSelectGUI()
 			PostMessage(hWnd, WM_CLOSE, 0, 0);
 		}
 
-
-		/*ChangeSceneButtonGUI<RayCastScene>(u8"01.���C�L���X�g");
-		ChangeSceneButtonGUI<LandWalkScene>(u8"02.�n����s");
-		ChangeSceneButtonGUI<SlideMoveScene>(u8"03.�ǂ���ړ�");
-		ChangeSceneButtonGUI<AnimationScene>(u8"04.�A�j���[�V����");
-		ChangeSceneButtonGUI<ProjectScreenScene>(u8"05.�X�N���[�����W�ϊ�");
-		ChangeSceneButtonGUI<AttachWeaponScene>(u8"06.�A�^�b�`�����g");
-		ChangeSceneButtonGUI<HitStopScene>(u8"07.�q�b�g�X�g�b�v");
-		ChangeSceneButtonGUI<UIAnimScene>(u8"08.UI���o");
-		ChangeSceneButtonGUI<MoveFloorScene>(u8"09.�ړ���");
-		ChangeSceneButtonGUI<TerrainAlignScene>(u8"10.�n�`�ɉ����p������");
-		ChangeSceneButtonGUI<ResourceManagementScene>(u8"11.���\�[�X�Ǘ�");*/
 
 	}
 	ImGui::End();

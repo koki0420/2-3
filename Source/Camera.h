@@ -8,7 +8,7 @@ class Camera
 public:
 	Camera();
 
-	void Update(DirectX::XMFLOAT3 pos,bool player);
+	void Update();
 
 	// Žw’è•ûŒü‚ðŒü‚­
 	void SetLookAt(const DirectX::XMFLOAT3& eye, const DirectX::XMFLOAT3& focus, const DirectX::XMFLOAT3& up);
