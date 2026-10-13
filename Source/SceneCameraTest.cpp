@@ -23,7 +23,9 @@ SceneCameraTest::SceneCameraTest()
 	stage.scale.y = 1;
 	stage.scale.z = 1;
 
-	stage.model = std::make_unique<Model>("Data/Model/Stage/stage_.mdl");
+	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
+
+	cameraController.SyncCameraToController(camera);
 }
 
 SceneCameraTest::~SceneCameraTest()
@@ -43,7 +45,8 @@ void SceneCameraTest::Finalize()
 
 void SceneCameraTest::Update(float elapsedTime)
 {
-	camera.Update();
+	cameraController.Update();
+	cameraController.SyncControllerToCamera(camera);
 }
 
 void SceneCameraTest::Render(float elapsedTime)

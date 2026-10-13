@@ -3,6 +3,7 @@
 #include "Scene.h"
 #include"Object.h"
 #include "Camera.h"
+#include "CameraMove_test.h"
 #include "FreeCameraController.h"
 
 #include"Framework.h"
@@ -38,7 +39,7 @@ public:
 private:
 
 	Camera								camera;
-	FreeCameraController				cameraController;
+	TestCameraController				cameraController;
 	Object								stage;
 
 

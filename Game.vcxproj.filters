@@ -452,6 +452,9 @@
     <ClInclude Include="Source\SceneCameraTest.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
+    <ClInclude Include="Source\CameraMove_test.h">
+      <Filter>ヘッダー</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Basic.hlsli">

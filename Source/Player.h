@@ -30,6 +30,7 @@ public:
 	// •`‰æˆ—
 	void Render(float elapsedTime, RenderContext rc,bool Pause);
 
+	Object player;
 
 };
 
