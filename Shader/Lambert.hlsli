@@ -34,3 +34,4 @@ cbuffer CbLight : register(b2)
 };
 
 
+#include "shading_functions.hlsli" 

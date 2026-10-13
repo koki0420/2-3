@@ -241,3 +241,23 @@ void Sprite::P_Render(
 }
 
 
+void Sprite::P_Render(
+	ID3D11DeviceContext* immediate_context,
+	float dx,
+	float dy,
+	float dw,
+	float dh)
+{
+	P_Render(
+		immediate_context,
+		dx,
+		dy,
+		0.0f,      // z
+		dw,
+		dh,
+		0.0f,      // angle
+		1.0f,
+		1.0f,
+		1.0f,
+		1.0f);
+}

@@ -49,6 +49,13 @@ public:
 		float r, float g, float b, float a
 	) const;
 
+	void P_Render(
+		ID3D11DeviceContext* immediate_context,
+		float dx,
+		float dy,
+		float dw,
+		float dh);
+
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vertexShader;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixelShader;

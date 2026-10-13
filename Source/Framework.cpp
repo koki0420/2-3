@@ -363,7 +363,7 @@ bool Framework::initialize()
 		// スカイマップ用のテクスチャ及びスプライトを準備 
 		load_texture_from_file(Graphics::Instance().GetDevice(), L".\\Data\\Sprite\\skybox/earth.jpg",
 			skymap_shader_resource_view.GetAddressOf(), &skymap_texture2d_desc);
-		skymap_sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), skymap_shader_resource_view);
+		skymap_sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data\\Sprite\\skybox/earth.jpg");
 
 	}
 	// シェーダーの読み込み
@@ -510,8 +510,6 @@ void Framework::Render(float elapsedTime)
 	// レンダーターゲット
 	Graphics::Instance().SetRenderTargets();
 
-	// シーン描画
-	SceneManager::Instance().Render(elapsedTime);
 
 	// 
 #ifndef DEBUG
@@ -596,8 +594,7 @@ void Framework::Render(float elapsedTime)
 	}
 
 
-	float aspect = Graphics::Instance().GetScreenWidth() / Graphics::Instance().GetScreenHeight();
-
+	float aspect =static_cast<float>(Graphics::Instance().GetScreenWidth()) /static_cast<float>(Graphics::Instance().GetScreenHeight());
 	DirectX::XMMATRIX P =
 		DirectX::XMMatrixPerspectiveFovLH(
 			DirectX::XMConvertToRadians(30),
@@ -612,6 +609,10 @@ void Framework::Render(float elapsedTime)
 	immediate_context->VSSetConstantBuffers(7, 1, skymap_constant_buffer.GetAddressOf());
 	immediate_context->PSSetConstantBuffers(7, 1, skymap_constant_buffer.GetAddressOf());
  
+	immediate_context->PSSetShaderResources(
+		0,
+		1,
+		skymap_shader_resource_view.GetAddressOf());
 
  // 空描画 
 if (skymap_sprite)
@@ -622,7 +623,7 @@ if (skymap_sprite)
 	immediate_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 	immediate_context->OMSetDepthStencilState(skymap_depth_stencil_state.Get(), 0);
 
-	skymap_sprite->P_Render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	skymap_sprite->P_Render(immediate_context, SCREEN_WIDTH*0.5f, SCREEN_HEIGHT*0.5f, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	immediate_context->OMSetDepthStencilState(depth_stencil_state.Get(), 0);
 }
@@ -692,6 +693,11 @@ if (skymap_sprite)
 	immediate_context->PSSetSamplers(
 		0, 1, sampler_state.GetAddressOf());
 
+	//スカイマップ用？
+	immediate_context->PSSetSamplers(4, 1, shadowmap_sampler_state.GetAddressOf());
+	immediate_context->PSSetShaderResources(5, 1, skymap_shader_resource_view.GetAddressOf());
+	immediate_context->PSSetSamplers(5, 1, sampler_state.GetAddressOf());
+
 	DirectX::XMMATRIX S{ DirectX::XMMatrixScaling(scaling.x, scaling.y, scaling.z) };
 	DirectX::XMMATRIX R{ DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) };
 	DirectX::XMMATRIX T{ DirectX::XMMatrixTranslation(translation.x, translation.y, translation.z) };
@@ -732,6 +738,9 @@ if (skymap_sprite)
 
 	// シーン描画
 	//scene->Render(elapsedTime);
+
+	// シーン描画
+	SceneManager::Instance().Render(elapsedTime);
 
 	//　シーンGUI描画
 	//scene->DrawGUI();

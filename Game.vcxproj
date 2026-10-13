@@ -266,6 +266,7 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
     <None Include="Shader\ShapeRenderer.hlsli" />
     <None Include="Shader\PrimitiveRenderer.hlsli" />
     <None Include="Shader\Skinning.hlsli" />
+    <None Include="Shader\skymap.hlsli" />
     <None Include="Shader\Sprite.hlsli" />
     <None Include="Shader\static_mesh.hlsli" />
   </ItemGroup>
@@ -314,6 +315,10 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
+    <FxCompile Include="Shader\skymap_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Shader\ramp_shader_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -339,6 +344,10 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shader\PrimitiveRendererVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\skymap_vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
