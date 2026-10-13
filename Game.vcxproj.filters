@@ -67,6 +67,12 @@
     <FxCompile Include="Shader\phong_shader_vs.hlsl">
       <Filter>Shader</Filter>
     </FxCompile>
+    <FxCompile Include="Shader\skymap_vs.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\skymap_ps.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Scene\AnimationScene.cpp">
@@ -497,6 +503,9 @@
       <Filter>Shader</Filter>
     </None>
     <None Include="Shader\phong_shader_vs.cso">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="Shader\skymap.hlsli">
       <Filter>Shader</Filter>
     </None>
   </ItemGroup>

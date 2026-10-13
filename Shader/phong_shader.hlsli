@@ -56,4 +56,11 @@ cbuffer SHADOWMAP_CONSTANTS_BUFFER : register(b6)
     float shadow_bias;
 };
 
+
+cbuffer ENVIRONMENT_CONSTANT_BUFFER : register(b3)
+{
+    float environment_value;
+    float3 dummy;
+};
+
 #include "shading_functions.hlsli"

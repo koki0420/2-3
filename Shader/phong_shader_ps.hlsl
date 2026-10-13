@@ -1,13 +1,12 @@
-//#include "phong_shader.hlsli"
 #include "Lambert.hlsli"
 
-//Texture2D color_map : register(t0);
-//SamplerState color_sampler_state : register(s0);
 Texture2D normal_map : register(t1);
 
 Texture2D shadow_map : register(t4);
 SamplerState shadow_sampler_state : register(s4);
 
+Texture2D sky_map : register(t5);
+SamplerState sky_sampler_state : register(s5);
 
 cbuffer CbMesh : register(b1)
 {
@@ -25,61 +24,32 @@ float4 main(VS_OUT pin) : SV_TARGET
             pin.texcoord) *
         materialColor;
 
-  
-    
-    //// �@��
+    // 法線
     float3 N = normalize(pin.normal);
-    
-    
 
-    
-    
-    //// ���C�g����
+    // 平行光源
     float3 L = normalize(-lightDirection.xyz);
 
-    //// �g�U����
+    // 拡散反射
     float diffuse =
         max(0.0f, dot(N, L));
 
-    // �J��������
+    // 視線ベクトル
     float3 V =
         normalize(cameraPosition.xyz - pin.position);
 
-    //// ���˃x�N�g��
-    //float3 R =
-    //    reflect(-L, N);
-
-    //// ���ʔ���
-    //float specular =
-    //    pow(
-    //        max(0.0f, dot(V, R)),
-    //        32.0f);
-
-    
-// �|�C���g���C�g
+    // ポイントライト
     float3 pointDiffuse = 0;
     float3 pointSpecular = 0;
 
-
-  
-    
-    
-    for (int i = 0; i < 19; i++)
+    for (int i = 0; i < 2; i++)
     {
-        
-
-       
         float3 LP =
             point_light[i].position.xyz -
             pin.position;
-        
-          
-       float len = length(LP);
-        
-     
-      
-        
-       
+
+        float len = length(LP);
+
         if (len >= point_light[i].range)
             continue;
 
@@ -89,23 +59,16 @@ float4 main(VS_OUT pin) : SV_TARGET
             saturate(
                 1.0f -
                 len / point_light[i].range);
-      
 
         attenuation *= attenuation;
-        
 
         float pd =
             max(0.0f, dot(N, LP));
 
-       
-        
-
-        
         pointDiffuse +=
-         point_light[i].color.rgb *
-         (0.3f + pd) *
-         attenuation;
-
+            point_light[i].color.rgb *
+            (0.3f + pd) *
+            attenuation;
 
         float3 PR =
             reflect(-LP, N);
@@ -121,45 +84,35 @@ float4 main(VS_OUT pin) : SV_TARGET
             point_light[i].color.rgb *
             ps *
             attenuation;
-        
-        
-      
-       
-
-       
-    
     }
 
-    
-    
-    
-    
-
-    
-  
- 
-    float ambient = 0.6f;
+    float ambient = 0.1f;
 
     float3 lighting =
         lightColor.rgb *
         (ambient + diffuse);
 
-    //lighting += pointDiffuse;
-
-   
-     //color.rgb *= pointDiffuse;
     color.rgb *= lighting;
-    
-    color.rgb *= (ambient + pointDiffuse);
-   // color.rgb += pointSpecular;
 
-     
-    
+    // ポイントライトスペキュラ
+    color.rgb += pointSpecular;
 
-    
-    
+    // スカイボックス反射
+    {
+        float4 skybox_color =
+            SampleSkybox(
+                sky_map,
+                sky_sampler_state,
+                reflect(-V, N));
+
+        color.rgb =
+            lerp(
+                color.rgb,
+                skybox_color.rgb,
+                0.3f);
+    }
+
     return color;
-
 }
 
 //float4 main(VS_OUT pin) : SV_TARGET

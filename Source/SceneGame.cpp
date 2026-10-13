@@ -21,11 +21,13 @@
 SceneGame::SceneGame()
 {
 
-	stage.scale.x = 1;
+	stage.scale.x = 10;
 	stage.scale.y = 1;
-	stage.scale.z = 1;
+	stage.scale.z = 10;
 	
-	stage.model = std::make_unique<Model>("Data/Model/Stage/stage_.mdl");
+	//stage.position.y = -10000;
+	
+	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 }
 
 SceneGame::~SceneGame()
@@ -46,6 +48,7 @@ void SceneGame::Finalize()
 void SceneGame::Update(float elapsedTime)
 {
 	camera.Update();
+	stage.UpdateTransform();
 }
 
 void SceneGame::Render(float elapsedTime)
