@@ -8,6 +8,9 @@
 #include"Framework.h"
 #include"Player.h"
 #include <EffectManager.h>
+//“G
+#include"Enemy.h"
+#include"EnemyManager.h"
 
 // XAUDIO2
 //#include "audio.h"
@@ -40,6 +43,8 @@ private:
 	Camera								camera;
 	FreeCameraController				cameraController;
 	Object								stage;
+
+	std::vector<std::unique_ptr<Enemy>> enemies;
 
 
 
