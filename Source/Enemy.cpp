@@ -35,13 +35,13 @@ void Enemy::Update(float elapsedTime)
 		DirectX::XMStoreFloat3(&enemy.position, new_pos);
 		enemy.position.y = -10;
 
-		float dx = -enemy.position.x;   // 0 - pos.x
-		float dz = -enemy.position.z;   // 0 - pos.z
-
-		// Y軸回転（Yaw）
-		enemy.angle.y = atan2f(dx, dz);
+		
 	}
+	float dx = -enemy.position.x;   // 0 - pos.x
+	float dz = -enemy.position.z;   // 0 - pos.z
 
+	// Y軸回転（Yaw）
+	enemy.angle.y = atan2f(dx, dz);
 	if(alive)enemy.UpdateTransform();
 }
 
