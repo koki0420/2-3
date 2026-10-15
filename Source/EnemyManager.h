@@ -25,6 +25,12 @@ public:
 		enemies.emplace_back(std::move(enemy));
 	}
 
+	bool Enemy_Alive(int i) { return enemies[i]->Alive(); }
+
+	void Enemy_Dead(int i) { enemies[i]->Dead(); }
+
+	void Clear() { enemies.clear(); }
+
 private:
 	std::vector<std::unique_ptr<Enemy>> enemies;
 };

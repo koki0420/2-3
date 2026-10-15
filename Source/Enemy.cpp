@@ -17,6 +17,9 @@ Enemy::~Enemy()
 void Enemy::Update(float elapsedTime)
 {
 	//エネミーの行動
+	enemy.position.z += (float)(rand()%10)/10;
+	if (enemy.position.z >= 260)enemy.position.z = -260;
+
 	if(alive)enemy.UpdateTransform();
 }
 

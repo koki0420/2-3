@@ -15,7 +15,9 @@ public:
 	//•`‰æˆ—
 	void Render(const RenderContext& immediate_context, ModelRenderer* renderer);
 
-	void Dead() { if (alive)alive == false; }
+	bool Alive(){return alive;}
+
+	void Dead() { alive = false; }
 
 private:
 	Object enemy;

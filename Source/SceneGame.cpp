@@ -30,16 +30,14 @@ SceneGame::SceneGame()
 	
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 	
-	for (int i = 0;i < 10;i += 1)
+	for (int i = 0;i < 20;i += 1)
 	{
-		for (int j = 0;j < 10;j += 1)
+		for (int j = 0;j < 20;j += 1)
 		{
-			enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -120+24.0f*j, 0, -120+24.0f*i }));
+			enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260+26.0f*j, 0, -260+26.0f*i }));
 		}
 	}
-	/*enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ 0, 0, 10 }));
-	enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ 10, 0, 10 }));*/
-
+	
 	
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
@@ -59,13 +57,19 @@ void SceneGame::Initialize()
 
 void SceneGame::Finalize()
 {
-	
+	EnemyManager::Instance().Clear();
 }
 
 void SceneGame::Update(float elapsedTime)
 {
 	camera.Update();
 	stage.UpdateTransform();
+
+	if (EnemyManager::Instance().Enemy_Alive(1))
+	{
+		EnemyManager::Instance().Enemy_Dead(1);
+	}
+
 	EnemyManager::Instance().Update(elapsedTime);
 
 }
@@ -100,6 +104,7 @@ void SceneGame::DrawGUI()
 
 	if (ImGui::Begin("SceneGame"))
 	{
+
 	}
 	ImGui::End();
 	
