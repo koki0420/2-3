@@ -246,12 +246,7 @@
     <ClCompile Include="External\ImGuizmo\ImGradient.cpp">
       <Filter>System</Filter>
     </ClCompile>
-    <ClCompile Include="Source\EnemyManager.cpp">
-      <Filter>ソース</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Enemy.cpp">
-      <Filter>ソース</Filter>
-    </ClCompile>
+    <ClCompile Include="Source\shader_sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Scene\AnimationScene.h">
@@ -452,10 +447,7 @@
     <ClInclude Include="Source\Animation.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
-    <ClInclude Include="Source\EnemyManager.h">
-      <Filter>ヘッダー</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Enemy.h">
+    <ClInclude Include="Source\shader_sprite.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
   </ItemGroup>
