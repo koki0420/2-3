@@ -58,6 +58,13 @@ Framework::Framework(HWND hWnd)
 
 
 	}
+	directional_light_color =
+	{
+		0.2f,
+		0.25f,
+		0.4f,
+		1.0f
+	};
 
 }
 
@@ -363,7 +370,7 @@ bool Framework::initialize()
 		// スカイマップ用のテクスチャ及びスプライトを準備 
 		load_texture_from_file(Graphics::Instance().GetDevice(), L".\\Data\\Sprite\\skybox/earth.jpg",
 			skymap_shader_resource_view.GetAddressOf(), &skymap_texture2d_desc);
-		skymap_sprite = std::make_unique<shader_sprite>(Graphics::Instance().GetDevice(), L"Data\\Sprite\\skybox/earth.jpg");
+		skymap_sprite = std::make_unique<shader_sprite>(Graphics::Instance().GetDevice(), L"Data\\Sprite\\skybox/night.png");
 		
 	}
 	// シェーダーの読み込み
@@ -411,8 +418,9 @@ bool Framework::initialize()
 			{
 
 				{ "POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 				{ "COLOR",        0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				{ "TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				
 				
 			};
 			create_vs_from_cso(Graphics::Instance().GetDevice(),
@@ -557,9 +565,22 @@ void Framework::Render(float elapsedTime)
 
 		//ビュー行列
 	DirectX::XMMATRIX V;
+	DirectX::XMMATRIX P;
+	DirectX::XMFLOAT3 sky_eye{};
+
+	const Camera* scene_camera = SceneManager::Instance().GetCamera();
+
+	if (scene_camera)
 	{
-		DirectX::XMVECTOR up =
-			DirectX::XMVectorSet(0, 1, 0, 0);
+		// SceneGame のカメラを使う
+		V = DirectX::XMLoadFloat4x4(&scene_camera->GetView());
+		P = DirectX::XMLoadFloat4x4(&scene_camera->GetProjection());
+		sky_eye = scene_camera->GetEye();
+	}
+	else
+	{
+		// カメラを持たないシーン用。現在の Framework のカメラ計算を残す
+		DirectX::XMVECTOR up = DirectX::XMVectorSet(0, 1, 0, 0);
 
 		float sx = sinf(rotateX);
 		float cx = cosf(rotateX);
@@ -573,36 +594,34 @@ void Framework::Render(float elapsedTime)
 			DirectX::XMVectorSet(-cx * sy, -sx, -cx * cy, 0);
 
 		DirectX::XMVECTOR Distance =
-			DirectX::XMVectorSet(distance, distance, distance,
-				0);
+			DirectX::XMVectorSet(distance, distance, distance, 0);
 
-		Front = DirectX::XMVectorMultiply(
-			Front,
-			Distance);
+		Front = DirectX::XMVectorMultiply(Front, Distance);
 
 		DirectX::XMVECTOR Eye =
-			DirectX::XMVectorSubtract(
-				Focus,
-				Front);
+			DirectX::XMVectorSubtract(Focus, Front);
 
-		DirectX::XMStoreFloat3(
-			&camera_position,
-			Eye);
+		DirectX::XMStoreFloat3(&camera_position, Eye);
 
 		V = DirectX::XMMatrixLookAtLH(
 			DirectX::XMLoadFloat3(&camera_position),
 			DirectX::XMLoadFloat3(&camera_focus),
-			up);
-	}
+			up
+		);
 
+		float aspect =
+			static_cast<float>(Graphics::Instance().GetScreenWidth()) /
+			static_cast<float>(Graphics::Instance().GetScreenHeight());
 
-	float aspect =static_cast<float>(Graphics::Instance().GetScreenWidth()) /static_cast<float>(Graphics::Instance().GetScreenHeight());
-	DirectX::XMMATRIX P =
-		DirectX::XMMatrixPerspectiveFovLH(
+		P = DirectX::XMMatrixPerspectiveFovLH(
 			DirectX::XMConvertToRadians(30),
 			aspect,
 			0.1f,
-			100.0f);
+			100.0f
+		);
+
+		sky_eye = camera_position;
+	}
 
 	//scene_constants更新
 	scene_constants scene_data{};
@@ -615,9 +634,9 @@ void Framework::Render(float elapsedTime)
 	scene_data.light_direction = directional_light_direction;
 	scene_data.light_color = directional_light_color;
 	scene_data.camera_position = DirectX::XMFLOAT4(
-		camera_position.x,
-		camera_position.y,
-		camera_position.z,
+		sky_eye.x,
+		sky_eye.y,
+		sky_eye.z,
 		1.0f
 	);
 

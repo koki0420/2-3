@@ -34,6 +34,8 @@ public:
 	//ƒV[ƒ“Ø‚è‘Ö‚¦
 	void ChangeScene(Scene* scene);
 
+	const Camera* GetCamera() const;
+
 private:
 	Scene* currentScene = nullptr;
 	Scene* nextScene = nullptr;
