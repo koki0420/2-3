@@ -41,6 +41,7 @@ private:
 	Camera								camera;
 	TestCameraController				cameraController;
 	Object								stage;
+	Player								player;
 
 
 

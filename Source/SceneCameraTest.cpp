@@ -45,8 +45,14 @@ void SceneCameraTest::Finalize()
 
 void SceneCameraTest::Update(float elapsedTime)
 {
+	
+
 	cameraController.Update();
 	cameraController.SyncControllerToCamera(camera);
+
+	camera.SetLookAt(camera.GetEye(), player.player.position, camera.GetUp());
+
+	player.Update(elapsedTime,stage,camera);
 }
 
 void SceneCameraTest::Render(float elapsedTime)
@@ -64,6 +70,7 @@ void SceneCameraTest::Render(float elapsedTime)
 	rc.camera = &camera;
 
 	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
+	player.Render(elapsedTime, rc, false);
 
 }
 
@@ -78,6 +85,8 @@ void SceneCameraTest::DrawGUI()
 
 	if (ImGui::Begin("SceneCameraTest"))
 	{
+		ImGui::DragFloat3("pPosition", &player.player.position.x, 0.1f);
+		ImGui::DragFloat3("pScale", &player.player.scale.x, 0.1f);
 	}
 	ImGui::End();
 
