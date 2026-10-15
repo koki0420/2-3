@@ -190,6 +190,8 @@ void Sprite::Render(ID3D11DeviceContext* dc,
 	dc->VSSetShader(vertexShader.Get(), nullptr, 0);
 	dc->PSSetShader(pixelShader.Get(), nullptr, 0);
 	
+	
+	
 	ID3D11SamplerState* sampler = Graphics::Instance().GetSamplerState();
 
 	

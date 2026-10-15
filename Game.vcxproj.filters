@@ -247,6 +247,7 @@
       <Filter>System</Filter>
     </ClCompile>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <ClCompile Include="Source\SceneCameraTest.cpp">
 =======
     <ClCompile Include="Source\EnemyManager.cpp">
@@ -256,6 +257,9 @@
 >>>>>>> 2da1d4eb693b34b65303190855e34965e01dfdde
       <Filter>ソース</Filter>
     </ClCompile>
+=======
+    <ClCompile Include="Source\shader_sprite.cpp" />
+>>>>>>> 1b1f929b4fb94a2f774f8ba2d6a4ed1eb13dc416
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Scene\AnimationScene.h">
@@ -457,6 +461,7 @@
       <Filter>ヘッダー</Filter>
     </ClInclude>
 <<<<<<< HEAD
+<<<<<<< HEAD
     <ClInclude Include="Source\SceneCameraTest.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
@@ -467,6 +472,9 @@
     </ClInclude>
     <ClInclude Include="Source\Enemy.h">
 >>>>>>> 2da1d4eb693b34b65303190855e34965e01dfdde
+=======
+    <ClInclude Include="Source\shader_sprite.h">
+>>>>>>> 1b1f929b4fb94a2f774f8ba2d6a4ed1eb13dc416
       <Filter>ヘッダー</Filter>
     </ClInclude>
   </ItemGroup>
