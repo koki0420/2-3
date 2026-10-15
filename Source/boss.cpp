@@ -15,7 +15,7 @@ void Boss::Update(float elapsedTime)
 
 }
 
-void Boss::Render()
+void Boss::Render(const RenderContext& immediate_context, ModelRenderer* renderer)
 {
 
 }
