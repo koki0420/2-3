@@ -9,5 +9,7 @@ float4 main(VS_OUT pin) : SV_TARGET
         pin.world_position.xyz - camera_position.xyz
     );
 
+    //return texture0.Sample(sampler0, pin.texcoord);
+    
     return SampleSkybox(texture0, sampler0, E);
 }

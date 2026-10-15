@@ -37,6 +37,10 @@ public:
 	void DrawGUI() override;
 
 
+	const Camera* GetCamera() const override
+	{
+		return &camera;
+	}
 
 private:
 	
