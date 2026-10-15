@@ -12,7 +12,7 @@ public:
 
 	void Update(float elapsedTime);
 
-	void Render(const RenderContext& immediate_context, ModelRenderer* renderer)
+	void Render(const RenderContext& immediate_context, ModelRenderer* renderer);
 
 private:
 	Object boss;
