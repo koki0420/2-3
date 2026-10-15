@@ -53,3 +53,8 @@ void SceneManager::ChangeScene(Scene* scene)
 	//V‚µ‚¢ƒV[ƒ“‚ðÝ’è
 	nextScene = scene;
 }
+
+const Camera* SceneManager::GetCamera() const
+{
+	return currentScene ? currentScene->GetCamera() : nullptr;
+}

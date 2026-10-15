@@ -248,6 +248,7 @@
     </ClCompile>
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <ClCompile Include="Source\SceneCameraTest.cpp">
 =======
     <ClCompile Include="Source\EnemyManager.cpp">
@@ -260,6 +261,20 @@
 =======
     <ClCompile Include="Source\shader_sprite.cpp" />
 >>>>>>> 1b1f929b4fb94a2f774f8ba2d6a4ed1eb13dc416
+=======
+    <ClCompile Include="Source\boss.cpp">
+      <Filter>ソース</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Enemy.cpp">
+      <Filter>ソース</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EnemyManager.cpp">
+      <Filter>ソース</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\shader_sprite.cpp">
+      <Filter>ソース</Filter>
+    </ClCompile>
+>>>>>>> 76d122859a945d80455457c661cfbe81778ae0a0
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Scene\AnimationScene.h">
@@ -475,6 +490,15 @@
 =======
     <ClInclude Include="Source\shader_sprite.h">
 >>>>>>> 1b1f929b4fb94a2f774f8ba2d6a4ed1eb13dc416
+      <Filter>ヘッダー</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\boss.h">
+      <Filter>ヘッダー</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Enemy.h">
+      <Filter>ヘッダー</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EnemyManager.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
   </ItemGroup>

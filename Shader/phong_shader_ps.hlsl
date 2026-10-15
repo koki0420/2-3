@@ -86,16 +86,16 @@ float4 main(VS_OUT pin) : SV_TARGET
             attenuation;
     }
 
-    float ambient = 0.1f;
+    float ambient = 0.01f;
 
     float3 lighting =
         lightColor.rgb *
-        (ambient + diffuse);
+        (ambient + diffuse*0.01f);
 
     color.rgb *= lighting;
 
     // ポイントライトスペキュラ
-    color.rgb += pointSpecular;
+  //  color.rgb += pointSpecular;
 
     // スカイボックス反射
     {
@@ -109,10 +109,10 @@ float4 main(VS_OUT pin) : SV_TARGET
             lerp(
                 color.rgb,
                 skybox_color.rgb,
-                0.3f);
+                0.6f);
     }
 
-    return color;
+    return saturate(color);
 }
 
 //float4 main(VS_OUT pin) : SV_TARGET

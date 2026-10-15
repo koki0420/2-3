@@ -136,5 +136,12 @@ float4 SampleSkybox(Texture2D tex, SamplerState samp, float3 direction)
  
     float latitude = (1.0f / (2.0f * PI)) * atan2(direction.z, direction.x) + 0.5f;
     float longitude = (1.0f / PI) * atan2(direction.y, length(direction.xz)) + 0.5f;
-    return tex.Sample(samp, float2(1.0f - saturate(latitude), 1.0f - saturate(longitude)));
+    
+    // 左右を半周ずらして、カメラ正面を地図の中央付近に合わせる
+    float u = frac(1.5f - latitude);
+    float v = 1.0f - saturate(longitude);
+    
+    return tex.Sample(samp, float2(u, v));
+    
+   // return tex.Sample(samp, float2(1.0f - saturate(latitude), 1.0f - saturate(longitude)));
 }

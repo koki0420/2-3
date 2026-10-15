@@ -1,6 +1,6 @@
 #pragma once
 
-
+class Camera;
 
 
 // ƒV[ƒ“Šî’ê
@@ -9,6 +9,8 @@ class Scene
 public:
 	Scene() = default;
 	virtual ~Scene() = default;
+
+	virtual const Camera* GetCamera() const { return nullptr; }
 
 	//‰Šú‰»
 	virtual void Initialize() = 0;
