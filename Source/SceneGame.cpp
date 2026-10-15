@@ -65,10 +65,10 @@ void SceneGame::Update(float elapsedTime)
 	camera.Update();
 	stage.UpdateTransform();
 
-	if (EnemyManager::Instance().Enemy_Alive(1))
+	/*if (EnemyManager::Instance().Enemy_Alive(1))
 	{
 		EnemyManager::Instance().Enemy_Dead(1);
-	}
+	}*/
 
 	EnemyManager::Instance().Update(elapsedTime);
 

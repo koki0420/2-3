@@ -19,6 +19,14 @@ public:
 
 	void Dead() { alive = false; }
 
+	DirectX::XMFLOAT3 GetPos() const { return enemy.position; };
+
+	void SetPos(const DirectX::XMFLOAT3 pos)
+	{
+		enemy.position = pos;
+	}
+
+
 private:
 	Object enemy;
 	bool alive;

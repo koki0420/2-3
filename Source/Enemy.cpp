@@ -16,9 +16,31 @@ Enemy::~Enemy()
 
 void Enemy::Update(float elapsedTime)
 {
-	//エネミーの行動
-	enemy.position.z += (float)(rand()%10)/10;
-	if (enemy.position.z >= 260)enemy.position.z = -260;
+	float direction = DirectX::XMVectorGetX
+	(DirectX::XMVector3Length
+	(DirectX::XMVectorSubtract
+	({0,0,-1}, DirectX::XMLoadFloat3(&enemy.position))));
+
+	if (direction <= 100)
+	{
+		//エネミーの行動
+		DirectX::XMVECTOR diff =
+			DirectX::XMVectorSubtract({ 0,0,-1 }, DirectX::XMLoadFloat3(&enemy.position));
+
+		diff = DirectX::XMVector3Normalize(diff);
+
+		DirectX::XMVECTOR new_pos = DirectX::XMVectorAdd
+		(DirectX::XMLoadFloat3(&enemy.position),
+			DirectX::XMVectorScale(diff, 0.1f));
+		DirectX::XMStoreFloat3(&enemy.position, new_pos);
+		enemy.position.y = -10;
+
+		float dx = -enemy.position.x;   // 0 - pos.x
+		float dz = -enemy.position.z;   // 0 - pos.z
+
+		// Y軸回転（Yaw）
+		enemy.angle.y = atan2f(dx, dz);
+	}
 
 	if(alive)enemy.UpdateTransform();
 }
