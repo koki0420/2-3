@@ -5,17 +5,19 @@ struct VS_OUT
     float2 texcoord : TEXCOORD;
     float4 world_position : WORLD_POSITION;
 };
- 
-cbuffer SCENE_CONSTANT_BUFFER : register(b1)
+
+cbuffer SCENE_CONSTANT_BUFFER : register(b0)
 {
     row_major float4x4 view_projection;
-    float4 options;
+    float4 light_direction;
+    float4 light_color;
     float4 camera_position;
-}; 
- 
+    float4 options;
+};
+
 cbuffer SKYMAP_CONSTANT_BUFFER : register(b7)
 {
     row_major float4x4 inverse_view_projection;
-}; 
- 
-#include "shading_functions.hlsli" 
+};
+
+#include "shading_functions.hlsli"

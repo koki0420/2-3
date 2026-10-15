@@ -363,8 +363,8 @@ bool Framework::initialize()
 		// スカイマップ用のテクスチャ及びスプライトを準備 
 		load_texture_from_file(Graphics::Instance().GetDevice(), L".\\Data\\Sprite\\skybox/earth.jpg",
 			skymap_shader_resource_view.GetAddressOf(), &skymap_texture2d_desc);
-		skymap_sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data\\Sprite\\skybox/earth.jpg");
-
+		skymap_sprite = std::make_unique<shader_sprite>(Graphics::Instance().GetDevice(), L"Data\\Sprite\\skybox/earth.jpg");
+		
 	}
 	// シェーダーの読み込み
 	{
@@ -386,13 +386,13 @@ bool Framework::initialize()
 
 			//ライティング
 			create_vs_from_cso(Graphics::Instance().GetDevice(),
-				"Data/Shader/LambertVS.cso",
+				"LambertVS.cso",
 				mesh_vertex_shader.GetAddressOf(),
 				mesh_input_layout.GetAddressOf(),
 				input_element_desc,
 				ARRAYSIZE(input_element_desc));
 			create_ps_from_cso(Graphics::Instance().GetDevice(),
-				"Data/Shader/phong_shader_ps.cso",
+				"phong_shader_ps.cso",
 				mesh_pixel_shader.GetAddressOf());
 
 			
@@ -409,9 +409,11 @@ bool Framework::initialize()
 		{
 			D3D11_INPUT_ELEMENT_DESC input_element_desc[]
 			{
-				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+
+				{ "POSITION",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				{ "TEXCOORD",     0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				{ "COLOR",        0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				
 			};
 			create_vs_from_cso(Graphics::Instance().GetDevice(),
 				"Data/Shader/SpriteVS.cso",
@@ -423,9 +425,9 @@ bool Framework::initialize()
 				"Data/Shader/SpritePS.cso",
 				sprite_pixel_shader.GetAddressOf());
 
-			create_vs_from_cso(Graphics::Instance().GetDevice(), "skymap_vs.cso", skymap_vertex_shader.GetAddressOf(),
-				skymap_input_layout.GetAddressOf(), input_element_desc, _countof(input_element_desc));
-			create_ps_from_cso(Graphics::Instance().GetDevice(), "skymap_ps.cso", skymap_pixel_shader.GetAddressOf());
+			create_vs_from_cso(Graphics::Instance().GetDevice(), "Data/Shader/skymap_vs.cso", skymap_vertex_shader.GetAddressOf(),
+			skymap_input_layout.GetAddressOf(), input_element_desc, _countof(input_element_desc));
+		    create_ps_from_cso(Graphics::Instance().GetDevice(), "Data/Shader/skymap_ps.cso", skymap_pixel_shader.GetAddressOf());
 
 
 
@@ -602,17 +604,60 @@ void Framework::Render(float elapsedTime)
 			0.1f,
 			100.0f);
 
-	skymap_constants skymap{};
-	DirectX::XMStoreFloat4x4(&skymap.inverse_view_ptojection, DirectX::XMMatrixInverse(nullptr, V*
-		P));
-	immediate_context->UpdateSubresource(skymap_constant_buffer.Get(), 0, 0, &skymap, 0, 0);
-	immediate_context->VSSetConstantBuffers(7, 1, skymap_constant_buffer.GetAddressOf());
-	immediate_context->PSSetConstantBuffers(7, 1, skymap_constant_buffer.GetAddressOf());
- 
-	immediate_context->PSSetShaderResources(
+	//scene_constants更新
+	scene_constants scene_data{};
+
+	DirectX::XMStoreFloat4x4(
+		&scene_data.view_projection,
+		V* P
+	);
+
+	scene_data.light_direction = directional_light_direction;
+	scene_data.light_color = directional_light_color;
+	scene_data.camera_position = DirectX::XMFLOAT4(
+		camera_position.x,
+		camera_position.y,
+		camera_position.z,
+		1.0f
+	);
+
+	immediate_context->UpdateSubresource(
+		scene_constant_buffer.Get(),
 		0,
-		1,
-		skymap_shader_resource_view.GetAddressOf());
+		nullptr,
+		&scene_data,
+		0,
+		0
+	);
+
+	// Scene.hlsli の CbScene : register(b0) に対応
+	immediate_context->VSSetConstantBuffers(
+		0, 1, scene_constant_buffer.GetAddressOf()
+	);
+	immediate_context->PSSetConstantBuffers(
+		0, 1, scene_constant_buffer.GetAddressOf()
+	);
+
+	skymap_constants skymap{};
+
+	DirectX::XMStoreFloat4x4(
+		&skymap.inverse_view_projection,
+		DirectX::XMMatrixInverse(nullptr, V* P)
+	);
+
+	immediate_context->UpdateSubresource(
+		skymap_constant_buffer.Get(),
+		0,
+		nullptr,
+		&skymap,
+		0,
+		0
+	);
+
+	immediate_context->VSSetConstantBuffers(
+		7, 1, skymap_constant_buffer.GetAddressOf()
+	);
+ 
 
  // 空描画 
 if (skymap_sprite)
@@ -623,27 +668,26 @@ if (skymap_sprite)
 	immediate_context->PSSetSamplers(0, 1, sampler_state.GetAddressOf());
 	immediate_context->OMSetDepthStencilState(skymap_depth_stencil_state.Get(), 0);
 
-	skymap_sprite->P_Render(immediate_context, SCREEN_WIDTH*0.5f, SCREEN_HEIGHT*0.5f, SCREEN_WIDTH, SCREEN_HEIGHT);
+	skymap_sprite->render(immediate_context, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	immediate_context->OMSetDepthStencilState(depth_stencil_state.Get(), 0);
 }
 
+//　メッシュ描画に切り替え
+	immediate_context->IASetInputLayout(
+		mesh_input_layout.Get());
 
+	immediate_context->VSSetShader(
+		mesh_vertex_shader.Get(),
+		nullptr,
+		0);
 
-	//scene_constants更新
-	scene_constants scene_data{};
+	immediate_context->PSSetShader(
+		mesh_pixel_shader.Get(),
+		nullptr,
+		0);
 
-	scene_data.camera_position.x = camera_position.x;
-	scene_data.camera_position.y = camera_position.y;
-	scene_data.camera_position.z = camera_position.z;
-
-	DirectX::XMStoreFloat4x4(&scene_data.view_projection, V * P);
-
-	immediate_context->UpdateSubresource(scene_constant_buffer.Get(), 0, 0, &scene_data, 0, 0);
-
-	immediate_context->VSSetConstantBuffers(1, 1, scene_constant_buffer.GetAddressOf());
-
-	immediate_context->PSSetConstantBuffers(1, 1, scene_constant_buffer.GetAddressOf());
+	
 
 
 	//ライト

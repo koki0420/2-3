@@ -56,6 +56,8 @@ public:
 		float dw,
 		float dh);
 
+	
+
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vertexShader;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>			pixelShader;
@@ -66,4 +68,6 @@ private:
 
 	float textureWidth = 0;
 	float textureHeight = 0;
+
+	
 };

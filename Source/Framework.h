@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include <static_mesh.h>
 #include <Sprite.h>
+#include "shader_sprite.h"
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
 #include<sstream>
@@ -76,8 +77,11 @@ public:
 	struct scene_constants
 	{
 		DirectX::XMFLOAT4X4 view_projection;
-		DirectX::XMFLOAT4 options;	//	xy : マウスの座標値, z : タイマー, w : フラグ
+		DirectX::XMFLOAT4 light_direction;
+		DirectX::XMFLOAT4 light_color;
 		DirectX::XMFLOAT4 camera_position;
+		DirectX::XMFLOAT4 options;	//	xy : マウスの座標値, z : タイマー, w : フラグ
+		
 	};
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> scene_constant_buffer;
@@ -150,7 +154,7 @@ public:
 	//スカイマッピング
 	struct skymap_constants
 	{
-		DirectX::XMFLOAT4X4 inverse_view_ptojection;
+		DirectX::XMFLOAT4X4 inverse_view_projection;
 	};
 	Microsoft::WRL::ComPtr<ID3D11Buffer> skymap_constant_buffer;
 	Microsoft::WRL::ComPtr<ID3D11VertexShader> skymap_vertex_shader;
@@ -159,7 +163,7 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> skymap_depth_stencil_state;
 	D3D11_TEXTURE2D_DESC skymap_texture2d_desc;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> skymap_shader_resource_view;
-	std::unique_ptr<Sprite> skymap_sprite;
+	std::unique_ptr<shader_sprite> skymap_sprite;
 
 
 

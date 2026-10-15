@@ -246,6 +246,7 @@
     <ClCompile Include="External\ImGuizmo\ImGradient.cpp">
       <Filter>System</Filter>
     </ClCompile>
+    <ClCompile Include="Source\shader_sprite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Scene\AnimationScene.h">
@@ -444,6 +445,9 @@
       <Filter>ヘッダー</Filter>
     </ClInclude>
     <ClInclude Include="Source\Animation.h">
+      <Filter>ヘッダー</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\shader_sprite.h">
       <Filter>ヘッダー</Filter>
     </ClInclude>
   </ItemGroup>
