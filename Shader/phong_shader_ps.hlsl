@@ -26,6 +26,8 @@ float4 main(VS_OUT pin) : SV_TARGET
 
     // 法線
     float3 N = normalize(pin.normal);
+    
+    
 
     // 平行光源
     float3 L = normalize(-lightDirection.xyz);
@@ -38,11 +40,11 @@ float4 main(VS_OUT pin) : SV_TARGET
     float3 V =
         normalize(cameraPosition.xyz - pin.position);
 
-    // ポイントライト
+    //// ポイントライト
     float3 pointDiffuse = 0;
     float3 pointSpecular = 0;
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 4; i++)
     {
         float3 LP =
             point_light[i].position.xyz -
@@ -86,16 +88,16 @@ float4 main(VS_OUT pin) : SV_TARGET
             attenuation;
     }
 
-    float ambient = 0.01f;
+    float ambient = 0.08f;
 
     float3 lighting =
         lightColor.rgb *
-        (ambient + diffuse*0.01f);
+        (ambient + diffuse*0.35f);
 
     color.rgb *= lighting;
 
     // ポイントライトスペキュラ
-  //  color.rgb += pointSpecular;
+    color.rgb += pointSpecular;
 
     // スカイボックス反射
     {
@@ -109,8 +111,10 @@ float4 main(VS_OUT pin) : SV_TARGET
             lerp(
                 color.rgb,
                 skybox_color.rgb,
-                0.6f);
+                0.15f);
     }
+    
+   
 
     return saturate(color);
 }
