@@ -13,7 +13,7 @@
 
 
 
-#define LIGHT_MAX 20
+#define LIGHT_MAX 41
 
 const LONG SCREEN_WIDTH = 1280;
 const LONG SCREEN_HEIGHT = 720;
