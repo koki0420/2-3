@@ -54,7 +54,7 @@ Framework::Framework(HWND hWnd)
 		//初期
 		point_light[0].position = { 12,5,42,0 };
 		point_light[0].color = { 1,1,1,1 };
-		point_light[0].range = 10000.0f;
+		point_light[0].range = 1000.0f;
 
 
 	}
