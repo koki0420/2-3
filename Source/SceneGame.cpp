@@ -41,6 +41,7 @@ void SceneGame::Initialize()
 
 	stage.position.y = -20;
 
+#if 1
 	for (int i = 0;i < 20;i += 1)
 	{
 		for (int j = 0;j < 20;j += 1)
@@ -52,6 +53,11 @@ void SceneGame::Initialize()
 	{
 		EnemyManager::Instance().Register(std::move(enemies[i]));
 	}
+#else
+	enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 26.0f , 0, -260 + 26.0f }));
+	EnemyManager::Instance().Register(std::move(enemies[0]));
+
+#endif
 }	
 
 void SceneGame::Finalize()
