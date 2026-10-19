@@ -41,8 +41,6 @@ Framework::Framework(HWND hWnd)
 	
 	{
 		
-		float floaLight = 13.5f;
-		float floalightY = 4.75f;
 
 		for (int i = 0; i < LIGHT_MAX; i++)
 		{
@@ -51,11 +49,70 @@ Framework::Framework(HWND hWnd)
 			point_light[i].range =0;
 		}
 
+		for (int i = 0; i < LIGHT_MAX; i++)
+		{
+			point_light[i].color = { 1.0f, 0.8f, 0.5f, 1.0f };
+			point_light[i].range = 150.0f;
+		}
 		//初期
-		point_light[0].position = { 12,5,42,0 };
-		point_light[0].color = { 1,1,1,1 };
-		point_light[0].range = 1000.0f;
+		point_light[0].position = { 0.0f, 60.0f, 280.0f, 0.0f };
+		point_light[1].position = { 75.0f, 60.0f, 280.0f, 0.0f };
+		point_light[2].position = { 150.0f, 60.0f, 280.0f, 0.0f };
+		point_light[3].position = { 225.0f, 60.0f, 280.0f, 0.0f };
+		point_light[4].position = { 280.0f, 60.0f, 280.0f, 0.0f };
+		point_light[5].position = { -75.0f, 60.0f, 280.0f, 0.0f };
+		point_light[6].position = { -150.0f, 60.0f, 280.0f, 0.0f };
+		point_light[7].position = { -225.0f, 60.0f, 280.0f, 0.0f };
+		point_light[8].position = { -280.0f, 60.0f, 280.0f, 0.0f };
 
+
+		point_light[9].position = { 0.0f, 60.0f, -280.0f, 0.0f };
+		point_light[10].position = { 75.0f, 60.0f, -280.0f, 0.0f };
+		point_light[11].position = { 150.0f, 60.0f, -280.0f, 0.0f };
+		point_light[12].position = { 225.0f, 60.0f, -280.0f, 0.0f };
+		point_light[13].position = { 280.0f, 60.0f, -280.0f, 0.0f };
+		point_light[14].position = { -75.0f, 60.0f, -280.0f, 0.0f };
+		point_light[15].position = { -150.0f, 60.0f, -280.0f, 0.0f };
+		point_light[16].position = { -225.0f, 60.0f, -280.0f, 0.0f };
+		point_light[17].position = { -280.0f, 60.0f, -280.0f, 0.0f };
+
+		point_light[18].position = { 280.0f, 60.0f, 0.0f, 0.0f };
+		point_light[19].position = { 280.0f, 60.0f, 75.0f, 0.0f };
+		point_light[20].position = { 280.0f, 60.0f,150.0f, 0.0f };
+		point_light[21].position = { 280.0f, 60.0f,225.0f, 0.0f };
+		point_light[22].position = { 280.0f, 60.0f,280.0f, 0.0f };
+		point_light[23].position = { 280.0f, 60.0f,-75.0f, 0.0f };
+		point_light[24].position = { 280.0f, 60.0f,-150.0f, 0.0f };
+		point_light[25].position = { 280.0f, 60.0f,-225.0f, 0.0f };
+		point_light[26].position = { 280.0f, 60.0f,-280.0f, 0.0f };
+
+		point_light[27].position = { -280.0f, 60.0f, 0.0f, 0.0f };
+		point_light[28].position = { -280.0f, 60.0f, 75.0f, 0.0f };
+		point_light[29].position = { -280.0f, 60.0f,150.0f, 0.0f };
+		point_light[30].position = { -280.0f, 60.0f,225.0f, 0.0f };
+		point_light[31].position = { -280.0f, 60.0f,280.0f, 0.0f };
+		point_light[32].position = { -280.0f, 60.0f,-75.0f, 0.0f };
+		point_light[33].position = { -280.0f, 60.0f,-150.0f, 0.0f };
+		point_light[34].position = { -280.0f, 60.0f,-225.0f, 0.0f };
+		point_light[35].position = { -280.0f, 60.0f,-280.0f, 0.0f };
+
+
+		point_light[36].range = 150.0f;
+		point_light[37].range = 150.0f;
+		point_light[38].range = 150.0f;
+		point_light[39].range = 150.0f;
+		point_light[40].range = 150.0f;
+
+
+		point_light[36].position = { 150.0f, 100.0f,150.0f, 0.0f };
+		point_light[37].position = { 150.0f, 100.0f,-150.0f, 0.0f };
+		point_light[38].position = { -150.0f, 100.0f,150.0f, 0.0f };
+		point_light[39].position = { -150.0f, 100.0f,-150.0f, 0.0f };
+		point_light[40].position = { 0.0f, 100.0f,0.0f, 0.0f };
+
+	
+
+		
 
 	}
 	directional_light_color =

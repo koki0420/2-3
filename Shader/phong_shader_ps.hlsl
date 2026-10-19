@@ -44,7 +44,7 @@ float4 main(VS_OUT pin) : SV_TARGET
     float3 pointDiffuse = 0;
     float3 pointSpecular = 0;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 41; ++i)
     {
         float3 LP =
             point_light[i].position.xyz -
@@ -68,10 +68,8 @@ float4 main(VS_OUT pin) : SV_TARGET
             max(0.0f, dot(N, LP));
 
         pointDiffuse +=
-            point_light[i].color.rgb *
-            (0.3f + pd) *
-            attenuation;
-
+          point_light[i].color.rgb *pd *attenuation;
+        
         float3 PR =
             reflect(-LP, N);
 
@@ -80,7 +78,7 @@ float4 main(VS_OUT pin) : SV_TARGET
                 max(
                     0.0f,
                     dot(V, PR)),
-                32.0f);
+                256.0f);
 
         pointSpecular +=
             point_light[i].color.rgb *
@@ -96,8 +94,12 @@ float4 main(VS_OUT pin) : SV_TARGET
 
     color.rgb *= lighting;
 
+    // ポイントライト拡散反射
+    color.rgb += pointDiffuse;
+
+    
     // ポイントライトスペキュラ
-    color.rgb += pointSpecular;
+   color.rgb += pointSpecular*0.05f;
 
     // スカイボックス反射
     {
@@ -111,7 +113,7 @@ float4 main(VS_OUT pin) : SV_TARGET
             lerp(
                 color.rgb,
                 skybox_color.rgb,
-                0.15f);
+                0.05f);
     }
     
    
