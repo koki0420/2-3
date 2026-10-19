@@ -21,23 +21,7 @@
 
 SceneGame::SceneGame()
 {
-	stage.scale.x = 0.2f;
-	stage.scale.y = 0.1f;
-	stage.scale.z = 0.2f;
 	
-	stage.position.y = -20;
-	
-	for (int i = 0;i < 20;i += 1)
-	{
-		for (int j = 0;j < 20;j += 1)
-		{
-			enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260+26.0f*j, 0, -260+26.0f*i }));
-		}
-	}
-	for (size_t i = 0; i < enemies.size(); i++)
-	{
-		EnemyManager::Instance().Register(std::move(enemies[i]));
-	}
 }
 
 SceneGame::~SceneGame()
@@ -50,6 +34,24 @@ SceneGame::~SceneGame()
 void SceneGame::Initialize()
 {
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
+
+	stage.scale.x = 0.2f;
+	stage.scale.y = 0.1f;
+	stage.scale.z = 0.2f;
+
+	stage.position.y = -20;
+
+	for (int i = 0;i < 20;i += 1)
+	{
+		for (int j = 0;j < 20;j += 1)
+		{
+			enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 26.0f * j, 0, -260 + 26.0f * i }));
+		}
+	}
+	for (size_t i = 0; i < enemies.size(); i++)
+	{
+		EnemyManager::Instance().Register(std::move(enemies[i]));
+	}
 }	
 
 void SceneGame::Finalize()
