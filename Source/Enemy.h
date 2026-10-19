@@ -30,6 +30,6 @@ public:
 private:
 	Object enemy;
 	DirectX::XMFLOAT3 arrive_position = { 0,0,0 };
-	bool alive;
+	bool alive=true;
 	bool arrive = true;
 };

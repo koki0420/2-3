@@ -11,10 +11,6 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	enemy.position.y = -10;
 	enemy.model = std::make_unique<Model>("Data/Model/Mr.Incredible/Mr.Incredible.mdl");
 
-	/*enemy.position.y = 30;
-	enemy.scale = { 1,1,1 };
-	enemy.model = std::make_unique<Model>("Data/Model/Enemy/spino_low.mdl");*/
-
 	alive = true;
 }
 
