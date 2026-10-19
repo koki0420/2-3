@@ -58,9 +58,9 @@ void SceneGame::Initialize()
 	//}
 
 	
-	//enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 26.0f , 0, -260 + 26.0f }));
-	//EnemyManager::Instance().Register(std::move(enemies[0]));
-	//enemy_num += 1;
+	enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 26.0f , 0, -260 + 26.0f }));
+	EnemyManager::Instance().Register(std::move(enemies[0]));
+	enemy_num += 1;
 	
 
 
@@ -126,7 +126,14 @@ void SceneGame::DrawGUI()
 
 	if (ImGui::Begin("SceneGame"))
 	{
-
+		if (ImGui::Button("enemy"))
+		{
+			if (enemy_num > 0)
+			{
+				EnemyManager::Instance().Enemy_Dead(0);
+				enemy_num -= 1;
+			}
+		}
 	}
 	ImGui::End();
 	
