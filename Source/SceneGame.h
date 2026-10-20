@@ -12,6 +12,8 @@
 #include"Enemy.h"
 #include"EnemyManager.h"
 
+#include "boss.h"
+
 // XAUDIO2
 //#include "audio.h"
 //#include <vector> //–¢g—p‚Ì‚½‚ßíœ
@@ -49,6 +51,8 @@ private:
 	Object								stage;
 
 	std::vector<std::unique_ptr<Enemy>> enemies;
+	std::unique_ptr<Boss> boss;
+	int enemy_num = 0;
 
 
 

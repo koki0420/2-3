@@ -30,7 +30,7 @@ cbuffer CbLight : register(b2)
   
 
 
-    PointLight point_light[19];
+    PointLight point_light[41];
 };
 
 

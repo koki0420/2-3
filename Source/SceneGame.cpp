@@ -21,23 +21,7 @@
 
 SceneGame::SceneGame()
 {
-	stage.scale.x = 0.2f;
-	stage.scale.y = 0.1f;
-	stage.scale.z = 0.2f;
 	
-	stage.position.y = -20;
-	
-	for (int i = 0;i < 20;i += 1)
-	{
-		for (int j = 0;j < 20;j += 1)
-		{
-			enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260+26.0f*j, 0, -260+26.0f*i }));
-		}
-	}
-	for (size_t i = 0; i < enemies.size(); i++)
-	{
-		EnemyManager::Instance().Register(std::move(enemies[i]));
-	}
 }
 
 SceneGame::~SceneGame()
@@ -49,7 +33,37 @@ SceneGame::~SceneGame()
 
 void SceneGame::Initialize()
 {
+	enemy_num = 0;
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
+
+	stage.scale.x = 0.2f;
+	stage.scale.y = 0.1f;
+	stage.scale.z = 0.2f;
+
+	stage.position.y = -20;
+
+	boss=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
+
+	//for (int i = 0;i < 20;i += 1)
+	//{
+	//	for (int j = 0;j < 20;j += 1)
+	//	{
+	//		enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 26.0f * j, 0, -260 + 26.0f * i }));
+	//	}
+	//}
+	//for (size_t i = 0; i < enemies.size(); i++)
+	//{
+	//	EnemyManager::Instance().Register(std::move(enemies[i]));
+	//	enemy_num += 1;
+	//}
+
+	
+	enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 26.0f , 0, -260 + 26.0f }));
+	EnemyManager::Instance().Register(std::move(enemies[0]));
+	enemy_num += 1;
+	
+
+
 }	
 
 void SceneGame::Finalize()
@@ -62,10 +76,17 @@ void SceneGame::Update(float elapsedTime)
 	camera.Update();
 	stage.UpdateTransform();
 
-	/*if (EnemyManager::Instance().Enemy_Alive(1))
+	//if (EnemyManager::Instance().Enemy_Alive(1))
+	//{
+	//	EnemyManager::Instance().Enemy_Dead(1);
+	//	enemy_num -= 1;
+	//}
+
+	if (enemy_num <= 0)
 	{
-		EnemyManager::Instance().Enemy_Dead(1);
-	}*/
+		boss->Update(elapsedTime);
+	}
+	
 
 	EnemyManager::Instance().Update(elapsedTime);
 
@@ -88,6 +109,10 @@ void SceneGame::Render(float elapsedTime)
 	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
 	EnemyManager::Instance().Render(rc,modelRenderer);
 
+	if (enemy_num <= 0)
+	{
+		boss->Render(rc, modelRenderer);
+	}
 }
 
 void SceneGame::DrawGUI()
@@ -101,7 +126,14 @@ void SceneGame::DrawGUI()
 
 	if (ImGui::Begin("SceneGame"))
 	{
-
+		if (ImGui::Button("enemy"))
+		{
+			if (enemy_num > 0)
+			{
+				EnemyManager::Instance().Enemy_Dead(0);
+				enemy_num -= 1;
+			}
+		}
 	}
 	ImGui::End();
 	
