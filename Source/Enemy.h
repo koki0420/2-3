@@ -17,7 +17,7 @@ public:
 
 	bool Alive(){return alive;}
 
-	void Dead() { alive = false; }
+	void enemy_set(bool alive) { this->alive = alive; }
 
 	DirectX::XMFLOAT3 GetPos() const { return enemy.position; };
 

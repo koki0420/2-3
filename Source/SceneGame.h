@@ -44,6 +44,8 @@ public:
 		return &camera;
 	}
 
+	void Respawn();
+
 private:
 	
 	Camera								camera;
@@ -53,6 +55,11 @@ private:
 	std::vector<std::unique_ptr<Enemy>> enemies;
 	std::unique_ptr<Boss> boss;
 	int enemy_num = 0;
+
+	bool Boss_Dead = false;
+
+	//デバッグ用
+	int enemy_num_debug = 0;
 
 
 

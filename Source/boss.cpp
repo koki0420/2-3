@@ -11,7 +11,9 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
     boss.scale = { 0.1f,0.1f,0.1f };
     boss.model = std::make_unique<Model>("Data/Model/Enemy/low_last_boss.mdl");
 
-	alive = true;
+	boss_count = 0;
+
+	alive = false;
 }
 
 Boss::~Boss()
