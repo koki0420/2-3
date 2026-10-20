@@ -52,7 +52,7 @@ Framework::Framework(HWND hWnd)
 		for (int i = 0; i < LIGHT_MAX; i++)
 		{
 			point_light[i].color = { 1.0f, 0.8f, 0.5f, 1.0f };
-			point_light[i].range = 150.0f;
+			point_light[i].range = 100.0f;
 		}
 		//初期
 		point_light[0].position = { 0.0f, 60.0f, 280.0f, 0.0f };
