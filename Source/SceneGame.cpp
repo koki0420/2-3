@@ -37,7 +37,7 @@ void SceneGame::Initialize()
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 
 	stage.scale.x = 0.2f;
-	stage.scale.y = 0.1f;
+	stage.scale.y = 0.2f;
 	stage.scale.z = 0.2f;
 
 	stage.position.y = -20;
