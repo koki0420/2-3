@@ -66,6 +66,13 @@ public:
 		float moveX = io.MouseDelta.x * 0.02f;
 		float moveY = io.MouseDelta.y * 0.02f;
 
+		
+
+		//Y軸のカメラ回転を-3.14～3.14に収まるようにする
+		if (angleX < -DirectX::XM_PI) { angleY += DirectX::XM_2PI; }
+		if (angleX > DirectX::XM_PI) { angleY -= DirectX::XM_2PI; }
+
+
 		// マウス左ボタン押下中
 		if (io.MouseDown[ImGuiMouseButton_Right])
 		{
@@ -119,10 +126,19 @@ public:
 			distance -= io.MouseWheel * distance * 0.1f;
 		}
 
+		//X軸のカメラ回転を制限
+		if (angleX > maxAngleX) { angleX = maxAngleX; }
+		if (angleX < minAngleX) { angleX = minAngleX; }
+
+		//近づきすぎを防ぐ
+		if (distance < 1.0f) { distance = 1.0f; }
+
 		float sx = ::sinf(angleX);
 		float cx = ::cosf(angleX);
 		float sy = ::sinf(angleY);
 		float cy = ::cosf(angleY);
+
+		
 
 		// カメラの方向を算出
 		DirectX::XMVECTOR Front = DirectX::XMVectorSet(-cx * sy, -sx, -cx * cy, 0.0f);
@@ -142,18 +158,33 @@ public:
 		DirectX::XMStoreFloat3(&eye, Eye);
 		DirectX::XMStoreFloat3(&up, Up);
 		DirectX::XMStoreFloat3(&right, Right);
+		
+		}
+
+		//注視点をプレイヤーの位置に設定
+		void SetFocus(const DirectX::XMFLOAT3& position) { focus = position; }
+
+	void DrawGUI() {
+	
+		if (ImGui::CollapsingHeader("camera", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::DragFloat("cAngleX", &angleX, 0.1f);
+			ImGui::DragFloat("cAngleY", &angleY, 0.1f);
+		}
 	}
 
-
 private:
-	DirectX::XMFLOAT3		eye;
-	DirectX::XMFLOAT3		focus;
-	DirectX::XMFLOAT3		up;
-	DirectX::XMFLOAT3		right;
+	DirectX::XMFLOAT3		eye;//視点
+	DirectX::XMFLOAT3		focus;//注視点
+	DirectX::XMFLOAT3		up;//上方向
+	DirectX::XMFLOAT3		right;//右方向
 	float					distance;
 
 	float					angleX;
 	float					angleY;
+
+	float maxAngleX = DirectX::XMConvertToRadians(70.0f);
+	float minAngleX = DirectX::XMConvertToRadians(10.0f);
 };
 
 
@@ -166,3 +197,4 @@ private:
 
 // 更新処理
 //void TestCameraController::Update()
+

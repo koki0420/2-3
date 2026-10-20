@@ -3,20 +3,116 @@
 #include "Player.h"
 #include <Collision.h>
 #include <filesystem>
+#include <Windows.h>
+#include <cmath>
+#include <memory>
 
 constexpr float POS = 0.0f;
 constexpr float  Head = 1.0f;
 
-Player::Player()
+const std::array<Player::WeaponData, 3>Player::weaponData =
 {
-	Initialize();
+	{
+		{"Sword",20.0f,140.0f,100.0f,0.50f,10.0f},
+		{"Fist",12.0f,80.0f,65.0f,0.28f,6.0f},
+		{"Scythe",30.0f,180.0f,160.0f,0.80f,15.0f}
+	}
+};
+
+namespace
+{
+	float Clamp(float value, float low, float high)
+	{
+		return value < low ? low : (value > high ? high : value);
+	}
+	bool VailedWeapon(Player::Weapon weapon)
+	{
+		return weapon == Player::Weapon::Sword || weapon == Player::Weapon::Fist
+			|| weapon == Player::Weapon::Scythe;
+	}
 }
+
+Player::Player() { Initialize(); }
 
 void Player::Initialize()
 {
+	health = maxHealth;
+	blood = 0.0f;
+	gauges.fill(0.0f);
+	weapon = Weapon::Sword;
+	invincibleTime = 0.0f;
+	attacking = attackActive = false;
+	attackTime = attackDuration = attackDamage = attackReach = 0.0f;
+	attackMoveRate = 1.0f;
+	hitEnemies.clear();
+	previousKeys.fill(false);
 	player.position = { 13, 0, 16 };
-	player.scale = { 1.0f, 1.0f, 1.0f };
+	player.angle = { 0,0,0 };
+	player.scale = { 1, 1, 1 };
+	player.velocity = { 0,0,0 };
 	player.model = std::make_unique<Model>("Data/Model/Mr.Incredible/Mr.Incredible.mdl");
+
+	player.UpdateTransform();
+}
+
+int Player::GetBloodLevel()const
+{
+	return blood >= 80.0f ? 2 : (blood >= 50.0f ? 1 : 0);
+}
+
+float Player::GetWeaponGauge(Weapon target)const
+{
+	return VailedWeapon(target) ? gauges[static_cast<std::size_t>(target)] : 0.0f;
+}
+
+const Player::WeaponData& Player::GetWeaponData()const
+{
+	return weaponData[static_cast<std::size_t>(weapon)];
+}
+
+bool Player::SetWeapon(Weapon next)
+{
+	if (IsDead() || attacking || attackActive || !VailedWeapon(next))return false;
+	weapon = next;
+	return true;
+}
+
+void Player::TakeDamage(float damage)
+{
+	if (damage <= 0.0f || IsDead() || invincibleTime > 0.0f)return;
+	health = Clamp(health - damage, 0.0f, maxHealth);
+	invincibleTime = 0.5f;
+	if (IsDead())
+	{
+		attacking = attackActive = false;
+		attackDamage = 0.0f;
+	}
+
+}
+
+void Player::Heal(float amount)
+{
+	if (amount > 0.0f && !IsDead())health = Clamp(health + amount, 0.0f, maxHealth);
+}
+
+void Player::AddBlood(float amount)
+{
+	if (amount > 0.0f && !IsDead())blood = Clamp(blood + amount, 0.0f, maxBlood);
+}
+
+void Player::OnEnemyDefeated(float bloodAmount)
+{
+	//血液を拾った瞬間に呼ぶ
+	AddBlood(bloodAmount);
+}
+
+bool Player::TryAttack(AttackType type)
+{
+	if (IsDead() || attacking || attackActive)return false;
+	if (type != AttackType::Normal && type != AttackType::Blood 
+		&& type != AttackType::Special)return false;
+	const WeaponData& data = GetWeaponData();
+	float& gauge = gauges[ static_cast<std::size_t>(weapon) ];
 }
 
 // 更新処理
@@ -43,13 +139,12 @@ void Player::Update(float elapsedTime, Object& S, const Camera& C)
 		float cameraRightZ = camemraRight.z / cameraRightLengthXZ;
 
 		// 移動ベクトル
-		const float speed = 100.0f * elapsedTime;
+		const float speed = 1000.0f * elapsedTime;
 		float vecX = cameraFrontX * axisY + cameraRightX * axisX;
 		float vecZ = cameraFrontZ * axisY + cameraRightZ * axisX;
 		float moveX = vecX * speed;
 		float moveZ = vecZ * speed;
 		float moveLength = sqrtf(moveX * moveX + moveZ * moveZ);
-
 		
 		player.position.x += moveX;
 		player.position.z += moveZ;
@@ -84,4 +179,5 @@ void Player::Render(float elapsedTime, RenderContext rc,bool Pause)
 	ModelRenderer* modelRenderer = Graphics::Instance().GetModelRenderer();
 
 	modelRenderer->Render(rc, player.transform, player.model.get(), ShaderId::Lambert);
+
 }

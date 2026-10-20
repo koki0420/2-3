@@ -18,24 +18,30 @@
 
 SceneCameraTest::SceneCameraTest()
 {
+	Initialize();
+}
 
+SceneCameraTest::~SceneCameraTest()
+{
+	Finalize();
+}
+
+void SceneCameraTest::Initialize()
+{
 	stage.scale.x = 1;
 	stage.scale.y = 1;
 	stage.scale.z = 1;
 
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 
+	DirectX::XMFLOAT3 focus = player.GetPos();
+
+	DirectX::XMFLOAT3 eye = { focus.x,focus.y + 1000.0f,focus.z - 1000.0f };
+
+	camera.SetLookAt(eye, focus, { 0.0f,1.0f,0.0f });
+
 	cameraController.SyncCameraToController(camera);
-}
-
-SceneCameraTest::~SceneCameraTest()
-{
-
-}
-
-void SceneCameraTest::Initialize()
-{
-
+	
 }
 
 void SceneCameraTest::Finalize()
@@ -47,12 +53,16 @@ void SceneCameraTest::Update(float elapsedTime)
 {
 	
 
+	//cameraController.Update();
+	//cameraController.SyncControllerToCamera(camera);
+
+	player.Update(elapsedTime, stage, camera);
+
+	//プレイヤーを中心にカメラを操作
+	cameraController.SetFocus(player.GetPos());
 	cameraController.Update();
 	cameraController.SyncControllerToCamera(camera);
-
-	camera.SetLookAt(camera.GetEye(), player.player.position, camera.GetUp());
-
-	player.Update(elapsedTime,stage,camera);
+	
 }
 
 void SceneCameraTest::Render(float elapsedTime)
@@ -85,8 +95,9 @@ void SceneCameraTest::DrawGUI()
 
 	if (ImGui::Begin("SceneCameraTest"))
 	{
-		ImGui::DragFloat3("pPosition", &player.player.position.x, 0.1f);
-		ImGui::DragFloat3("pScale", &player.player.scale.x, 0.1f);
+		cameraController.DrawGUI();
+
+		player.DrawGUI();
 	}
 	ImGui::End();
 
