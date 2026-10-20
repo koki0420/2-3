@@ -9,7 +9,7 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	boss.position.y = -15;
 	arrive_position = { 0,-15,0 };
     boss.scale = { 0.1f,0.1f,0.1f };
-    boss.model = std::make_unique<Model>("Data/Model/Enemy/last_boss.mdl");
+    boss.model = std::make_unique<Model>("Data/Model/Enemy/low_last_boss.mdl");
 
 	alive = true;
 }

@@ -33,9 +33,10 @@ SceneGame::~SceneGame()
 
 void SceneGame::Initialize()
 {
-	enemy_num = 0;
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 
+	enemy_num = 0;
+	
 	stage.scale.x = 0.2f;
 	stage.scale.y = 0.2f;
 	stage.scale.z = 0.2f;
