@@ -27,7 +27,7 @@ public:
 
 	bool Enemy_Alive(int i) { return enemies[i]->Alive(); }
 
-	void Enemy_Dead(int i) { enemies[i]->Dead(); }
+	void Enemy_Set(int i,bool Alive) { enemies[i]->enemy_set(Alive); }
 
 	void Clear() { enemies.clear(); }
 
