@@ -19,5 +19,5 @@ public:
 
 private:
 
-
+	std::unique_ptr<Sprite> sprite = nullptr;
 };
