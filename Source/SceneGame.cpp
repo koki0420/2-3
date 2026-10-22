@@ -57,10 +57,6 @@ void SceneGame::Initialize()
 		EnemyManager::Instance().Register(std::move(enemies[i]));
 		enemy_num += 1;
 	}
-
-	
-
-
 }	
 
 void SceneGame::Finalize()
@@ -73,19 +69,18 @@ void SceneGame::Update(float elapsedTime)
 	if (Boss_Dead)
 	{
 		Respawn();
+		boss->Boss_Chage();
 		Boss_Dead = false;
 	}
-	
-	camera.Update();
-	stage.UpdateTransform();
-
-
 	{
 		if (enemy_num > 0) boss->Boss_Set(false);
 		else boss->Boss_Set(true);
 		boss->Update(elapsedTime);
 	}
-	
+
+	camera.Update();
+	stage.UpdateTransform();
+
 
 	EnemyManager::Instance().Update(elapsedTime);
 
@@ -130,6 +125,17 @@ void SceneGame::DrawGUI()
 				EnemyManager::Instance().Enemy_Set(enemy_num_debug,false);
 				enemy_num -= 1;
 				enemy_num_debug += 1;
+			}
+		}
+		if (ImGui::Button("all_enemy"))
+		{
+			if (enemy_num > 0)
+			{
+				for (size_t i = 0;i < enemies.size();i += 1)
+				{
+					EnemyManager::Instance().Enemy_Set(i, false);
+					enemy_num -= 1;
+				}
 			}
 		}
 		if (ImGui::Button("boss"))

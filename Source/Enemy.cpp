@@ -7,9 +7,9 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	srand((unsigned int)time(NULL));
 	enemy.position = pos;
 
-	enemy.scale = { 0.1f,0.1f,0.1f };
+	enemy.scale = { 0.04f,0.04f,0.04f };
 	enemy.position.y = -10;
-	enemy.model = std::make_unique<Model>("Data/Model/Mr.Incredible/Mr.Incredible.mdl");
+	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
 
 	alive = true;
 }
