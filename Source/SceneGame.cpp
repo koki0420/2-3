@@ -61,9 +61,8 @@ void SceneGame::Initialize()
 	enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 26.0f , 0, -260 + 26.0f }));
 	EnemyManager::Instance().Register(std::move(enemies[0]));
 	enemy_num += 1;
+	p->Initialize();
 	
-
-
 }	
 
 void SceneGame::Finalize()
@@ -107,11 +106,18 @@ void SceneGame::Render(float elapsedTime)
 	rc.camera = &camera;
 
 	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
-	EnemyManager::Instance().Render(rc,modelRenderer);
+	EnemyManager::Instance().Render(rc, modelRenderer);
 
 	if (enemy_num <= 0)
 	{
 		boss->Render(rc, modelRenderer);
+	}
+
+
+	{
+		p->UIRender(dc,elapsedTime);
+		
+		
 	}
 }
 

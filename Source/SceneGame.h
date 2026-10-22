@@ -131,4 +131,6 @@ private:
 	bool goalReached = false;
 	float goalTimer = 0.0f;
 
+	
+	
 };
