@@ -54,3 +54,22 @@ void EnemyManager::Render(const RenderContext& immediate_context, ModelRenderer*
 		enemy->Render(immediate_context,renderer);
 	}
 }
+
+void EnemyManager::Enemy_Set(int i, bool Alive)
+{
+	//€‚ñ‚Å‚é‚©¶‚«‚Ä‚é‚©
+	enemies[i]->enemy_set(Alive);
+	//‚à‚µ€‚ñ‚Å‚¢‚½‚çA“G‚Ì”z’u—pŠÖ”‚ğƒŠƒZƒbƒg
+	if (!(Alive))
+	{
+		enemy_respawn_h = 0;
+		enemy_respawn_w = 0;
+		enemy_num = 0;
+	}
+	//enemy_num(“G‚ª‰½•C‚©)‚ª10–ˆ‚Éc‚ğ+1
+	if (enemy_num % 10 == 0)enemy_respawn_h += 1;
+	enemy_respawn_w += 1;
+	if (enemy_respawn_w > 10)enemy_respawn_w = 0;
+	enemies[i]->SetPos({ -260 + 52.0f * enemy_respawn_w, -10, -260 + 52.0f * enemy_respawn_h });
+	enemy_num += 1;
+}
