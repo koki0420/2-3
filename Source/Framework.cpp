@@ -97,11 +97,11 @@ Framework::Framework(HWND hWnd)
 		point_light[35].position = { -280.0f, 60.0f,-280.0f, 0.0f };
 
 
-		point_light[36].range = 150.0f;
-		point_light[37].range = 150.0f;
-		point_light[38].range = 150.0f;
-		point_light[39].range = 150.0f;
-		point_light[40].range = 150.0f;
+		point_light[36].range = 200.0f;
+		point_light[37].range = 200.0f;
+		point_light[38].range = 200.0f;
+		point_light[39].range = 200.0f;
+		point_light[40].range = 200.0f;
 
 
 		point_light[36].position = { 150.0f, 100.0f,150.0f, 0.0f };
