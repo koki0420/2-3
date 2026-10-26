@@ -9,7 +9,8 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 
 	enemy.scale = { 0.04f,0.04f,0.04f };
 	enemy.position.y = -10;
-	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
+	//enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
+	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_3.mdl");
 
 	alive = true;
 }
