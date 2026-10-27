@@ -1,105 +1,97 @@
 #include "SceneCameraTest.h"
-#include <imgui.h>
-#include <ImGuizmo.h>
-#include <DirectXCollision.h>
-#include <algorithm>
-
+#include "EnemyManager.h"
 #include "Graphics.h"
-#include "Collision.h"
-#include <SceneManager.h>
-#include"SceneTitle.h"
-#include"SceneResult.h"
-#include"SceneLoading.h"
+#include <imgui.h>
+#include <cmath>
 
-#include "audio.h"
-#include "AudioResource.h"
-
-//
-
-SceneCameraTest::SceneCameraTest()
-{
-	Initialize();
-}
-
-SceneCameraTest::~SceneCameraTest()
-{
-	Finalize();
-}
+SceneCameraTest::SceneCameraTest() { Initialize(); }
+SceneCameraTest::~SceneCameraTest() { Finalize(); }
 
 void SceneCameraTest::Initialize()
 {
-	stage.scale.x = 1;
-	stage.scale.y = 1;
-	stage.scale.z = 1;
-
-	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
-
-	DirectX::XMFLOAT3 focus = player.GetPos();
-
-	DirectX::XMFLOAT3 eye = { focus.x,focus.y + 1000.0f,focus.z - 1000.0f };
-
-	camera.SetLookAt(eye, focus, { 0.0f,1.0f,0.0f });
-
-	cameraController.SyncCameraToController(camera);
-	
+    stage.scale = { 1, 1, 1 };
+    stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
+    stage.UpdateTransform();
+    // コンストラクタ以外からのシーン再初期化にも対応する。
+    player.Initialize();
+    pause = false;
+    const float width = Graphics::Instance().GetScreenWidth();
+    const float height = Graphics::Instance().GetScreenHeight();
+    camera.SetPerspectiveFov(45.0f * GameplayMath::Pi / 180.0f,
+        height > 0.0f ? width / height : 16.0f / 9.0f, 1.0f, 10000.0f);
+    followCamera.Reset(camera, player.GetPos(), player.GetAngle().y);
+    SpawnTestEnemies();
 }
-
+void SceneCameraTest::SpawnTestEnemies()
+{
+    auto& manager = EnemyManager::Instance();
+    enemyCombat.Clear();
+    manager.Clear();
+    const auto& center = player.GetPos();
+    // 動作確認用。実ゲームのスポーン処理ができたら、ここを置き換える。
+    for (int i = 0; i < 24; ++i)
+    {
+        const float theta = i * (2.0f * GameplayMath::Pi / 24.0f);
+        const float radius = 220.0f + (i % 3) * 90.0f;
+        auto enemy = std::make_unique<Enemy>(DirectX::XMFLOAT3{
+            center.x + std::sin(theta) * radius, center.y,
+            center.z + std::cos(theta) * radius });
+        enemyCombat.Register(*enemy);
+        manager.Register(std::move(enemy));
+    }
+}
 void SceneCameraTest::Finalize()
 {
-
+    enemyCombat.Clear();
+    EnemyManager::Instance().Clear();
 }
 
 void SceneCameraTest::Update(float elapsedTime)
 {
-	
-
-	//cameraController.Update();
-	//cameraController.SyncControllerToCamera(camera);
-
-	player.Update(elapsedTime, stage, camera);
-
-	//プレイヤーを中心にカメラを操作
-	cameraController.SetFocus(player.GetPos());
-	cameraController.Update();
-	cameraController.SyncControllerToCamera(camera);
-	
+    if (pause || !std::isfinite(elapsedTime) || elapsedTime <= 0.0f) return;
+    player.Update(elapsedTime, stage, camera);
+    // 元のManagerのUpdateをそのまま使用。追跡AIなどは追加しない。
+    /*EnemyManager::Instance().Update(elapsedTime);
+    enemyCombat.Update(elapsedTime, player);*/
+    const bool context = ImGui::GetCurrentContext() != nullptr;
+    const bool manual = context && !ImGui::GetIO().WantCaptureMouse && ImGui::IsMouseDown(1);
+    const float mouseX = manual ? ImGui::GetIO().MouseDelta.x : 0.0f;
+    const float mouseY = manual ? ImGui::GetIO().MouseDelta.y : 0.0f;
+    followCamera.Update(camera, player.GetPos(), player.GetAngle().y,
+        elapsedTime, manual, mouseX, mouseY);
 }
 
 void SceneCameraTest::Render(float elapsedTime)
 {
-	ID3D11DeviceContext* dc = Graphics::Instance().GetDeviceContext();
-	RenderState* renderState = Graphics::Instance().GetRenderState();
-	ModelRenderer* modelRenderer = Graphics::Instance().GetModelRenderer();
-
-	ShapeRenderer* shapeRenderer = Graphics::Instance().GetShapeRenderer();
-
-	RenderContext rc;
-	rc.deviceContext = dc;
-
-	rc.renderState = renderState;
-	rc.camera = &camera;
-
-	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
-	player.Render(elapsedTime, rc, false);
-
+    auto& graphics = Graphics::Instance();
+    ModelRenderer* renderer = graphics.GetModelRenderer();
+    RenderContext rc;
+    rc.deviceContext = graphics.GetDeviceContext();
+    rc.renderState = graphics.GetRenderState();
+    rc.camera = &camera;
+    renderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
+    player.Render(elapsedTime, rc, pause);
+    EnemyManager::Instance().Render(rc, renderer);
 }
 
 void SceneCameraTest::DrawGUI()
 {
-	ImVec2 displaySize = ImGui::GetIO().DisplaySize;
-	ImVec2 pos = ImGui::GetMainViewport()->GetWorkPos();
-	float width = 210;
-	float height = 460;
-	ImGui::SetNextWindowPos(ImVec2(pos.x + 10, pos.y + 10), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(width, height), ImGuiCond_Once);
-
-	if (ImGui::Begin("SceneCameraTest"))
-	{
-		cameraController.DrawGUI();
-
-		player.DrawGUI();
-	}
-	ImGui::End();
-
+    ImGui::SetNextWindowSize(ImVec2(380, 650), ImGuiCond_Once);
+    if (ImGui::Begin("SceneCameraTest"))
+    {
+        ImGui::Checkbox("Pause", &pause);
+        ImGui::Text("Alive enemies: %d", static_cast<int>(enemyCombat.GetAliveCount()));
+        if (ImGui::Button("Respawn test enemies")) SpawnTestEnemies();
+        if (ImGui::CollapsingHeader("Follow camera", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            ImGui::Text("Right mouse drag: limited look / Release: recenter");
+            ImGui::DragFloat("Distance", &followCamera.distance, 5.0f, 50.0f, 3000.0f);
+            ImGui::DragFloat("Focus height", &followCamera.focusHeight, 1.0f, 0.0f, 500.0f);
+            ImGui::DragFloat("Camera pitch (rad)", &followCamera.basePitch, 0.01f, 0.31f, 1.09f);
+            ImGui::DragFloat("Turn follow speed", &followCamera.turnSpeed, 0.1f, 0.5f, 15.0f);
+            ImGui::DragFloat("Position follow speed", &followCamera.positionSpeed, 0.1f, 1.0f, 30.0f);
+        }
+        player.DrawGUI();
+    }
+    ImGui::End();
 }
-

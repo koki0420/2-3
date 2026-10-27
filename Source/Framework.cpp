@@ -37,7 +37,7 @@ Framework::Framework(HWND hWnd)
 	SceneManager::Instance().ChangeScene(new SceneTitle);
 
 
-	audio_device::initialize();
+	/*audio_device::initialize();*/
 
 	
 	

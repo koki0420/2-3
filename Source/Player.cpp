@@ -1,183 +1,428 @@
-#include <imgui.h>
-#include <ImGuizmo.h>
 #include "Player.h"
-#include <Collision.h>
-#include <filesystem>
+#include "GameplayMath.h"
 #include <Windows.h>
-#include <cmath>
-#include <memory>
+#include <imgui.h>
+#include <algorithm>
+#include <cctype>
+#include <initializer_list>
+#include <string>
 
-constexpr float POS = 0.0f;
-constexpr float  Head = 1.0f;
+using namespace GameplayMath;
 
-const std::array<Player::WeaponData, 3>Player::weaponData =
-{
-	{
-		{"Sword",20.0f,140.0f,100.0f,0.50f,10.0f},
-		{"Fist",12.0f,80.0f,65.0f,0.28f,6.0f},
-		{"Scythe",30.0f,180.0f,160.0f,0.80f,15.0f}
-	}
-};
-
+const std::array<Player::WeaponData, 3> Player::weaponData = { {
+    { "Sword", 20.0f, 140.0f, 100.0f, 0.50f, 10.0f },
+    { "Fist", 12.0f, 80.0f, 65.0f, 0.28f, 6.0f },
+    { "Scythe", 30.0f, 180.0f, 160.0f, 0.80f, 15.0f }
+} };
 namespace
 {
-	float Clamp(float value, float low, float high)
-	{
-		return value < low ? low : (value > high ? high : value);
-	}
-	bool VailedWeapon(Player::Weapon weapon)
-	{
-		return weapon == Player::Weapon::Sword || weapon == Player::Weapon::Fist
-			|| weapon == Player::Weapon::Scythe;
-	}
+    bool ValidWeapon(Player::Weapon w)
+    {
+        return w == Player::Weapon::Sword || w == Player::Weapon::Fist || w == Player::Weapon::Scythe;
+    }
+    std::string LowerName(const std::string& source)
+    {
+        std::string result;
+        for (unsigned char c : source)
+            if (std::isalnum(c)) result += static_cast<char>(std::tolower(c));
+        return result;
+    }
 }
 
 Player::Player() { Initialize(); }
 
 void Player::Initialize()
 {
-	health = maxHealth;
-	blood = 0.0f;
-	gauges.fill(0.0f);
-	weapon = Weapon::Sword;
-	invincibleTime = 0.0f;
-	attacking = attackActive = false;
-	attackTime = attackDuration = attackDamage = attackReach = 0.0f;
-	attackMoveRate = 1.0f;
-	hitEnemies.clear();
-	previousKeys.fill(false);
-	player.position = { 13, 0, 16 };
-	player.angle = { 0,0,0 };
-	player.scale = { 1, 1, 1 };
-	player.velocity = { 0,0,0 };
-	player.model = std::make_unique<Model>("Data/Model/Mr.Incredible/Mr.Incredible.mdl");
-
-	player.UpdateTransform();
+    animation.reset();
+    health = maxHealth;
+    blood = 0.0f;
+    gauges.fill(0.0f);
+    weapon = Weapon::Sword;
+    invincibleTime = hurtTime = 0.0f;
+    attacking = attackActive = musou = false;
+    attackTime = attackDuration = attackDamage = attackReach = attackRadius = 0.0f;
+    attackMoveRate = 1.0f;
+    swayTime = visualSway = visualPitch = movementYaw = 0.0f;
+    previousMoveMask = 0;
+    hitEnemies.clear();
+    previousKeys.fill(false);
+    state = State::Idle;
+    currentClip = -1;
+    player.position = { 13, 0, 16 };
+    player.angle = { 0, 0, 0 };
+    player.scale = { 1, 1, 1 };
+    player.velocity = { 0, 0, 0 };
+    player.model = std::make_unique<Model>("Data/Model/Player/player.fbx");
+    animation = std::make_unique<PlayerAnimation>(*player.model);
+    FindAnimationClips();
+    UpdateAnimation(0.0f, false);
+    UpdateVisualTransform();
 }
 
-int Player::GetBloodLevel()const
+float Player::GetWeaponGauge(Weapon target) const
 {
-	return blood >= 80.0f ? 2 : (blood >= 50.0f ? 1 : 0);
+    return ValidWeapon(target) ? gauges[static_cast<std::size_t>(target)] : 0.0f;
 }
-
-float Player::GetWeaponGauge(Weapon target)const
+const Player::WeaponData& Player::GetWeaponData() const
 {
-	return VailedWeapon(target) ? gauges[static_cast<std::size_t>(target)] : 0.0f;
-}
-
-const Player::WeaponData& Player::GetWeaponData()const
-{
-	return weaponData[static_cast<std::size_t>(weapon)];
+    return weaponData[static_cast<std::size_t>(weapon)];
 }
 
 bool Player::SetWeapon(Weapon next)
 {
-	if (IsDead() || attacking || attackActive || !VailedWeapon(next))return false;
-	weapon = next;
-	return true;
+    if (IsDead() || attacking || attackActive || hurtTime > 0.0f || !ValidWeapon(next)) return false;
+    weapon = next;
+    return true;
 }
 
 void Player::TakeDamage(float damage)
 {
-	if (damage <= 0.0f || IsDead() || invincibleTime > 0.0f)return;
-	health = Clamp(health - damage, 0.0f, maxHealth);
-	invincibleTime = 0.5f;
-	if (IsDead())
-	{
-		attacking = attackActive = false;
-		attackDamage = 0.0f;
-	}
-
+    if (!std::isfinite(damage) || damage <= 0.0f || IsDead() || invincibleTime > 0.0f) return;
+    health = Clamp(health - damage, 0.0f, maxHealth);
+    invincibleTime = 0.5f;
+    hurtTime = 0.25f;
+    attacking = attackActive = false;
+    attackDamage = 0.0f;
+    if (IsDead()) musou = false;
+    UpdateAnimation(0.0f, false);
 }
-
 void Player::Heal(float amount)
 {
-	if (amount > 0.0f && !IsDead())health = Clamp(health + amount, 0.0f, maxHealth);
+    if (std::isfinite(amount) && amount > 0.0f && !IsDead()) health = Clamp(health + amount, 0.0f, maxHealth);
 }
-
 void Player::AddBlood(float amount)
 {
-	if (amount > 0.0f && !IsDead())blood = Clamp(blood + amount, 0.0f, maxBlood);
+    if (std::isfinite(amount) && amount > 0.0f && !IsDead()) blood = Clamp(blood + amount, 0.0f, maxBlood);
 }
+void Player::OnEnemyDefeated(float amount) { AddBlood(amount); }
 
-void Player::OnEnemyDefeated(float bloodAmount)
+bool Player::TryStartMusou()
 {
-	//血液を拾った瞬間に呼ぶ
-	AddBlood(bloodAmount);
+    if (!CanStartMusou()) return false;
+    musou = true;
+    swayTime = 0.0f;
+    return true;
 }
 
 bool Player::TryAttack(AttackType type)
 {
-	if (IsDead() || attacking || attackActive)return false;
-	if (type != AttackType::Normal && type != AttackType::Blood 
-		&& type != AttackType::Special)return false;
-	const WeaponData& data = GetWeaponData();
-	float& gauge = gauges[ static_cast<std::size_t>(weapon) ];
+    if (IsDead() || attacking || attackActive || hurtTime > 0.0f) return false;
+    if (type != AttackType::Normal && type != AttackType::Blood && type != AttackType::Special) return false;
+    const auto& data = GetWeaponData();
+    float& gauge = gauges[static_cast<std::size_t>(weapon)];
+    if (type == AttackType::Blood && blood < data.bloodCost) return false;
+    if (type == AttackType::Special && gauge < maxGauge) return false;
+    // 蓄積量だけでは強化しない。開始時の無双状態で一撃の性能を確定。
+    attackDamage = data.damage * (musou ? 2.0f : 1.0f);
+    attackReach = data.reach;
+    attackRadius = data.radius * (musou ? 1.25f : 1.0f);
+    attackDuration = data.duration / (musou ? 1.5f : 1.0f);
+    attackMoveRate = weapon == Weapon::Fist ? 0.8f : 0.45f;
+    if (type == AttackType::Blood)
+    {
+        blood = Clamp(blood - data.bloodCost, 0.0f, maxBlood);
+        attackDamage *= 2.0f;
+        attackRadius *= 1.3f;
+        if (blood <= 0.0f) musou = false;
+    }
+    else if (type == AttackType::Special)
+    {
+        gauge = 0.0f;
+        attackDamage *= 4.0f;
+        attackRadius *= 2.0f;
+        attackDuration *= 1.5f;
+    }
+    attackType = type;
+    attackTime = 0.0f;
+    attacking = true;
+    attackActive = false;
+    hitEnemies.clear();
+    state = State::Attack;
+    currentClip = SelectClip(state);
+    if (ValidClip(currentClip)) animation->PlayAnimation(currentClip, false);
+    return true;
 }
 
-// 更新処理
-void Player::Update(float elapsedTime, Object& S, const Camera& C)
+void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 {
-	// プレイヤー移動処理
-	{
-		// 入力処理
-		float axisX = 0.0f;
-		float axisY = 0.0f;
-		if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
-		if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;
-		if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
-		if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
+    (void)stage;
+    attackActive = false;
+    if (!std::isfinite(elapsedTime) || elapsedTime <= 0.0f) return;
+    invincibleTime = Clamp(invincibleTime - elapsedTime, 0.0f, 0.5f);
+    hurtTime = Clamp(hurtTime - elapsedTime, 0.0f, 0.25f);
+    if (musou)
+    {
+        blood = Clamp(blood - musouDrain * elapsedTime, 0.0f, maxBlood);
+        if (blood <= 0.0f || IsDead()) musou = false;
+    }
+    if (musou) swayTime = std::fmod(swayTime + elapsedTime, 1000.0f);
+    const float targetRoll = musou ? std::sin(swayTime * 3.1f) * 0.14f : 0.0f;
+    const float targetPitch = musou ? std::sin(swayTime * 2.3f) * 0.045f : 0.0f;
+    visualSway += (targetRoll - visualSway) * FollowRate(10.0f, elapsedTime);
+    visualPitch += (targetPitch - visualPitch) * FollowRate(10.0f, elapsedTime);
 
-		// カメラの方向
-		const DirectX::XMFLOAT3& cameraFront = C.GetFront();
-		const DirectX::XMFLOAT3& camemraRight = C.GetRight();
-		float cameraFrontLengthXZ = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
-		float cameraRightLengthXZ = sqrtf(camemraRight.x * camemraRight.x + camemraRight.z * camemraRight.z);
-		float cameraFrontX = cameraFront.x / cameraFrontLengthXZ;
-		float cameraFrontZ = cameraFront.z / cameraFrontLengthXZ;
-		float cameraRightX = camemraRight.x / cameraRightLengthXZ;
-		float cameraRightZ = camemraRight.z / cameraRightLengthXZ;
+    const int keys[] = { '1', '2', '3', 'J', 'K', 'L', 'R' };
+    bool pressed[7] = {};
+    const bool capture = ImGui::GetCurrentContext() && ImGui::GetIO().WantCaptureKeyboard;
+    for (std::size_t i = 0; i < previousKeys.size(); ++i)
+    {
+        const bool down = (GetAsyncKeyState(keys[i]) & 0x8000) != 0;
+        pressed[i] = down && !previousKeys[i] && !capture;
+        previousKeys[i] = down;
+    }
+    if (IsDead())
+    {
+        previousMoveMask = 0;
+        UpdateAnimation(elapsedTime, false);
+        UpdateVisualTransform();
+        return;
+    }
+    if (pressed[0]) SetWeapon(Weapon::Sword);
+    else if (pressed[1]) SetWeapon(Weapon::Fist);
+    else if (pressed[2]) SetWeapon(Weapon::Scythe);
+    if (pressed[6]) TryStartMusou();
+    if (pressed[5]) TryAttack(AttackType::Special);
+    else if (pressed[4]) TryAttack(AttackType::Blood);
+    else if (pressed[3]) TryAttack(AttackType::Normal);
 
-		// 移動ベクトル
-		const float speed = 1000.0f * elapsedTime;
-		float vecX = cameraFrontX * axisY + cameraRightX * axisX;
-		float vecZ = cameraFrontZ * axisY + cameraRightZ * axisX;
-		float moveX = vecX * speed;
-		float moveZ = vecZ * speed;
-		float moveLength = sqrtf(moveX * moveX + moveZ * moveZ);
-		
-		player.position.x += moveX;
-		player.position.z += moveZ;
-
-		// 移動しているときだけ向きを更新する
-		if (moveLength > 0.0f)
-		{
-			float vx = moveX / moveLength;
-			float vz = moveZ / moveLength;
-			player.angle.y = atan2f(vx, vz);
-		}
-
-	}
-
-	player.UpdateTransform();
-	//// プレイヤー行列更新処理
-	//{
-	//	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(player.scale.x, player.scale.y, player.scale.z);
-	//	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(player.angle.x, player.angle.y, player.angle.z);
-	//	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(player.position.x, player.position.y, player.position.z);
-	//	DirectX::XMStoreFloat4x4(&player.transform, S * R * T);
-	//}
-
-
+    const bool movingAttack = attacking;
+    if (attacking)
+    {
+        const float before = attackTime;
+        attackTime += elapsedTime;
+        attackActive = before < attackDuration * 0.65f && attackTime >= attackDuration * 0.2f;
+        if (attackTime >= attackDuration) attacking = false;
+    }
+    float axisX = 0.0f, axisY = 0.0f;
+    int moveMask = 0;
+    if (!capture && hurtTime <= 0.0f)
+    {
+        if (GetAsyncKeyState('W') & 0x8000) { axisY += 1; moveMask |= 1; }
+        if (GetAsyncKeyState('S') & 0x8000) { axisY -= 1; moveMask |= 2; }
+        if (GetAsyncKeyState('D') & 0x8000) { axisX += 1; moveMask |= 4; }
+        if (GetAsyncKeyState('A') & 0x8000) { axisX -= 1; moveMask |= 8; }
+    }
+    const bool moved = axisX != 0.0f || axisY != 0.0f;
+    if (moved)
+    {
+        // 同じキーを押している間は移動基準を固定する。
+        // 背後へ回るカメラに移動が引かれて、意図せず円を描くのを防ぐ。
+        if (moveMask != previousMoveMask)
+        {
+            const auto& front = camera.GetFront();
+            if (front.x * front.x + front.z * front.z > 0.00001f)
+                movementYaw = std::atan2(front.x, front.z);
+            else movementYaw = player.angle.y;
+        }
+        const float inputYaw = movementYaw + std::atan2(axisX, axisY);
+        // 蛇行は移動方向だけに加算。論理的な向きとカメラには揺れを渡さない。
+        const float stumble = musou
+            ? std::sin(swayTime * 3.0f) * 0.18f + std::sin(swayTime * 5.3f) * 0.07f : 0.0f;
+        const float speed = moveSpeed * (musou ? 1.2f : 1.0f)
+            * (movingAttack ? attackMoveRate : 1.0f);
+        player.position.x += std::sin(inputYaw + stumble) * speed * elapsedTime;
+        player.position.z += std::cos(inputYaw + stumble) * speed * elapsedTime;
+        if (!movingAttack) player.angle.y = WrapAngle(inputYaw);
+    }
+    previousMoveMask = moved ? moveMask : 0;
+    UpdateAnimation(elapsedTime, moved);
+    UpdateVisualTransform();
 }
 
-// 描画処理
-void Player::Render(float elapsedTime, RenderContext rc,bool Pause)
+DirectX::XMFLOAT3 Player::GetHitCenter() const
 {
-	/*ID3D11DeviceContext* dc = Graphics::Instance().GetDeviceContext();
-	RenderState* renderState = Graphics::Instance().GetRenderState();*/
-	ModelRenderer* modelRenderer = Graphics::Instance().GetModelRenderer();
+    return { player.position.x, player.position.y + bodyHeight, player.position.z };
+}
 
-	modelRenderer->Render(rc, player.transform, player.model.get(), ShaderId::Lambert);
+bool Player::TryHitEnemy(std::uint64_t id, const DirectX::XMFLOAT3& center, float radius)
+{
+    if (IsDead() || !attackActive || radius < 0.0f || hitEnemies.count(id)) return false;
+    // 前方へ伸びるカプセル判定。懐に入った敵にも命中させる。
+    const float fx = std::sin(player.angle.y), fz = std::cos(player.angle.y);
+    const float dx = center.x - player.position.x, dz = center.z - player.position.z;
+    const float projection = Clamp(dx * fx + dz * fz, 0.0f, attackReach);
+    const float x = player.position.x + fx * projection;
+    const float y = player.position.y + attackHeight;
+    const float z = player.position.z + fz * projection;
+    if (!SphereHit(center.x - x, center.y - y, center.z - z, attackRadius + radius)) return false;
+    hitEnemies.insert(id);
+    if (attackType != AttackType::Special)
+    {
+        auto& gauge = gauges[static_cast<std::size_t>(weapon)];
+        gauge = Clamp(gauge + 8.0f, 0.0f, maxGauge);
+    }
+    return true;
+}
 
+bool Player::ValidClip(int index) const
+{
+    if (!player.model || index < 0) return false;
+    const auto& list = player.model->GetResource()->GetAnimations();
+    return static_cast<std::size_t>(index) < list.size() && !list[index].keyframes.empty();
+}
+
+void Player::FindAnimationClips()
+{
+    clips = AnimationClips{};
+    const auto& list = player.model->GetResource()->GetAnimations();
+    auto find = [&](std::initializer_list<const char*> candidates)
+        {
+            for (const char* word : candidates)
+                for (std::size_t i = 0; i < list.size(); ++i)
+                    if (ValidClip(static_cast<int>(i)) && LowerName(list[i].name).find(word) != std::string::npos)
+                        return static_cast<int>(i);
+            return -1;
+        };
+    clips.idle = find({ "idle", "standing", "breathing" });
+    clips.run = find({ "running", "run", "jog", "walk" });
+    clips.damage = find({ "hitreaction", "gethit", "takinghit", "damage", "hurt" });
+    clips.death = find({ "death", "dying", "die" });
+    clips.weaponIdle[0] = find({ "swordidle", "swordandshieldidle" });
+    clips.weaponIdle[1] = find({ "boxingidle", "fistidle", "fightingidle" });
+    clips.weaponIdle[2] = find({ "scytheidle" });
+    const int genericAttack = find({ "attack", "slash", "punch", "kick" });
+    clips.normal[0] = find({ "swordattack", "swordslash", "swordandshieldslash", "slash" });
+    clips.normal[1] = find({ "fistattack", "punch", "boxing", "kick" });
+    clips.normal[2] = find({ "scytheattack", "scytheslash", "reap" });
+    for (std::size_t w = 0; w < 3; ++w)
+        if (clips.normal[w] < 0) clips.normal[w] = genericAttack;
+    clips.blood[0] = find({ "swordblood", "swordheavy" });
+    clips.blood[1] = find({ "fistblood", "uppercut" });
+    clips.blood[2] = find({ "scytheblood", "scytheheavy" });
+    clips.special[0] = find({ "swordspecial", "swordspin" });
+    clips.special[1] = find({ "fistspecial", "combopunch" });
+    clips.special[2] = find({ "scythespecial", "scythespin" });
+}
+
+void Player::SetAnimationClips(const AnimationClips& value)
+{
+    clips = value;
+    currentClip = -1;
+}
+
+int Player::SelectClip(State next) const
+{
+    const std::size_t w = static_cast<std::size_t>(weapon);
+    switch (next)
+    {
+    case State::Dead: return clips.death;
+    case State::Damage: return clips.damage;
+    case State::Attack:
+        if (attackType == AttackType::Special && ValidClip(clips.special[w])) return clips.special[w];
+        if (attackType == AttackType::Blood && ValidClip(clips.blood[w])) return clips.blood[w];
+        return clips.normal[w];
+    case State::Run: if (ValidClip(clips.run)) return clips.run; break;
+    default: break;
+    }
+    return ValidClip(clips.weaponIdle[w]) ? clips.weaponIdle[w] : clips.idle;
+}
+
+void Player::UpdateAnimation(float elapsedTime, bool moved)
+{
+    if (!animation) return;
+    const State next = IsDead() ? State::Dead : (hurtTime > 0.0f ? State::Damage
+        : ((attacking || attackActive) ? State::Attack : (moved ? State::Run : State::Idle)));
+    const int index = SelectClip(next);
+    const bool loop = next == State::Idle || next == State::Run;
+    if (next != state || index != currentClip)
+    {
+        state = next;
+        currentClip = index;
+        if (ValidClip(index)) animation->PlayAnimation(index, loop);
+        else animation->Stop();
+    }
+    float rate = 1.0f;
+    if (next == State::Attack && attackDuration > 0.0f && ValidClip(index))
+        rate = animation->GetDuration(index) / attackDuration;
+    else if (next == State::Damage && ValidClip(index))
+        rate = animation->GetDuration(index) / 0.25f;
+    else if (next == State::Run && musou) rate = 1.2f;
+    animation->Update(elapsedTime * rate);
+}
+
+void Player::UpdateVisualTransform()
+{
+    // ふらつく姿勢は描画行列だけに反映。GetAngle() は安定した向きを返す。
+    using namespace DirectX;
+    float pitch = player.angle.x + visualPitch;
+    float roll = player.angle.z + visualSway;
+    float yaw = player.angle.y;
+    // 攻撃モーションがない場合も最低限の振りを表示。ボーンの代用品に限る。
+    if ((attacking || attackActive) && !ValidClip(SelectClip(State::Attack)) && attackDuration > 0.0f)
+    {
+        const float t = Clamp(attackTime / attackDuration, 0.0f, 1.0f);
+        yaw += std::sin(t * Pi) * (weapon == Weapon::Fist ? 0.2f : 0.65f);
+        pitch += std::sin(t * Pi) * 0.08f;
+    }
+    const XMMATRIX s = XMMatrixScaling(player.scale.x, player.scale.y, player.scale.z);
+    const XMMATRIX r = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+    const XMMATRIX t = XMMatrixTranslation(player.position.x, player.position.y, player.position.z);
+    XMStoreFloat4x4(&player.transform, s * r * t);
+}
+
+void Player::Render(float elapsedTime, RenderContext rc, bool pause)
+{
+    (void)elapsedTime;
+    (void)pause;
+    if (player.model) Graphics::Instance().GetModelRenderer()->Render(
+        rc, player.transform, player.model.get(), ShaderId::Lambert);
+}
+
+void Player::DrawGUI()
+{
+    if (!ImGui::CollapsingHeader("Player", ImGuiTreeNodeFlags_DefaultOpen)) return;
+    ImGui::DragFloat3("Position", &player.position.x, 0.1f);
+    ImGui::DragFloat3("Angle", &player.angle.x, 0.01f);
+    ImGui::DragFloat3("Scale", &player.scale.x, 0.01f);
+    ImGui::DragFloat("Move speed", &moveSpeed, 10.0f, 0.0f, 5000.0f);
+    ImGui::DragFloat("Player hit radius", &bodyRadius, 1.0f, 1.0f, 200.0f);
+    ImGui::DragFloat("Player hit height", &bodyHeight, 1.0f, 0.0f, 300.0f);
+    ImGui::DragFloat("Attack height", &attackHeight, 1.0f, 0.0f, 300.0f);
+    ImGui::Text("HP %.0f / 100", health); ImGui::ProgressBar(health / maxHealth);
+    ImGui::Text("Blood %.0f / 100", blood); ImGui::ProgressBar(blood / maxBlood);
+    ImGui::Text("Musou: %s", musou ? "ACTIVE (-10/sec)" : (CanStartMusou() ? "READY [R]" : "Need 80 blood"));
+    ImGui::Text("Weapon: %s", GetWeaponData().name);
+    for (std::size_t w = 0; w < gauges.size(); ++w)
+    {
+        ImGui::Text("%s gauge", weaponData[w].name);
+        ImGui::ProgressBar(gauges[w] / maxGauge);
+    }
+    ImGui::Text("WASD Move / 1-3 Weapon / J Attack / K Blood / L Special / R Musou");
+    if (IsDead()) ImGui::Text("DEAD");
+    if (ImGui::Button("Debug: Blood +15")) AddBlood(15.0f);
+    if (ImGui::Button("Debug: Damage 10")) TakeDamage(10.0f);
+    if (ImGui::Button("Debug: Fill current gauge")) gauges[static_cast<std::size_t>(weapon)] = maxGauge;
+    if (ImGui::Button("Debug: Respawn")) Initialize();
+    if (ImGui::TreeNode("Animation mapping"))
+    {
+        const auto& list = player.model->GetResource()->GetAnimations();
+        auto select = [&](const char* label, int& index)
+            {
+                const char* preview = ValidClip(index) ? list[index].name.c_str() : "(none)";
+                if (ImGui::BeginCombo(label, preview))
+                {
+                    if (ImGui::Selectable("(none)", index < 0)) index = -1;
+                    for (std::size_t i = 0; i < list.size(); ++i)
+                    {
+                        ImGui::PushID(static_cast<int>(i));
+                        if (ImGui::Selectable(list[i].name.c_str(), index == static_cast<int>(i))) index = static_cast<int>(i);
+                        ImGui::PopID();
+                    }
+                    ImGui::EndCombo();
+                }
+            };
+        select("Idle", clips.idle); select("Run", clips.run);
+        select("Damage", clips.damage); select("Death", clips.death);
+        for (std::size_t w = 0; w < 3; ++w)
+        {
+            ImGui::PushID(static_cast<int>(w));
+            ImGui::Text("%s", weaponData[w].name);
+            select("Weapon idle", clips.weaponIdle[w]);
+            select("Normal", clips.normal[w]); select("Blood", clips.blood[w]); select("Special", clips.special[w]);
+            ImGui::PopID();
+        }
+        if (list.empty()) ImGui::Text("No animation clips in this model.");
+        ImGui::Text("Runtime selections reset on Initialize(). Save indexes in code if needed.");
+        ImGui::TreePop();
+    }
 }
