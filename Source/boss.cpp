@@ -32,59 +32,75 @@ Boss::~Boss()
 void Boss::Update(float elapsedTime)
 {
 
-	//ボス
-	{
-		float direction = DirectX::XMVectorGetX
-		(DirectX::XMVector3Length
-		(DirectX::XMVectorSubtract
-		({ 0,0,-1 }, DirectX::XMLoadFloat3(&boss.position))));
-
-
-		float dx = arrive_position.x - boss.position.x;   // 0 - pos.x
-		float dz = arrive_position.z - boss.position.z;   // 0 - pos.z
-
-		// Y軸回転（Yaw）
-		boss.angle.y = atan2f(dx, dz);
-		//boss_anime->PlayAnimation(,true)
-	}
-
+	
 	if (dead)
 	{
 		if (!dyingStarted)
 		{
 			middle_boss_anime->PlayAnimation("Dying", false);
+			//boss_anime->PlayAnimation("Dying", false);
 			dyingStarted = true;
 		}
-
-		if (!middle_boss_anime->IsPlaying())
+		if (!boss_anime->IsPlaying() && boss_count >= 2)
 		{
 			alive = false;
 			dyingStarted = false;
 		}
+
+		if (!middle_boss_anime->IsPlaying()&&boss_count<2)
+		{
+			alive = false;
+			dyingStarted = false;
+		}
+
+		
 	}
 	else
 	{
-		float direction = DirectX::XMVectorGetX
-		(DirectX::XMVector3Length
-		(DirectX::XMVectorSubtract
-		({ 0,0,-1 }, DirectX::XMLoadFloat3(&middle_boss.position))));
-
-
-		float dx = arrive_position.x - middle_boss.position.x;   // 0 - pos.x
-		float dz = arrive_position.z - middle_boss.position.z;   // 0 - pos.z
-
-		// Y軸回転（Yaw）
-		middle_boss.angle.y = atan2f(dx, dz);
-
-		if (!(middle_boss_anime->IsPlaying()))
+		//中ボス
 		{
-			middle_boss_anime->PlayAnimation("Roaring", true);
+			float direction = DirectX::XMVectorGetX
+			(DirectX::XMVector3Length
+			(DirectX::XMVectorSubtract
+			({ 0,0,-1 }, DirectX::XMLoadFloat3(&middle_boss.position))));
+
+
+			float dx = arrive_position.x - middle_boss.position.x;   // 0 - pos.x
+			float dz = arrive_position.z - middle_boss.position.z;   // 0 - pos.z
+
+			// Y軸回転（Yaw）
+			middle_boss.angle.y = atan2f(dx, dz);
+
+			if (!(middle_boss_anime->IsPlaying()))
+			{
+				middle_boss_anime->PlayAnimation("Roaring", true);
+			}
 		}
+
+		//ボス
+		{
+			float direction = DirectX::XMVectorGetX
+			(DirectX::XMVector3Length
+			(DirectX::XMVectorSubtract
+			({ 0,0,-1 }, DirectX::XMLoadFloat3(&boss.position))));
+
+
+			float dx = arrive_position.x - boss.position.x;   // 0 - pos.x
+			float dz = arrive_position.z - boss.position.z;   // 0 - pos.z
+
+			// Y軸回転（Yaw）
+			boss.angle.y = atan2f(dx, dz);
+			if (!(boss_anime->IsPlaying()))
+			{
+				//boss_anime->PlayAnimation("Roaring", true);
+			}
+		}
+
 
 	}
 
 	
-	if (boss_count >= 3)boss_count = 0;
+	if (boss_count >= 3)clear=true;
 	if (alive)
 	{
 		if (boss_count < 2)
