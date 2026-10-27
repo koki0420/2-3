@@ -12,7 +12,6 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	//enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
 	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_3.mdl");
 
-
 	alive = true;
 }
 
@@ -76,8 +75,6 @@ void Enemy::Update(float elapsedTime)
 	(DirectX::XMLoadFloat3(&enemy.position),
 		DirectX::XMVectorScale(diff, 0.1f));
 	DirectX::XMStoreFloat3(&enemy.position, new_pos);
-
-
 
 	float dx = arrive_position.x - enemy.position.x;   // 0 - pos.x
 	float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
