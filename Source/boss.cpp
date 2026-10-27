@@ -9,7 +9,7 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	boss.position = pos;
 	boss.position.y = -15;
     boss.scale = { 0.1f,0.1f,0.1f };
-    boss.model = std::make_unique<Model>("Data/Model/Enemy/low_last_boss.mdl");
+    boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_boss.mdl");
 
 	middle_boss.position = pos;
 	middle_boss.position.y = -15;
@@ -73,7 +73,10 @@ void Boss::Update(float elapsedTime)
 
 			if (!(middle_boss_anime->IsPlaying()))
 			{
-				middle_boss_anime->PlayAnimation("Roaring", true);
+				int i = rand() % 2;
+				if (i == 0)middle_boss_anime->PlayAnimation("Roaring", false);
+				if (i == 1)middle_boss_anime->PlayAnimation("Jump", false);
+
 			}
 		}
 

@@ -32,6 +32,9 @@ private:
 	Object enemy;
 	unique_ptr<Animation> enemy_anime;
 	DirectX::XMFLOAT3 arrive_position = { 0,0,0 };
+
+	bool walk_anime = true;
+
 	bool alive=true;
 	bool arrive = true;
 };
