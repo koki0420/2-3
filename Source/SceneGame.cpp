@@ -57,6 +57,12 @@ void SceneGame::Initialize()
 		EnemyManager::Instance().Register(std::move(enemies[i]));
 		enemy_num += 1;
 	}
+	spriteGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
+	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_ff4444_128.png");
+
+	spriteW1 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sword_transparent.png");
+	spriteW2 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent .png");
+	spriteW3 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent .png");
 }	
 
 void SceneGame::Finalize()
@@ -68,14 +74,23 @@ void SceneGame::Update(float elapsedTime)
 {
 	if (Boss_Dead)
 	{
-		Respawn();
-		boss->Boss_Chage();
-		Boss_Dead = false;
+		boss->Boss_Dead(Boss_Dead);
+	
+
+		if (!(boss->Boss_Alive()))
+		{
+			Respawn();
+			boss->Boss_Chage();
+			Boss_Dead = false;
+		}
 	}
 	{
-		if (enemy_num > 0) boss->Boss_Set(false);
-		else boss->Boss_Set(true);
-		boss->Update(elapsedTime);
+		if (enemy_num > 0)boss->Boss_Set(false);
+		else
+		{
+			boss->Boss_Set(true);
+			boss->Update(elapsedTime);
+		}
 	}
 
 	camera.Update();
@@ -105,6 +120,26 @@ void SceneGame::Render(float elapsedTime)
 
 	boss->Render(rc, modelRenderer);
 	
+	{
+		spriteGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteHP->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		//
+
+
+		spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteHP->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteW1->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+
+		spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteHP->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteW2->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+
+		spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteHP->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteW3->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+
+	}
+
 }
 
 void SceneGame::DrawGUI()

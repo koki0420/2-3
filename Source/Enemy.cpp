@@ -76,14 +76,16 @@ void Enemy::Update(float elapsedTime)
 		DirectX::XMVectorScale(diff, 0.1f));
 	DirectX::XMStoreFloat3(&enemy.position, new_pos);
 
-
-
 	float dx = arrive_position.x - enemy.position.x;   // 0 - pos.x
 	float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
 
 	// Yé≤âÒì]ÅiYawÅj
 	enemy.angle.y = atan2f(dx, dz);
-	if(alive)enemy.UpdateTransform();
+	if (alive)
+	{
+		enemy.UpdateTransform();
+
+	}
 
 }
 

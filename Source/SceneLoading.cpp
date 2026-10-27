@@ -59,7 +59,7 @@ void SceneLoading::Update(float elapsedTime)
 	}
 
 	//次のシーンの準備が完了したらシーンを切り替える + 全部読まれたら
-	if (nextScene->IsReady() && timer > 2.0f && isAllRead)
+	if (nextScene->IsReady() && isAllRead)
 	{
 		SceneManager::Instance().ChangeScene(nextScene);
 		nextScene = nullptr;
