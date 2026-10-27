@@ -21,6 +21,8 @@ SceneTitle::~SceneTitle()
 }
 void SceneTitle::Initialize()
 {
+	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_capsule_start_128.png");
+
 }
 void SceneTitle::Finalize()
 {
@@ -45,7 +47,14 @@ void SceneTitle::Update(float elapsedTime)
 	//左クリックの押下情報を記録
 	static bool prev = false;
 	bool now = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
+	if (mx >= 400 && mx <= 528&& now )
+	{
+		if (my >= 500 && my <= 628)
+		{
+			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
 
+		}
+	}
 	
 }
 void SceneTitle::Render(float elapsedTime)
@@ -62,6 +71,7 @@ void SceneTitle::Render(float elapsedTime)
 	dc->OMSetDepthStencilState(rc.renderState->GetDepthStencilState(DepthState::TestAndWrite), 0);
 	// ブレンドステート設定
 	dc->OMSetBlendState(rc.renderState->GetBlendState(BlendState::Transparency), nullptr, 0xFFFFFFFF);
-
+	
+	sprite->Render(dc, 400, 500, 0, 128, 128, 0, 0, 128 , 128, 0, 1, 1, 1, 1);
 }
 
