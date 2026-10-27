@@ -51,6 +51,7 @@ void Animation::PlayAnimation(int index, bool loop)
 
 void Animation::PlayAnimation(const char* name, bool loop)
 {
+
 	int index = 0;
 	const std::vector<ModelResource::Animation>& animations = model->GetResource()->GetAnimations();
 	for (const ModelResource::Animation& animation : animations)
@@ -88,7 +89,8 @@ void Animation::UpdateAnimation(float elapsedTime)
 			}
 			else
 			{
-				animationSeconds = animation.secondsLength;
+				animationSeconds = 0;
+				animationPlaying = false;
 				return;
 			}
 		}

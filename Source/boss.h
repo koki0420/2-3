@@ -23,7 +23,17 @@ public:
 		this->alive=alive; 
 	}
 
-	void Boss_Chage() { boss_count+=1; }
+	void Boss_Dead(bool dead)
+	{
+		this->dead = dead;
+	}
+
+	void Boss_Chage() 
+	{
+		boss_count+=1;
+		this->dead = false;
+	}
+
 
 private:
 	Object boss;
@@ -32,6 +42,8 @@ private:
 	unique_ptr<Animation> middle_boss_anime;
 	DirectX::XMFLOAT3 arrive_position = { 0,0,0 };
 	bool alive = true;
+	bool dead = false;
 	bool arrive = true;
+	bool dyingStarted = false;
 	int boss_count = 0;
 };

@@ -48,6 +48,21 @@ void Boss::Update(float elapsedTime)
 		//boss_anime->PlayAnimation(,true)
 	}
 
+	if (dead)
+	{
+		if (!dyingStarted)
+		{
+			middle_boss_anime->PlayAnimation("Dying", false);
+			dyingStarted = true;
+		}
+
+		if (!middle_boss_anime->IsPlaying())
+		{
+			alive = false;
+			dyingStarted = false;
+		}
+	}
+	else
 	{
 		float direction = DirectX::XMVectorGetX
 		(DirectX::XMVector3Length
@@ -61,11 +76,14 @@ void Boss::Update(float elapsedTime)
 		// YŽ²‰ñ“]iYawj
 		middle_boss.angle.y = atan2f(dx, dz);
 
-		if(!(middle_boss_anime->IsPlaying()))middle_boss_anime->PlayAnimation("Dying", true);
+		if (!(middle_boss_anime->IsPlaying()))
+		{
+			middle_boss_anime->PlayAnimation("Roaring", true);
+		}
 
 	}
 
-
+	
 	if (boss_count >= 3)boss_count = 0;
 	if (alive)
 	{
