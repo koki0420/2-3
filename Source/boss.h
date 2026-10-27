@@ -3,6 +3,7 @@
 #include"Object.h"
 
 #include"ModelRenderer.h"
+#include"Animation.h"
 
 class Boss
 {
@@ -26,7 +27,9 @@ public:
 
 private:
 	Object boss;
+	unique_ptr<Animation> boss_anime;
 	Object middle_boss;
+	unique_ptr<Animation> middle_boss_anime;
 	DirectX::XMFLOAT3 arrive_position = { 0,0,0 };
 	bool alive = true;
 	bool arrive = true;

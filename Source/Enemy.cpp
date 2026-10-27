@@ -12,6 +12,7 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	//enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
 	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_3.mdl");
 
+
 	alive = true;
 }
 
@@ -83,7 +84,11 @@ void Enemy::Update(float elapsedTime)
 
 	// Yé≤âÒì]ÅiYawÅj
 	enemy.angle.y = atan2f(dx, dz);
-	if(alive)enemy.UpdateTransform();
+	if (alive)
+	{
+		enemy.UpdateTransform();
+
+	}
 
 }
 

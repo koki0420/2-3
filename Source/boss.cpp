@@ -18,6 +18,9 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 
 	boss_count = 0;
 
+	boss_anime= std::make_unique<Animation>(*boss.model);
+	middle_boss_anime = std::make_unique<Animation>(*middle_boss.model);
+
 	alive = false;
 }
 
@@ -42,6 +45,7 @@ void Boss::Update(float elapsedTime)
 
 		// YŽ²‰ñ“]iYawj
 		boss.angle.y = atan2f(dx, dz);
+		//boss_anime->PlayAnimation(,true)
 	}
 
 	{
@@ -56,13 +60,25 @@ void Boss::Update(float elapsedTime)
 
 		// YŽ²‰ñ“]iYawj
 		middle_boss.angle.y = atan2f(dx, dz);
+
+		if(!(middle_boss_anime->IsPlaying()))middle_boss_anime->PlayAnimation("Dying", true);
+
 	}
+
 
 	if (boss_count >= 3)boss_count = 0;
 	if (alive)
 	{
-		if (boss_count < 2)middle_boss.UpdateTransform();
-		else boss.UpdateTransform();
+		if (boss_count < 2)
+		{
+			middle_boss.UpdateTransform();
+			middle_boss_anime->Update(elapsedTime);
+		}
+		else
+		{
+			boss.UpdateTransform();
+			boss_anime->Update(elapsedTime);
+		}
 	}
 }
 
