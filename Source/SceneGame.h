@@ -138,6 +138,11 @@ private:
 	bool goalReached = false;
 	float goalTimer = 0.0f;
 
-	
+	std::unique_ptr<Sprite> spriteGauge = nullptr;
+	std::unique_ptr<Sprite> spriteHP = nullptr;
+	std::unique_ptr<Sprite> spriteW1 = nullptr;
+	std::unique_ptr<Sprite> spriteW2 = nullptr;
+	std::unique_ptr<Sprite> spriteW3 = nullptr;
+
 	
 };
