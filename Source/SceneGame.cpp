@@ -70,14 +70,23 @@ void SceneGame::Update(float elapsedTime)
 {
 	if (Boss_Dead)
 	{
-		Respawn();
-		boss->Boss_Chage();
-		Boss_Dead = false;
+		boss->Boss_Dead(Boss_Dead);
+	
+
+		if (!(boss->Boss_Alive()))
+		{
+			Respawn();
+			boss->Boss_Chage();
+			Boss_Dead = false;
+		}
 	}
 	{
-		if (enemy_num > 0) boss->Boss_Set(false);
-		else boss->Boss_Set(true);
-		boss->Update(elapsedTime);
+		if (enemy_num > 0)boss->Boss_Set(false);
+		else
+		{
+			boss->Boss_Set(true);
+			boss->Update(elapsedTime);
+		}
 	}
 
 	camera.Update();

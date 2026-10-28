@@ -26,16 +26,15 @@ Animation::Animation(Model& M)
 	//);
 	//cameraController.SyncCameraToController(camera);
 
-
 	model = &M;
 }
 
 
 // 更新処理
-void Animation::Update(float elapsedTime)
+void Animation::Update(float elapsedTime,bool enemy)
 {
 	// アニメーション更新処理
-	UpdateAnimation(elapsedTime);
+	UpdateAnimation(elapsedTime,enemy);
 }
 
 
@@ -51,6 +50,7 @@ void Animation::PlayAnimation(int index, bool loop)
 
 void Animation::PlayAnimation(const char* name, bool loop)
 {
+
 	int index = 0;
 	const std::vector<ModelResource::Animation>& animations = model->GetResource()->GetAnimations();
 	for (const ModelResource::Animation& animation : animations)
@@ -66,32 +66,51 @@ void Animation::PlayAnimation(const char* name, bool loop)
 
 
 // アニメーション更新処理
-void Animation::UpdateAnimation(float elapsedTime)
+void Animation::UpdateAnimation(float elapsedTime, bool enemy = false)
 {
 	if (animationPlaying)
 	{
-
+		
 		std::vector<Model::Node>& nodes = model->GetNodes();
 
 		const std::vector<ModelResource::Animation>& animations = model->GetResource()->GetAnimations();
 		const ModelResource::Animation& animation = animations.at(animationIndex);
 
-		//時間経過
-		animationSeconds += elapsedTime;
+		
 
 		//再生時間が終端時間をこえたら
 		if (animationSeconds >= animation.secondsLength)
 		{
 			if (animationLoop)
 			{
-				animationSeconds = 0;
+				if (enemy)
+				{
+					anime_time = -elapsedTime;
+					
+				}
+				else
+				{
+					animationSeconds = 0;
+				}
 			}
 			else
 			{
-				animationSeconds = animation.secondsLength;
+				animationSeconds = 0;
+				animationPlaying = false;
 				return;
 			}
 		}
+		if (animationSeconds <= 0)
+		{
+			animationSeconds = 0;
+			anime_time = elapsedTime;
+		}
+
+		
+
+		//時間経過
+		animationSeconds += anime_time;
+		
 
 		float blendRate = 1.0f;
 		if (animationSeconds < animationBlendSecondsLength)

@@ -17,7 +17,7 @@ public:
 
 
 	// 更新処理
-	void Update(float elapsedTime);
+	void Update(float elapsedTime,bool enemy = false);
 	bool IsPlaying() const
 	{
 		return animationPlaying;
@@ -29,7 +29,7 @@ public:
 	void PlayAnimation(const char* name, bool loop);
 private:
 	// アニメーション更新処理
-	void UpdateAnimation(float elapsedTime);
+	void UpdateAnimation(float elapsedTime, bool enemy);
 
 
 
@@ -44,5 +44,7 @@ private:
 	bool								animationLoop = false;
 	bool								animationPlaying = false;
 	float								animationBlendSecondsLength = 0.2f;
+
+	float anime_time;
 
 };

@@ -7,12 +7,14 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	srand((unsigned int)time(NULL));
 	enemy.position = pos;
 
-	enemy.scale = { 0.04f,0.04f,0.04f };
-	enemy.position.y = -10;
-	//enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
-	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_3.mdl");
+	enemy.scale = { 10,10,10 };
+	enemy.position.y = -25;
+	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
 
+	enemy_anime= std::make_unique<Animation>(*enemy.model);
+	walk_anime = true;
 	alive = true;
+
 }
 
 Enemy::~Enemy()
@@ -28,13 +30,20 @@ void Enemy::Update(float elapsedTime)
 	(DirectX::XMVectorSubtract
 	({0,0,-1}, DirectX::XMLoadFloat3(&enemy.position))));
 
+	if (walk_anime)
+	{
+		enemy_anime->PlayAnimation("Walk", true);
+		walk_anime = false;
+	}
+
 	if (direction <= 100)
 	{
-		arrive_position = { 0,-10,0 };
+		arrive_position = { 0,-25,0 };
 		
 	}
 	else
 	{
+
 		if (arrive)
 		{
 			arrive_position.x = enemy.position.x+(float)(rand() % 100-50) * 10;
@@ -76,14 +85,17 @@ void Enemy::Update(float elapsedTime)
 		DirectX::XMVectorScale(diff, 0.1f));
 	DirectX::XMStoreFloat3(&enemy.position, new_pos);
 
-
-
 	float dx = arrive_position.x - enemy.position.x;   // 0 - pos.x
 	float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
 
 	// YŽ²‰ñ“]iYawj
 	enemy.angle.y = atan2f(dx, dz);
-	if(alive)enemy.UpdateTransform();
+
+	if (alive)
+	{
+		enemy.UpdateTransform();
+		enemy_anime->Update(elapsedTime,true);
+	}
 
 }
 
