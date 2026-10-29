@@ -44,6 +44,9 @@ private:
 	Object boss;
 	unique_ptr<Animation> boss_anime;
 
+	Object weapon;
+
+
 	//中ボス
 	Object middle_boss;
 	unique_ptr<Animation> middle_boss_anime;
@@ -69,6 +72,12 @@ private:
 	//クリア
 	bool clear = false;
 
+	//タイマー
+	float timer = 0;
+
+	bool idle_anime = true;
+	bool walk_anime = true;
+	bool attack_anime = false;
 
 	//エフェクト
 	Effect* midle_effect=nullptr;

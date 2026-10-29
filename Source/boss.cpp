@@ -6,17 +6,19 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 {
 	arrive_position = { 0,-15,0 };
 
-	
+	boss.position = pos;
+	boss.position.y = -15;
+    boss.scale = { 0.4f,0.4f,0.4f };
+    boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_boss.mdl");
+
+	weapon.position = { 0,15,0 };
+	weapon.scale = { 0.5f,0.5f,0.5f };
+	weapon.model = std::make_unique<Model>("Data/Model/Weapon/Sword.mdl");
+
 	middle_boss.position = pos;
 	middle_boss.position.y = -15;
 	middle_boss.scale = { 0.5f,0.5f,0.5f };
 	middle_boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_midle.mdl");
-
-	boss.position = pos;
-	boss.position.y = -15;
-	boss.scale = { 0.5f,0.5f,0.5f };
-	boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_boss.mdl");
-
 
 	boss_count = 2;
 
@@ -24,6 +26,8 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	middle_boss_anime = std::make_unique<Animation>(*middle_boss.model);
 
 	alive = false;
+
+	//-3, 43,0.495
 
 	midle_effect = EffectManager::Instance().CreateEffect("Data/Effect/midle_enemy_smash.efkefc");
 }
@@ -35,7 +39,8 @@ Boss::~Boss()
 
 void Boss::Update(float elapsedTime)
 {
-
+	timer += elapsedTime;
+	
 	
 	if (dead)
 	{
@@ -105,8 +110,11 @@ void Boss::Update(float elapsedTime)
 
 			// YŽ²‰ñ“]iYawj
 			boss.angle.y = atan2f(dx, dz);
-			if (!(boss_anime->IsPlaying()))
+
+
+			if (attack_anime)
 			{
+				
 				int i = rand() % 2;
 				if (i == 0)boss_anime->PlayAnimation("Attack", false);
 				if (i == 1)
@@ -119,7 +127,23 @@ void Boss::Update(float elapsedTime)
 					}*/
 				}
 
+				attack_anime = false;
 			}
+			else
+			{
+				if (idle_anime)
+				{
+					boss_anime->PlayAnimation("Idle", true);
+					idle_anime = false;
+				}
+
+				if ((int)timer % (5 * (rand() % 6 + 1)) == 0 && !(boss_anime->IsPlaying("Attack")) && !(boss_anime->IsPlaying("Jump_Attack")))
+				{
+					attack_anime = true;
+				}
+				if (!(boss_anime->IsPlaying()))idle_anime = true;
+			}
+
 		}
 
 
@@ -138,6 +162,29 @@ void Boss::Update(float elapsedTime)
 		{
 			boss.UpdateTransform();
 			boss_anime->Update(elapsedTime);
+			weapon.UpdateTransform();
+
+
+			const char* rightHandName = "RightHand";
+			DirectX::XMMATRIX S = DirectX::XMMatrixScaling(weapon.scale.x, weapon.scale.y, weapon.scale.z);
+			DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(weapon.angle.x, weapon.angle.y, weapon.angle.z);
+			DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(weapon.position.x, weapon.position.y, weapon.position.z);
+			DirectX::XMStoreFloat4x4(&weapon.transform, S* R* T);
+
+			for (const Model::Node& node : boss.model->GetNodes())
+			{
+				if (strcmp(node.name, rightHandName) == 0)
+				{
+					DirectX::XMMATRIX w_trans = DirectX::XMLoadFloat4x4(&weapon.transform);
+					DirectX::XMMATRIX g_trans = DirectX::XMLoadFloat4x4(&node.globalTransform);
+					DirectX::XMMATRIX p_trans = DirectX::XMLoadFloat4x4(&boss.transform);
+					w_trans = (w_trans * g_trans) * p_trans;
+					DirectX::XMStoreFloat4x4(&weapon.transform, w_trans);
+
+
+					break;
+				}
+			}
 		}
 	}
 }
@@ -147,6 +194,10 @@ void Boss::Render(const RenderContext& immediate_context, ModelRenderer* rendere
 	if (alive)
 	{
 		if (boss_count < 2)renderer->Render(immediate_context, middle_boss.transform, middle_boss.model.get(), ShaderId::Lambert);
-		else renderer->Render(immediate_context, boss.transform, boss.model.get(), ShaderId::Lambert);
+		else
+		{
+			renderer->Render(immediate_context, boss.transform, boss.model.get(), ShaderId::Lambert);
+			renderer->Render(immediate_context, weapon.transform, weapon.model.get(), ShaderId::Lambert);
+		}
 	}
 }
