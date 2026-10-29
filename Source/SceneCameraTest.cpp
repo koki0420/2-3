@@ -3,75 +3,194 @@
 #include "Graphics.h"
 #include <imgui.h>
 #include <cmath>
+#include "ShapeRenderer.h"
 
-SceneCameraTest::SceneCameraTest() { Initialize(); }
-SceneCameraTest::~SceneCameraTest() { Finalize(); }
+SceneCameraTest::SceneCameraTest() { }
+SceneCameraTest::~SceneCameraTest() {}
 
 void SceneCameraTest::Initialize()
 {
-    stage.scale = { 1, 1, 1 };
+    player = new Player();
+    camera = new Camera();
+    CameraController = new TestCameraController;
     stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
-    stage.UpdateTransform();
-    // コンストラクタ以外からのシーン再初期化にも対応する。
-    player.Initialize();
-    pause = false;
-    const float width = Graphics::Instance().GetScreenWidth();
-    const float height = Graphics::Instance().GetScreenHeight();
-    camera.SetPerspectiveFov(45.0f * GameplayMath::Pi / 180.0f,
-        height > 0.0f ? width / height : 16.0f / 9.0f, 1.0f, 10000.0f);
-    followCamera.Reset(camera, player.GetPos(), player.GetAngle().y);
-    SpawnTestEnemies();
-}
-void SceneCameraTest::SpawnTestEnemies()
-{
-    auto& manager = EnemyManager::Instance();
-    enemyCombat.Clear();
-    manager.Clear();
-    const auto& center = player.GetPos();
-    // 動作確認用。実ゲームのスポーン処理ができたら、ここを置き換える。
-    for (int i = 0; i < 24; ++i)
+
+    enemy_num = 0;
+
+    stage.scale.x = 0.2f;
+    stage.scale.y = 0.2f;
+    stage.scale.z = 0.2f;
+
+    stage.position.y = -20;
+
+    boss = std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
+
+    for (int i = 0;i < 10;i += 1)
     {
-        const float theta = i * (2.0f * GameplayMath::Pi / 24.0f);
-        const float radius = 220.0f + (i % 3) * 90.0f;
-        auto enemy = std::make_unique<Enemy>(DirectX::XMFLOAT3{
-            center.x + std::sin(theta) * radius, center.y,
-            center.z + std::cos(theta) * radius });
-        enemyCombat.Register(*enemy);
-        manager.Register(std::move(enemy));
+        for (int j = 0;j < 10;j += 1)
+        {
+            enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 52.0f * j, 0, -260 + 52.0f * i }));
+        }
     }
+    for (size_t i = 0; i < enemies.size(); i++)
+    {
+        enemyList.push_back(enemies[i].get());
+        enemyHP.push_back(100.0f);
+
+        EnemyManager::Instance().Register(std::move(enemies[i]));
+
+        enemy_num += 1;
+    }
+    spriteGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
+    spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_ff4444_128.png");
+
+    spriteW1 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sword_transparent.png");
+    spriteW2 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent .png");
+    spriteW3 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent .png");
+
+
+    CameraController->SyncCameraToController(*camera);
+
 }
+
 void SceneCameraTest::Finalize()
 {
-    enemyCombat.Clear();
+    enemyList.clear();
+    enemyHP.clear();
+    enemies.clear();
+
     EnemyManager::Instance().Clear();
 }
 
 void SceneCameraTest::Update(float elapsedTime)
 {
-    if (pause || !std::isfinite(elapsedTime) || elapsedTime <= 0.0f) return;
-    player.Update(elapsedTime, stage, camera);
-    // 元のManagerのUpdateをそのまま使用。追跡AIなどは追加しない。
-    /*EnemyManager::Instance().Update(elapsedTime);
-    enemyCombat.Update(elapsedTime, player);*/
-    const bool context = ImGui::GetCurrentContext() != nullptr;
-    const bool manual = context && !ImGui::GetIO().WantCaptureMouse && ImGui::IsMouseDown(1);
-    const float mouseX = manual ? ImGui::GetIO().MouseDelta.x : 0.0f;
-    const float mouseY = manual ? ImGui::GetIO().MouseDelta.y : 0.0f;
-    followCamera.Update(camera, player.GetPos(), player.GetAngle().y,
-        elapsedTime, manual, mouseX, mouseY);
+    DirectX::XMFLOAT3 focus = player->GetPosition();
+    focus.y += 1.0f;
+    CameraController->SetFocus(focus);
+    CameraController->Update();
+    CameraController->SyncControllerToCamera(*camera);
+
+    if (Boss_Dead)
+    {
+        Respawn();
+        boss->Boss_Chage();
+        Boss_Dead = false;
+    }
+    {
+        if (enemy_num > 0) boss->Boss_Set(false);
+        else boss->Boss_Set(true);
+        boss->Update(elapsedTime);
+    }
+
+    stage.UpdateTransform();
+
+    EnemyManager::Instance().Update(elapsedTime);
+    player->Update(elapsedTime, stage, *camera);
+
+
+    //enemyPositionには敵の球の中心、enemyRadiusには半径を入れる
+    for (size_t i = 0; i < enemyList.size(); i++)
+    {
+        // 倒れている敵は調べない
+        if (!enemyList[i]->Alive())
+        {
+            continue;
+        }
+
+        // 敵の判定の中心
+        /*DirectX::XMFLOAT3 enemyPosition = enemyList[i]->GetPos();
+        enemyPosition.y += 10.0f;*/
+        DirectX::XMFLOAT3 enemyPosition = enemyList[i]->GetPos();
+        enemyPosition.y += enemyCollisionHeight;
+
+        if (player->CheckAttackHit(i,enemyPosition, enemyRadius))
+        {
+            enemyHP[i] -= player->GetPAtkDmg();
+
+            if (enemyHP[i] <= 0.0f)
+            {
+                EnemyManager::Instance().Enemy_Set(
+                    static_cast<int>(i), false);
+
+                enemy_num -= 1;
+
+                //この敵の処理はここで終える
+                continue;
+            }
+        }
+
+        player->CheckTakeAttack(i, enemyPosition, enemyRadius);
+
+    }
+    
 }
 
 void SceneCameraTest::Render(float elapsedTime)
 {
-    auto& graphics = Graphics::Instance();
-    ModelRenderer* renderer = graphics.GetModelRenderer();
+    ID3D11DeviceContext* dc = Graphics::Instance().GetDeviceContext();
+    RenderState* renderState = Graphics::Instance().GetRenderState();
+    ModelRenderer* modelRenderer = Graphics::Instance().GetModelRenderer();
+
+    ShapeRenderer* shapeRenderer = Graphics::Instance().GetShapeRenderer();
+
     RenderContext rc;
-    rc.deviceContext = graphics.GetDeviceContext();
-    rc.renderState = graphics.GetRenderState();
-    rc.camera = &camera;
-    renderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
-    player.Render(elapsedTime, rc, pause);
-    EnemyManager::Instance().Render(rc, renderer);
+    rc.deviceContext = dc;
+
+    rc.renderState = renderState;
+    rc.camera = camera;
+
+    modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
+    EnemyManager::Instance().Render(rc, modelRenderer);
+    player->Render(elapsedTime, rc);
+    boss->Render(rc, modelRenderer);
+
+    {
+        spriteGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+        spriteHP->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+        //
+
+
+        spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+        spriteHP->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+        spriteW1->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+
+        spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+        spriteHP->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+        spriteW2->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+
+        spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+        spriteHP->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+        spriteW3->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+
+    }
+
+
+    //debug
+    if (showEnemyCollision)
+    {
+        for (Enemy* enemy : enemyList)
+        {
+            if (enemy == nullptr || !enemy->Alive())
+            {
+                continue;
+            }
+
+            DirectX::XMFLOAT3 center = enemy->GetPos();
+            center.y += enemyCollisionHeight;
+
+            shapeRenderer->DrawSphere(
+                center,
+                enemyRadius,
+                { 0, 1, 0, 1 });
+        }
+    }
+
+    shapeRenderer->Render(
+        rc.deviceContext,
+        rc.camera->GetView(),
+        rc.camera->GetProjection()
+    );
+
 }
 
 void SceneCameraTest::DrawGUI()
@@ -79,19 +198,106 @@ void SceneCameraTest::DrawGUI()
     ImGui::SetNextWindowSize(ImVec2(380, 650), ImGuiCond_Once);
     if (ImGui::Begin("SceneCameraTest"))
     {
-        ImGui::Checkbox("Pause", &pause);
-        ImGui::Text("Alive enemies: %d", static_cast<int>(enemyCombat.GetAliveCount()));
-        if (ImGui::Button("Respawn test enemies")) SpawnTestEnemies();
-        if (ImGui::CollapsingHeader("Follow camera", ImGuiTreeNodeFlags_DefaultOpen))
+        if (ImGui::Button("enemy"))
         {
-            ImGui::Text("Right mouse drag: limited look / Release: recenter");
-            ImGui::DragFloat("Distance", &followCamera.distance, 5.0f, 50.0f, 3000.0f);
-            ImGui::DragFloat("Focus height", &followCamera.focusHeight, 1.0f, 0.0f, 500.0f);
-            ImGui::DragFloat("Camera pitch (rad)", &followCamera.basePitch, 0.01f, 0.31f, 1.09f);
-            ImGui::DragFloat("Turn follow speed", &followCamera.turnSpeed, 0.1f, 0.5f, 15.0f);
-            ImGui::DragFloat("Position follow speed", &followCamera.positionSpeed, 0.1f, 1.0f, 30.0f);
+            if (enemy_num > 0)
+            {
+                EnemyManager::Instance().Enemy_Set(enemy_num_debug, false);
+                enemy_num -= 1;
+                enemy_num_debug += 1;
+            }
         }
-        player.DrawGUI();
+        if (ImGui::Button("all_enemy"))
+        {
+            if (enemy_num > 0)
+            {
+                for (size_t i = 0;i < enemies.size();i += 1)
+                {
+                    EnemyManager::Instance().Enemy_Set(i, false);
+                    enemy_num -= 1;
+                }
+            }
+        }
+        if (ImGui::Button("boss"))
+        {
+            if (boss->Boss_Alive() && enemy_num <= 0)
+            {
+                Boss_Dead = true;
+            }
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Enemy collision");
+
+        ImGui::Checkbox("Show enemy collision", &showEnemyCollision);
+        ImGui::SliderFloat("Enemy radius", &enemyRadius, 0.1f, 10.0f);
+        ImGui::SliderFloat(
+            "Enemy collision height", &enemyCollisionHeight, -30.0f, 10.0f);
+
+        ImGui::Separator();
+
+        if (ImGui::CollapsingHeader("Camera",
+            ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            // ビュー行列の逆行列から、カメラのワールド座標を求める
+            DirectX::XMFLOAT4X4 view = camera->GetView();
+
+            DirectX::XMMATRIX inverseView = DirectX::XMMatrixInverse(
+                nullptr,
+                DirectX::XMLoadFloat4x4(&view));
+
+            DirectX::XMFLOAT3 cameraPosition;
+
+            DirectX::XMStoreFloat3(
+                &cameraPosition,
+                inverseView.r[3]);
+
+            DirectX::XMFLOAT3 front = camera->GetFront();
+            DirectX::XMFLOAT3 right = camera->GetRight();
+
+            ImGui::Text("Position");
+            ImGui::Text("X: %.2f  Y: %.2f  Z: %.2f",
+                cameraPosition.x,
+                cameraPosition.y,
+                cameraPosition.z);
+
+            ImGui::Text("Front direction");
+            ImGui::Text("X: %.3f  Y: %.3f  Z: %.3f",
+                front.x, front.y, front.z);
+
+            ImGui::Text("Right direction");
+            ImGui::Text("X: %.3f  Y: %.3f  Z: %.3f",
+                right.x, right.y, right.z);
+
+            DirectX::XMFLOAT3 playerPosition = player->GetPosition();
+
+            float dx = cameraPosition.x - playerPosition.x;
+            float dy = cameraPosition.y - playerPosition.y;
+            float dz = cameraPosition.z - playerPosition.z;
+
+            float distance = sqrtf(dx * dx + dy * dy + dz * dz);
+
+            ImGui::Text("Distance to player: %.2f", distance);
+        }
+
+        player->DrawGUI();
     }
     ImGui::End();
+}
+
+
+void SceneCameraTest::Respawn()
+{
+    enemy_num = 0;
+    enemy_num_debug = 0;
+
+    for (size_t i = 0; i < enemyList.size(); i++)
+    {
+        enemyHP[i] = 100.0f;
+
+        EnemyManager::Instance().Enemy_Set(
+            static_cast<int>(i), true);
+
+        enemy_num += 1;
+    }
 }

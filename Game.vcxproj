@@ -138,10 +138,7 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
     <ClInclude Include="Source\boss.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CameraMove_test.h" />
-    <ClInclude Include="Source\EnemyCombatLink.h" />
-    <ClInclude Include="Source\FollowCamera.h" />
     <ClInclude Include="Source\GameplayMath.h" />
-    <ClInclude Include="Source\PlayerAnimation.h" />
     <ClInclude Include="Source\SceneCameraTest.h" />
     <ClInclude Include="Source\Collision.h" />
     <ClInclude Include="Source\Dialog.h" />
@@ -230,7 +227,6 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
     <ClCompile Include="Source\LambertShader.cpp" />
     <ClCompile Include="Source\ModelResource.cpp" />
     <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\PlayerAnimation.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\SceneCameraTest.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />

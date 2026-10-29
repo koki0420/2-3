@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <array>
 #include <cstdint>
 #include <memory>
@@ -8,106 +7,97 @@
 #include "Graphics.h"
 #include "Camera.h"
 #include "Object.h"
-#include "PlayerAnimation.h"
+#include "Animation.h"
 
 class Player
 {
 public:
-    enum class Weapon { Sword, Fist, Scythe };
-    enum class AttackType { Normal, Blood, Special };
-    struct WeaponData
-    {
-        const char* name;
-        float damage, reach, radius, duration, bloodCost;
-    };
-    // ÀÛ‚Ìmdl‚Éû˜^‚³‚ê‚Ä‚¢‚é”Ô†B-1 ‚Í–¢Š„“–B
-    struct AnimationClips
-    {
-        int idle = -1, run = -1, damage = -1, death = -1;
-        std::array<int, 3> weaponIdle = { { -1, -1, -1 } };
-        std::array<int, 3> normal = { { -1, -1, -1 } };
-        std::array<int, 3> blood = { { -1, -1, -1 } };
-        std::array<int, 3> special = { { -1, -1, -1 } };
-    };
 
     Player();
     ~Player() = default;
     void Initialize();
     void Update(float elapsedTime, Object& stage, const Camera& camera);
-    void Render(float elapsedTime, RenderContext rc, bool pause);
+    void Render(float elapsedTime, RenderContext rc);
     void DrawGUI();
-    void TakeDamage(float damage);
-    void Heal(float amount);
-    void AddBlood(float amount);
-    void OnEnemyDefeated(float bloodAmount = 15.0f);
-    bool SetWeapon(Weapon next);
-    bool TryAttack(AttackType type);
-    bool TryStartMusou();
-    bool TryHitEnemy(std::uint64_t enemyId, const DirectX::XMFLOAT3& center, float radius);
-    void SetAnimationClips(const AnimationClips& clips);
+  
+    DirectX::XMFLOAT3 GetVelocity() { return player.velocity; }
+    DirectX::XMFLOAT3 GetPosition() { return player.position; }
+    DirectX::XMFLOAT3 GetScale() { return player.scale; }
+    DirectX::XMFLOAT3 GetAngle() { return player.angle; }
+    float GetPAtkDmg() { return pAtkDmg; }
+    float GetPlayerHP() { return playerHP; }
 
-    const DirectX::XMFLOAT3& GetPos() const { return player.position; }
-    const DirectX::XMFLOAT3& GetAngle() const { return player.angle; }
-    const DirectX::XMFLOAT3& GetScale() const { return player.scale; }
-    float GetHealth() const { return health; }
-    float GetBlood() const { return blood; }
-    float Getblood() const { return blood; }
-    float GetMaxHealth() const { return maxHealth; }
-    float GetMaxBlood() const { return maxBlood; }
-    bool IsDead() const { return health <= 0.0f; }
-    bool IsAttacking() const { return attacking; }
-    bool IsAttackActive() const { return attackActive; }
-    bool IsMusou() const { return musou; }
-    bool CanStartMusou() const { return !IsDead() && !musou && blood >= musouThreshold; }
-    float GetAttackDamage() const { return attackDamage; }
-    Weapon GetWeapon() const { return weapon; }
-    int GetBloodLevel() const { return musou ? 1 : 0; } // ŒİŠ·—pB’~Ï‚¾‚¯‚Å‚Í‹­‰»‚µ‚È‚¢B
-    float GetWeaponGauge(Weapon target) const;
-    const WeaponData& GetWeaponData() const;
-    const AnimationClips& GetAnimationClips() const { return clips; }
-    DirectX::XMFLOAT3 GetHitCenter() const;
-    float GetHitRadius() const { return bodyRadius; }
+    bool CheckAttackHit(
+        size_t enemyIndex,
+        DirectX::XMFLOAT3 enemyPosition,
+        float enemyRadius);
+
+    void takeDamage(float damage);
+
+    bool CheckTakeAttack(size_t enemyIndex,
+        DirectX::XMFLOAT3 enemyPosition,
+        float enemyRadius);
 
 protected:
     Object player;
 
+    float playerHP = 10000.0f;
+    float playerRadius = 5.0f;
+    float pAtkDmg = 200.0f;
+    bool IsDead = false;
+    float invincibleTime = 0.5f;
+
+    //
+    float enemyHP = 100.0f;
+    //
+
+    //ä»®ã®å€¤
+    float attackStartTime = 0.4f;
+    float attackEndTime = 1.0f;
+
+    //ç¾åœ¨æ”»æ’ƒåˆ¤å®šãŒæœ‰åŠ¹ã‹
+    bool IsAttackActive()const;
+
+    std::unordered_set<size_t> hitEnemies;
+
+    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//æ”»æ’ƒåˆ¤å®šã®ä¸­å¿ƒ
+    float attackRadius = 2.0f;//çƒã®åŠå¾„
+    float attackDistance = 2.5f;//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã‚‰å‰æ–¹ã¸ã®è·é›¢
+    float attackHeight = 3.0f;//åœ°é¢ã‹ã‚‰ã®é«˜ã•
+
+    float attackTime=0;//æ”»æ’ƒã‚’å§‹ã‚ã¦ã‹ã‚‰ã®çµŒéæ™‚é–“
+    float attackDuration=2.4f;//æ”»æ’ƒãŒçµ‚ã‚ã‚‹ã¾ã§ã®æ™‚é–“
+    bool isAttacking=false;
+    void StartAttack();//æ”»æ’ƒã®é–‹å§‹å‡¦ç†
+    void UpdateAttack(float elapsedTime);
+
+    bool InputMove(float elapsedTime,Camera camera);
+
+    Animation* animation = nullptr;
+    void pAnimation(float elapsedTime,bool isMoving);
+
 private:
-    enum class State { Idle, Run, Attack, Damage, Dead };
-    void FindAnimationClips();
-    void UpdateAnimation(float elapsedTime, bool moved);
-    void UpdateVisualTransform();
-    int SelectClip(State next) const;
-    bool ValidClip(int index) const;
 
-    static constexpr float maxHealth = 100.0f;
-    static constexpr float maxBlood = 100.0f;
-    static constexpr float maxGauge = 100.0f;
-    static constexpr float musouThreshold = 80.0f;
-    static constexpr float musouDrain = 10.0f;
-    static const std::array<WeaponData, 3> weaponData;
-    float health = maxHealth, blood = 0.0f;
-    float moveSpeed = 1000.0f;
-    float bodyRadius = 40.0f, bodyHeight = 80.0f;
-    float attackHeight = 20.0f; // Œ³‚Ì“G(0.1”{ƒ‚ƒfƒ‹)‚Ì‚‚³‚É‡‚í‚¹‚½‰¼İ’è
-    float invincibleTime = 0.0f, hurtTime = 0.0f;
-    Weapon weapon = Weapon::Sword;
-    std::array<float, 3> gauges = {};
-    bool attacking = false, attackActive = false;
-    float attackTime = 0.0f, attackDuration = 0.0f;
-    float attackDamage = 0.0f, attackReach = 0.0f, attackRadius = 0.0f;
-    float attackMoveRate = 1.0f;
-    AttackType attackType = AttackType::Normal;
-    std::unordered_set<std::uint64_t> hitEnemies;
-    std::array<bool, 7> previousKeys = {};
-    bool musou = false;
-    float swayTime = 0.0f;
-    float visualSway = 0.0f, visualPitch = 0.0f;
-    float movementYaw = 0.0f;
-    int previousMoveMask = 0;
-    // model ‚ª”jŠü‚³‚ê‚é‘O‚É animation ‚ğ”jŠü‚·‚éB
-    std::unique_ptr<PlayerAnimation> animation;
-    AnimationClips clips;
+    //ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³State
+    enum class State
+    {
+        Idle,
+        Run,
+        SwordAttack1,
+        SwordAttack2,
+    };
     State state = State::Idle;
-    int currentClip = -1;
-};
 
+    enum class Weapon
+    {
+        Sword,
+        Fist,
+        Scythe,
+    };
+    Weapon weapon = Weapon::Sword;
+
+    //debug
+    bool showAttackCollision = true;
+    bool previewState = false;
+
+};

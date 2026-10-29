@@ -89,7 +89,6 @@
     <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\TransformUtils.cpp" />
     <ClCompile Include="Source\Shader.cpp" />
-    <ClCompile Include="Source\PlayerAnimation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="External\imgui-docking\imconfig.h" />
@@ -164,10 +163,7 @@
     <ClInclude Include="Source\texture.h" />
     <ClInclude Include="Source\Timer.h" />
     <ClInclude Include="Source\TransformUtils.h" />
-    <ClInclude Include="Source\PlayerAnimation.h" />
     <ClInclude Include="Source\GameplayMath.h" />
-    <ClInclude Include="Source\EnemyCombatLink.h" />
-    <ClInclude Include="Source\FollowCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Basic.hlsli" />
