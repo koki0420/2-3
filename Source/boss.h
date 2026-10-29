@@ -8,6 +8,8 @@
 #include <Effect.h>
 #include <EffectManager.h>
 
+#include "Animation.h"
+
 class Boss
 {
 public:
@@ -72,6 +74,9 @@ private:
 
 	//エフェクト
 	Effect* midle_effect=nullptr;
+
+	//ジャンプ用
+	bool jump_effect_play;
 
 	Effekseer::Handle Effect_handle = -1;
 };

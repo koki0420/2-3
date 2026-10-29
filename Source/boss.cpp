@@ -24,6 +24,9 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	alive = false;
 
 	midle_effect = EffectManager::Instance().CreateEffect("Data/Effect/midle_enemy_smash.efkefc");
+
+	jump_effect_play = true;
+
 }
 
 Boss::~Boss()
@@ -80,11 +83,7 @@ void Boss::Update(float elapsedTime)
 				if (i == 1)
 				{
 					middle_boss_anime->PlayAnimation("Jump", false);
-					if (Effect_handle < 0)
-					{
-						assert(midle_effect != nullptr);
-						Effect_handle = midle_effect->Play(middle_boss.position, 1.0f);
-					}
+					jump_effect_play = false;
 				}
 
 			}
@@ -127,6 +126,18 @@ void Boss::Update(float elapsedTime)
 			boss_anime->Update(elapsedTime);
 		}
 	}
+
+	//エフェクト
+	
+
+	if (middle_boss_anime->GetCurrentFrame()>=70 && !jump_effect_play)
+	{
+		
+		midle_effect->Play(middle_boss.position, 7.0f);
+		jump_effect_play = true;
+	}
+
+	
 }
 
 void Boss::Render(const RenderContext& immediate_context, ModelRenderer* renderer)
