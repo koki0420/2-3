@@ -34,7 +34,7 @@ void Enemy::Update(float elapsedTime)
 
 	if (walk_anime)
 	{
-		enemy_anime->PlayAnimation("Walk", true);
+		enemy_anime->PlayAnimation("Walking", true);
 		walk_anime = false;
 	}
 
@@ -43,7 +43,7 @@ void Enemy::Update(float elapsedTime)
 		arrive_position = enemy.position;
 		if (attack_anime)
 		{
-			enemy_anime->PlayAnimation("Attack", false);
+			enemy_anime->PlayAnimation("Punch", false);
 			attack_anime = false;
 		}
 		else
@@ -54,7 +54,7 @@ void Enemy::Update(float elapsedTime)
 				idle_anime = false;
 			}
 
-			if ((int)timer % (5 * (rand() % 6 + 1)) == 0&&!(enemy_anime->IsPlaying("Attack")))
+			if ((int)timer % (5 * (rand() % 6 + 1)) == 0&&!(enemy_anime->IsPlaying("Punch")))
 			{
 
 				attack_anime = true;
