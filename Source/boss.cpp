@@ -6,17 +6,19 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 {
 	arrive_position = { 0,-15,0 };
 
-	boss.position = pos;
-	boss.position.y = -15;
-    boss.scale = { 0.1f,0.1f,0.1f };
-    boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_boss.mdl");
-
+	
 	middle_boss.position = pos;
 	middle_boss.position.y = -15;
 	middle_boss.scale = { 0.5f,0.5f,0.5f };
 	middle_boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_midle.mdl");
 
-	boss_count = 0;
+	boss.position = pos;
+	boss.position.y = -15;
+	boss.scale = { 0.5f,0.5f,0.5f };
+	boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_boss.mdl");
+
+
+	boss_count = 2;
 
 	boss_anime= std::make_unique<Animation>(*boss.model);
 	middle_boss_anime = std::make_unique<Animation>(*middle_boss.model);
@@ -42,8 +44,8 @@ void Boss::Update(float elapsedTime)
 	{
 		if (!dyingStarted)
 		{
-			middle_boss_anime->PlayAnimation("Dying", false);
-			//boss_anime->PlayAnimation("Dying", false);
+			middle_boss_anime->PlayAnimation("Death", false);
+			boss_anime->PlayAnimation("Death", false);
 			dyingStarted = true;
 		}
 		if (!boss_anime->IsPlaying() && boss_count >= 2)
@@ -104,7 +106,18 @@ void Boss::Update(float elapsedTime)
 			boss.angle.y = atan2f(dx, dz);
 			if (!(boss_anime->IsPlaying()))
 			{
-				//boss_anime->PlayAnimation("Roaring", true);
+				int i = rand() % 2;
+				if (i == 0)boss_anime->PlayAnimation("Attack", false);
+				if (i == 1)
+				{
+					boss_anime->PlayAnimation("Jump_Attack", false);
+					/*if (Effect_handle < 0)
+					{
+						assert(boss_effect != nullptr);
+						Effect_handle = boss_effect->Play(boss.position, 1.0f);
+					}*/
+				}
+
 			}
 		}
 

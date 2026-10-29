@@ -17,11 +17,12 @@ public:
 
 
 	// 更新処理
-	void Update(float elapsedTime,bool enemy = false);
+	void Update(float elapsedTime);
 	bool IsPlaying() const
 	{
 		return animationPlaying;
 	}
+	bool IsPlaying(const char* name) const;
 
 
 	// アニメーション再生
@@ -37,7 +38,7 @@ public:
 
 private:
 	// アニメーション更新処理
-	void UpdateAnimation(float elapsedTime, bool enemy);
+	void UpdateAnimation(float elapsedTime);
 
 
 
