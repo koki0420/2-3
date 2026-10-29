@@ -161,8 +161,6 @@ void Boss::Update(float elapsedTime)
 		{
 			boss.UpdateTransform();
 			boss_anime->Update(elapsedTime);
-			weapon.UpdateTransform();
-
 
 			const char* rightHandName = "RightHand";
 			DirectX::XMMATRIX S = DirectX::XMMatrixScaling(weapon.scale.x, weapon.scale.y, weapon.scale.z);
