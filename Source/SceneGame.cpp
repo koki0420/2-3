@@ -13,6 +13,8 @@
 #include"SceneResult.h"
 #include"SceneLoading.h"
 
+#include <EffectManager.h>
+
 #include "audio.h"
 #include "AudioResource.h"
 
@@ -99,6 +101,8 @@ void SceneGame::Update(float elapsedTime)
 
 	EnemyManager::Instance().Update(elapsedTime);
 
+	EffectManager::Instance().Update(elapsedTime);
+
 }
 
 void SceneGame::Render(float elapsedTime)
@@ -117,6 +121,8 @@ void SceneGame::Render(float elapsedTime)
 
 	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
 	EnemyManager::Instance().Render(rc, modelRenderer);
+
+	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetView());
 
 	boss->Render(rc, modelRenderer);
 	

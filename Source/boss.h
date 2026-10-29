@@ -5,6 +5,9 @@
 #include"ModelRenderer.h"
 #include"Animation.h"
 
+#include <Effect.h>
+#include <EffectManager.h>
+
 class Boss
 {
 public:
@@ -65,4 +68,10 @@ private:
 
 	//クリア
 	bool clear = false;
+
+
+	//エフェクト
+	Effect* midle_effect=nullptr;
+
+	Effekseer::Handle Effect_handle = -1;
 };
