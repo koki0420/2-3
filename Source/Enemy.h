@@ -2,6 +2,7 @@
 
 #include"ModelRenderer.h"
 #include"Object.h"
+#include"Animation.h"
 
 //エネミー
 class Enemy
@@ -29,7 +30,15 @@ public:
 
 private:
 	Object enemy;
+	unique_ptr<Animation> enemy_anime;
 	DirectX::XMFLOAT3 arrive_position = { 0,0,0 };
+
+	bool idle_anime = true;
+	bool walk_anime = true;
+	bool attack_anime = true;
+
 	bool alive=true;
 	bool arrive = true;
+
+	float timer = 0;
 };

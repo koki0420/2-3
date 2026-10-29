@@ -22,11 +22,20 @@ public:
 	{
 		return animationPlaying;
 	}
+	bool IsPlaying(const char* name) const;
 
 
 	// アニメーション再生
 	void PlayAnimation(int index, bool loop);
 	void PlayAnimation(const char* name, bool loop);
+
+	//フレーム取得
+	int Animation::GetCurrentFrame() const
+	{
+		constexpr float FPS = 60.0f;
+		return static_cast<int>(animationSeconds*FPS);
+	}
+
 private:
 	// アニメーション更新処理
 	void UpdateAnimation(float elapsedTime);
@@ -44,5 +53,7 @@ private:
 	bool								animationLoop = false;
 	bool								animationPlaying = false;
 	float								animationBlendSecondsLength = 0.2f;
+
+	float anime_time;
 
 };

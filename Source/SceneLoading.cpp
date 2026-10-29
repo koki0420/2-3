@@ -59,7 +59,7 @@ void SceneLoading::Update(float elapsedTime)
 	}
 
 	//次のシーンの準備が完了したらシーンを切り替える + 全部読まれたら
-	if (nextScene->IsReady() && isAllRead)
+	if (nextScene->IsReady())
 	{
 		SceneManager::Instance().ChangeScene(nextScene);
 		nextScene = nullptr;
@@ -106,13 +106,10 @@ void SceneLoading::Render(float elapsedTime)
 		}
 
 		//画面右下にローディングアイコン描画
-		if(timer <= 2.0f)
-		{
-			spriteLogo->Render(dc, positionX, positionY, 0.0f,
-				spriteWidth, spriteHeight,
-				angle,
-				1.0f, 1.0f, 1.0f, 1.0f);
-		}
+		spriteLogo->Render(dc, positionX, positionY, 0.0f,
+			spriteWidth, spriteHeight,
+			angle,
+			1.0f, 1.0f, 1.0f, 1.0f);
 	}
 }
 

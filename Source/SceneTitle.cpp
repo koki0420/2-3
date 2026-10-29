@@ -45,9 +45,9 @@ void SceneTitle::Update(float elapsedTime)
 	S_W / 10, S_H / 1.7f;
 
 	//左クリックの押下情報を記録
-	static bool prev = false;
+	static bool prev = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
 	bool now = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
-	if (mx >= 400 && mx <= 528&& now )
+	if (mx >= 400 && mx <= 528&& now!=prev && now==true)
 	{
 		if (my >= 500 && my <= 628)
 		{
@@ -55,7 +55,7 @@ void SceneTitle::Update(float elapsedTime)
 
 		}
 	}
-	
+	prev = now;
 }
 void SceneTitle::Render(float elapsedTime)
 {
