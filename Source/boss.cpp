@@ -22,6 +22,8 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	middle_boss_anime = std::make_unique<Animation>(*middle_boss.model);
 
 	alive = false;
+
+	midle_effect = EffectManager::Instance().CreateEffect("Data/Effect/midle_enemy_smash.efkefc");
 }
 
 Boss::~Boss()
@@ -75,7 +77,15 @@ void Boss::Update(float elapsedTime)
 			{
 				int i = rand() % 2;
 				if (i == 0)middle_boss_anime->PlayAnimation("Roaring", false);
-				if (i == 1)middle_boss_anime->PlayAnimation("Jump", false);
+				if (i == 1)
+				{
+					middle_boss_anime->PlayAnimation("Jump", false);
+					if (Effect_handle < 0)
+					{
+						assert(midle_effect != nullptr);
+						Effect_handle = midle_effect->Play(middle_boss.position, 1.0f);
+					}
+				}
 
 			}
 		}
