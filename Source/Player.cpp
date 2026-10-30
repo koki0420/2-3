@@ -5,8 +5,10 @@
 #include <cmath>
 #include "ShapeRenderer.h"
 
-<<<<<<< HEAD
-Player::Player() { Initialize(); }
+Player::Player()
+{
+	Initialize();
+}
 
 void Player::Initialize()
 {
@@ -57,8 +59,8 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 
 void Player::Render(float elapsedTime, RenderContext rc)
 {
-    if (player.model) Graphics::Instance().GetModelRenderer()->Render(
-        rc, player.transform, player.model.get(), ShaderId::Lambert);
+	if (player.model) Graphics::Instance().GetModelRenderer()->Render(
+		rc, player.transform, player.model.get(), ShaderId::Lambert);
 
 	if (showAttackCollision && IsAttackActive())
 	{
@@ -76,37 +78,30 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		pPos,
 		playerRadius,
 		{ 1, 1, 0, 1 });
-
-=======
-Player::Player()
-{
-	spriteGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
-	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_44cc44_128.png");
-	spriteWP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_ff4444_128.png");
-
-	spriteW[0] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sword_transparent.png");
-	spriteW[1] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent.png");
-	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");
-
-}
-
-void Player::Initialize()
-{
-	
->>>>>>> cbe2ca2cbb218cdbd0047b8ebc4895f2b6e16233
 }
 
 
-<<<<<<< HEAD
-bool Player::InputMove(float elapsedTime,Camera camera)
-=======
-// 描画処理
-void Player::Render(float elapsedTime, RenderContext rc,bool Pause)
-{	
-}
+//Player::Player()
+//{
+//	spriteGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
+//	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_44cc44_128.png");
+//	spriteWP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_ff4444_128.png");
+//
+//	spriteW[0] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sword_transparent.png");
+//	spriteW[1] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent.png");
+//	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");
+//
+//}
 
-void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
->>>>>>> cbe2ca2cbb218cdbd0047b8ebc4895f2b6e16233
+//void Player::Initialize()
+//{
+//	
+//
+//}
+
+
+
+bool Player::InputMove(float elapsedTime, Camera camera)
 {
 	// 入力処理
 	float axisX = 0.0f;
@@ -151,28 +146,80 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 	}
 
 	return moveLength > 0.0f;
-	
-
-	spriteGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteHP->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteW[wt]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-	spriteGauge->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-		//
-
-
-	spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteW[wt]->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-
-	spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteW[(1+ wt)%3]->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-
-	spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteW[(2 + wt)%3]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 }
+
+//// 描画処理
+//void Player::Render(float elapsedTime, RenderContext rc,bool Pause)
+//{	
+//}
+
+//void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
+//{
+//	// 入力処理
+//	float axisX = 0.0f;
+//	float axisY = 0.0f;
+//	if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
+//	if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;
+//	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
+//	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
+//
+//	// カメラの方向
+//	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
+//	const DirectX::XMFLOAT3& camemraRight = camera.GetRight();
+//	float cameraFrontLengthXZ = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
+//	float cameraRightLengthXZ = sqrtf(camemraRight.x * camemraRight.x + camemraRight.z * camemraRight.z);
+//	float cameraFrontX = cameraFront.x / cameraFrontLengthXZ;
+//	float cameraFrontZ = cameraFront.z / cameraFrontLengthXZ;
+//	float cameraRightX = camemraRight.x / cameraRightLengthXZ;
+//	float cameraRightZ = camemraRight.z / cameraRightLengthXZ;
+//
+//	// 移動ベクトル
+//	const float speed = 5.0f * elapsedTime;
+//	float vecX = cameraFrontX * axisY + cameraRightX * axisX;
+//	float vecZ = cameraFrontZ * axisY + cameraRightZ * axisX;
+//	float moveX = vecX * speed;
+//	float moveZ = vecZ * speed;
+//	float moveLength = sqrtf(moveX * moveX + moveZ * moveZ);
+//
+//	player.position.x += moveX;
+//	player.position.z += moveZ;
+//
+//	//移動しているときだけその方向へ向く
+//	if (moveLength > 0.0f)
+//	{
+//		player.angle.y = atan2f(moveX, moveZ);
+//	}
+//
+//	{
+//		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(player.scale.x, player.scale.y, player.scale.z);
+//		DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(player.angle.x, player.angle.y, player.angle.z);
+//		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(player.position.x, player.position.y, player.position.z);
+//		DirectX::XMStoreFloat4x4(&player.transform, S * R * T);
+//	}
+//
+//	return moveLength > 0.0f;
+//	
+//
+//	spriteGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteHP->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteW[wt]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+//	spriteGauge->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteWP->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//		//
+//
+//
+//	spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteWP->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteW[wt]->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+//
+//	spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteWP->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteW[(1+ wt)%3]->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+//
+//	spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteWP->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+//	spriteW[(2 + wt)%3]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+//}
 
 void Player::pAnimation(float elapsedTime,bool isMoving)
 {

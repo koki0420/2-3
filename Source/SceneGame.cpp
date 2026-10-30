@@ -23,7 +23,7 @@
 
 SceneGame::SceneGame()
 {
-	p = std::make_unique<Player>();
+	
 }
 
 SceneGame::~SceneGame()
@@ -60,7 +60,7 @@ void SceneGame::Initialize()
 		enemy_num += 1;
 	}
 	
-	p->Initialize();
+	
 }	
 
 void SceneGame::Finalize()
@@ -122,9 +122,7 @@ void SceneGame::Render(float elapsedTime)
 
 	boss->Render(rc, modelRenderer);
 
-	{
-		p->UIRender(elapsedTime, dc);
-	}
+
 
 }
 

@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Object.h"
 #include "Animation.h"
+#include "Sprite.h"
 
 class Player
 {
@@ -55,20 +56,20 @@ protected:
     float attackStartTime = 0.4f;
     float attackEndTime = 1.0f;
 
-    //現在攻撁E��定が有効ぁE
+    //現在攻撃判定が有効か
     bool IsAttackActive()const;
 
     std::unordered_set<size_t> hitEnemies;
 
-    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撁E��定�E中忁E
-    float attackRadius = 2.0f;//琁E�E半征E
+    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撃判定の中心
+    float attackRadius = 2.0f;//球の半径
     float attackDistance = 2.5f;//プレイヤーから前方への距離
     float attackHeight = 3.0f;//地面からの高さ
 
-    float attackTime=0;//攻撁E��始めてからの経過時間
-    float attackDuration=2.4f;//攻撁E��終わるまでの時間
+    float attackTime=0;//攻撃を始めてからの経過時間
+    float attackDuration=2.4f;//攻撃が終わるまでの時間
     bool isAttacking=false;
-    void StartAttack();//攻撁E�E開始�E琁E
+    void StartAttack();//攻撃の開始処理
     void UpdateAttack(float elapsedTime);
 
     bool InputMove(float elapsedTime,Camera camera);
@@ -77,8 +78,6 @@ protected:
     void pAnimation(float elapsedTime,bool isMoving);
 
 private:
-
-<<<<<<< HEAD
     //アニメーションState
     enum class State
     {
@@ -96,26 +95,28 @@ private:
         Scythe,
     };
     Weapon weapon = Weapon::Sword;
-=======
-	std::unique_ptr<Sprite> spriteGauge = nullptr;
+
+	/*std::unique_ptr<Sprite> spriteGauge = nullptr;
 	std::unique_ptr<Sprite> spriteHP = nullptr;
 	std::unique_ptr<Sprite> spriteWP = nullptr;
 	std::unique_ptr<Sprite> spriteW[3];
 
-	int wt=0;
-public:
-	Player();
-	~Player() {};
-
-	void Initialize();
+	int wt=0;*/
 
 
-	// �X�V����
-	void Update(float elapsedTime, Object& S, const Camera& C);
-	// �`�揈��
-	void Render(float elapsedTime, RenderContext rc,bool Pause);
-	void UIRender(float elapsedTime, ID3D11DeviceContext* dc);
->>>>>>> cbe2ca2cbb218cdbd0047b8ebc4895f2b6e16233
+//public:
+//	Player();
+//	~Player() {};
+//
+//	void Initialize();
+//
+//
+//	// �X�V����
+//	void Update(float elapsedTime, Object& S, const Camera& C);
+//	// �`�揈��
+//	void Render(float elapsedTime, RenderContext rc,bool Pause);
+//	void UIRender(float elapsedTime, ID3D11DeviceContext* dc);
+
 
     //debug
     bool showAttackCollision = true;

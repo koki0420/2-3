@@ -50,11 +50,11 @@ private:
     //デバッグ用
     int enemy_num_debug = 0;
 
-    std::unique_ptr<Sprite> spriteGauge = nullptr;
-    std::unique_ptr<Sprite> spriteHP = nullptr;
-    std::unique_ptr<Sprite> spriteW1 = nullptr;
-    std::unique_ptr<Sprite> spriteW2 = nullptr;
-    std::unique_ptr<Sprite> spriteW3 = nullptr;
+    //std::unique_ptr<Sprite> spriteGauge = nullptr;
+    //std::unique_ptr<Sprite> spriteHP = nullptr;
+    //std::unique_ptr<Sprite> spriteW1 = nullptr;
+    //std::unique_ptr<Sprite> spriteW2 = nullptr;
+    //std::unique_ptr<Sprite> spriteW3 = nullptr;
 
     //debug
     bool showEnemyCollision = false;
