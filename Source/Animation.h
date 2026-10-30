@@ -17,19 +17,28 @@ public:
 
 
 	// 更新処理
-	void Update(float elapsedTime,bool enemy = false);
+	void Update(float elapsedTime);
 	bool IsPlaying() const
 	{
 		return animationPlaying;
 	}
+	bool IsPlaying(const char* name) const;
 
 
 	// アニメーション再生
 	void PlayAnimation(int index, bool loop);
 	void PlayAnimation(const char* name, bool loop);
+
+	//フレーム取得
+	int Animation::GetCurrentFrame() const
+	{
+		constexpr float FPS = 60.0f;
+		return static_cast<int>(animationSeconds*FPS);
+	}
+
 private:
 	// アニメーション更新処理
-	void UpdateAnimation(float elapsedTime, bool enemy);
+	void UpdateAnimation(float elapsedTime);
 
 
 

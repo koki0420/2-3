@@ -33,8 +33,13 @@ private:
 	unique_ptr<Animation> enemy_anime;
 	DirectX::XMFLOAT3 arrive_position = { 0,0,0 };
 
+	bool idle_anime = true;
 	bool walk_anime = true;
+	bool attack_anime = true;
 
 	bool alive=true;
 	bool arrive = true;
+
+	float timer = 0;
+	float nextTimer = 0;
 };

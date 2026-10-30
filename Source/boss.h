@@ -5,6 +5,11 @@
 #include"ModelRenderer.h"
 #include"Animation.h"
 
+#include <Effect.h>
+#include <EffectManager.h>
+
+#include "Animation.h"
+
 class Boss
 {
 public:
@@ -41,6 +46,9 @@ private:
 	Object boss;
 	unique_ptr<Animation> boss_anime;
 
+	Object weapon;
+
+
 	//中ボス
 	Object middle_boss;
 	unique_ptr<Animation> middle_boss_anime;
@@ -65,4 +73,19 @@ private:
 
 	//クリア
 	bool clear = false;
+
+	//タイマー
+	float timer = 0;
+
+	bool idle_anime = true;
+	bool walk_anime = true;
+	bool attack_anime = false;
+
+	//エフェクト
+	Effect* midle_effect=nullptr;
+
+	//ジャンプ用
+	bool jump_effect_play;
+
+	Effekseer::Handle Effect_handle = -1;
 };

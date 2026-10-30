@@ -31,12 +31,26 @@ Animation::Animation(Model& M)
 
 
 // 更新処理
-void Animation::Update(float elapsedTime,bool enemy)
+void Animation::Update(float elapsedTime)
 {
 	// アニメーション更新処理
-	UpdateAnimation(elapsedTime,enemy);
+	UpdateAnimation(elapsedTime);
 }
 
+bool Animation::IsPlaying(const char* name) const
+{
+	if (!animationPlaying) return false;
+
+	const auto& animations = model->GetResource()->GetAnimations();
+
+	if (animationIndex < 0 ||
+		animationIndex >= static_cast<int>(animations.size()))
+	{
+		return false;
+	}
+
+	return animations[animationIndex].name == name;
+}
 
 
 // アニメーション再生
@@ -66,7 +80,7 @@ void Animation::PlayAnimation(const char* name, bool loop)
 
 
 // アニメーション更新処理
-void Animation::UpdateAnimation(float elapsedTime, bool enemy = false)
+void Animation::UpdateAnimation(float elapsedTime)
 {
 	if (animationPlaying)
 	{
@@ -83,15 +97,7 @@ void Animation::UpdateAnimation(float elapsedTime, bool enemy = false)
 		{
 			if (animationLoop)
 			{
-				if (enemy)
-				{
-					anime_time = -elapsedTime;
-					
-				}
-				else
-				{
-					animationSeconds = 0;
-				}
+				animationSeconds = 0;
 			}
 			else
 			{
