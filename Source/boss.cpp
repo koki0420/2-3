@@ -195,7 +195,7 @@ void Boss::Update(float elapsedTime)
 
 	if (boss_anime->GetCurrentFrame() >= 50 && !boss_jump)
 	{
-		boss_jump_effect->Play({boss.position.x,boss.position.y,boss.position.z-50.0f}, 6.0f);
+		boss_jump_effect->Play({boss.position.x,boss.position.y,boss.position.z-60.0f}, 6.0f);
 		boss_jump = true;
 	}
 	

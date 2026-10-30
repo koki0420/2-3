@@ -126,10 +126,14 @@ void SceneGame::Render(float elapsedTime)
 	rc.renderState = renderState;
 	rc.camera = &camera;
 
+	
+
 	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
 	EnemyManager::Instance().Render(rc, modelRenderer);
 
 	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetProjection());
+
+	
 
 	boss->Render(rc, modelRenderer);
 
