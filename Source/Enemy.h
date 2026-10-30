@@ -41,4 +41,5 @@ private:
 	bool arrive = true;
 
 	float timer = 0;
+	float nextTimer = 0;
 };
