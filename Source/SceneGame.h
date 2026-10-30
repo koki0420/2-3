@@ -4,6 +4,7 @@
 #include"Object.h"
 #include "Camera.h"
 #include "FreeCameraController.h"
+#include"shader_sprite.h"
 
 #include"Framework.h"
 #include"Player.h"
@@ -136,7 +137,7 @@ private:
 
 
 	bool goalReached = false;
-	float goalTimer = 0.0f;
+	float clearTimer = 0.0f;
 
 	
 

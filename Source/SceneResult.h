@@ -18,5 +18,6 @@ public:
 	void Update(float elapsedTime);
 	void Render(float elapsedTime);
 private:
+	std::unique_ptr<Sprite> spriteTitele = nullptr;
 	std::unique_ptr<Sprite> sprite = nullptr;
 };
