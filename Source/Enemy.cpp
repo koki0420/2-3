@@ -4,7 +4,6 @@
 
 Enemy::Enemy(DirectX::XMFLOAT3 pos)
 {
-	srand((unsigned int)time(NULL));
 	enemy.position = pos;
 
 	enemy.scale = { 10,10,10 };
@@ -17,6 +16,7 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	attack_anime = true;
 	alive = true;
 	timer = 0;
+	nextTimer = (float)(rand() % 10 + 1);
 }
 
 Enemy::~Enemy()
@@ -54,10 +54,14 @@ void Enemy::Update(float elapsedTime)
 				idle_anime = false;
 			}
 
-			if ((int)timer % (5 * (rand() % 6 + 1)) == 0&&!(enemy_anime->IsPlaying("Punch")))
-			{
+			timer += elapsedTime;
 
+			if (timer >= nextTimer)
+			{
 				attack_anime = true;
+
+				timer = 0.0f;
+				nextTimer = (float)(rand() % 10 + 1);
 			}
 			if (!(enemy_anime->IsPlaying()))idle_anime = true;
 		}

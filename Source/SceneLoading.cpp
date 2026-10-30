@@ -6,7 +6,7 @@
 void SceneLoading::Initialize()
 {
 	//スプライト初期化
-	spriteLogo = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/LOAD.png");
+	spriteLogo = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sh_arrow_cycle_01_128.png");
 	spriteBack1 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/tutorial1.png");
 	spriteBack2 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/tutorial2.png");
 

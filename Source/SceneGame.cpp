@@ -23,7 +23,7 @@
 
 SceneGame::SceneGame()
 {
-	p = std::make_unique<Player>();
+	
 }
 
 SceneGame::~SceneGame()
@@ -35,6 +35,7 @@ SceneGame::~SceneGame()
 
 void SceneGame::Initialize()
 {
+	
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 
 	enemy_num = 0;
@@ -59,8 +60,10 @@ void SceneGame::Initialize()
 		EnemyManager::Instance().Register(std::move(enemies[i]));
 		enemy_num += 1;
 	}
-	
+	p = std::make_unique<Player>();
 	p->Initialize();
+	
+
 }	
 
 void SceneGame::Finalize()
@@ -93,12 +96,20 @@ void SceneGame::Update(float elapsedTime)
 
 	camera.Update();
 	stage.UpdateTransform();
-
+	
 
 	EnemyManager::Instance().Update(elapsedTime);
 
 	EffectManager::Instance().Update(elapsedTime);
 
+	if (boss->Clear())
+	{
+		if(clearTimer>5)
+		{
+			SceneManager::Instance().ChangeScene(new SceneResult);
+		}
+		clearTimer += elapsedTime;
+	}
 }
 
 void SceneGame::Render(float elapsedTime)

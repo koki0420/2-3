@@ -17,6 +17,7 @@ class Player
 {
 private:
 
+	std::unique_ptr<Sprite> spriteHPGauge = nullptr;
 	std::unique_ptr<Sprite> spriteGauge = nullptr;
 	std::unique_ptr<Sprite> spriteHP = nullptr;
 	std::unique_ptr<Sprite> spriteWP = nullptr;

@@ -18,7 +18,8 @@ SceneResult::~SceneResult()
 }
 void SceneResult::Initialize()
 {
-	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_title_128.png");
+	spriteTitele = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_title_128.png");
+	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_exit_128.png");
 }
 void SceneResult::Finalize()
 {
@@ -26,7 +27,7 @@ void SceneResult::Finalize()
 void SceneResult::Update(float elapsedTime)
 {
 	while (ShowCursor(TRUE) <= 0) {}
-	static bool prev = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
+	static bool prev = false;
 	bool now = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
 	POINT mousePos;
 	GetCursorPos(&mousePos);
@@ -41,12 +42,18 @@ void SceneResult::Update(float elapsedTime)
 	S_W / 10, S_H / 1.7f;
 
 	//左クリックの押下情報を記録
-	if (mx >= 400 && mx <= 528 &&  now != prev)
+	if (my >= 500 && my <= 628&&prev && !now)
 	{
-		if (my >= 500 && my <= 628)
+		if (mx >= 400 && mx <= 528 )
 		{
-			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneTitle));
+			
+			SceneManager::Instance().ChangeScene(new SceneTitle);
 
+		}
+		if (mx >= 700 && mx <= 828)
+		{
+
+			PostMessage(Graphics::Instance().GetWindowHandle(), WM_CLOSE, 0, 0);
 		}
 	}
 	prev = now;
@@ -54,6 +61,8 @@ void SceneResult::Update(float elapsedTime)
 void SceneResult::Render(float elapsedTime)
 {
 	ID3D11DeviceContext* dc = Graphics::Instance().GetDeviceContext();
-	sprite->Render(dc, 400, 500, 0, 128, 128, 0, 0, 128, 128, 0, 1, 1, 1, 1);
+	spriteTitele->Render(dc, 400, 500, 0, 128, 128, 0, 0, 128, 128, 0, 1, 1, 1, 1);
+	sprite->Render(dc, 700, 500, 0, 128, 128, 0, 0, 128, 128, 0, 1, 1, 1, 1);
+
 }
 

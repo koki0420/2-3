@@ -4,6 +4,7 @@
 #include"Object.h"
 #include "Camera.h"
 #include "FreeCameraController.h"
+#include"shader_sprite.h"
 
 #include"Framework.h"
 #include"Player.h"
@@ -93,16 +94,7 @@ private:
 	float smashVolume = 4.0f;
 	//-----------------------------------------------------
 
-	// AudioSourceへ移動
-	//std::shared_ptr<audio_buffer> audio_buffers[8]; //要素数は、何種類の音源を使うか
-	//スマートポインタに変更
-	//std::unique_ptr<audio_source_voice> bgm[1]{};//要素数は、何個のBGMを使うか
-	//std::unique_ptr<audio_source_voice> sePlayer[Item::ITEM_TYPE_NUM]{}; //要素数は、何個のSEを使うか	//プレイヤーにもたせるSE
-	//std::unique_ptr<audio_source_voice> seItem[ITEM]{}; //アイテムにもたせるSE
-	// seSystemの添字はAudioResourceNumber::「欲しい番号」- Item::ITEM_TYPE_NUMで取得できる //システム音
-	//std::unique_ptr<audio_source_voice> seSystem[AudioResourceNumber::CountNum - Item::ITEM_TYPE_NUM]{};
-	
-	//const float bombVolumeDefault = 5.0f;
+
 	
 
 	std::unique_ptr <Player> p = nullptr;
@@ -136,7 +128,7 @@ private:
 
 
 	bool goalReached = false;
-	float goalTimer = 0.0f;
+	float clearTimer = 0.0f;
 
 	
 
