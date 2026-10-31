@@ -31,9 +31,11 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 
 	midle_effect = EffectManager::Instance().CreateEffect("Data/Effect/midle_enemy_smash.efkefc");
 	boss_jump_effect = EffectManager::Instance().CreateEffect("Data/Effect/enemy_lastboss_sowrd.efkefc");
+	boss_slash_effect = EffectManager::Instance().CreateEffect("Data/Effect/enemy_lastboss_slash.efkefc");
 
 	jump_effect_play = true;
 	boss_jump = true;
+	boss_slash = true;
 
 }
 
@@ -117,7 +119,13 @@ void Boss::Update(float elapsedTime)
 			{
 				
 				int i = rand() % 2;
-				if (i == 0)boss_anime->PlayAnimation("Attack", false);
+				if (i == 0)
+				{
+					boss_anime->PlayAnimation("Attack", false);
+					boss_slash = false;
+				}
+
+
 				if (i == 1)
 				{
 					boss_anime->PlayAnimation("Jump_Attack", false);
@@ -199,6 +207,12 @@ void Boss::Update(float elapsedTime)
 		boss_jump = true;
 	}
 	
+	if (boss_anime->GetCurrentFrame() >= 20 && !boss_slash)
+	{
+		boss_slash_effect->Play({ boss.position.x,boss.position.y + 30,boss.position.z-30 }, 15.0f);
+		boss_slash = true;
+	}
+
 }
 
 void Boss::Render(const RenderContext& immediate_context, ModelRenderer* renderer)
