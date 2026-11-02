@@ -6,9 +6,7 @@
 void SceneLoading::Initialize()
 {
 	//スプライト初期化
-	spriteLogo = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/LOAD.png");
-	spriteBack1 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/tutorial1.png");
-	spriteBack2 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/tutorial2.png");
+	spriteLogo = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sh_arrow_cycle_01_128.png");
 
 	//スレッド開始
 	thread = std::make_unique<std::thread>(LoadingThread, this);
@@ -40,23 +38,7 @@ void SceneLoading::Update(float elapsedTime)
 	//現在の左クリック入力情報
 	bool now = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
 
-	// 1枚目且つクリック終わったら
-	if (pageNum == 1 && (prev && !now))
-	{
-		//次のスプライトへ
-		pageNum++;
-	}
-	//2枚目且つクリック
-	if (pageNum == 2 && (prev && !now) && release)
-	{
-		isAllRead = true;
 
-	}
-	if (pageNum == 2 && (!prev && now))
-	{
-		release = true;
-
-	}
 
 	//次のシーンの準備が完了したらシーンを切り替える + 全部読まれたら
 	if (nextScene->IsReady())
@@ -89,21 +71,7 @@ void SceneLoading::Render(float elapsedTime)
 		float positionX = screenWidth - spriteWidth - 20; // 20ピクセルだけずらす
 		float positionY = screenHeight - spriteHeight - 20;
 
-		//ローディング画面の背景描画
-		if(pageNum == 1)
-		{
-			spriteBack1->Render(dc, 0.0f, 0.0f, 0.1f,
-				screenWidth, screenHeight,
-				0.0f,
-				1.0f, 1.0f, 1.0f, 1.0f);
-		}
-		if (pageNum == 2)
-		{
-			spriteBack2->Render(dc, 0.0f, 0.0f, 0.1f,
-				screenWidth, screenHeight,
-				0.0f,
-				1.0f, 1.0f, 1.0f, 1.0f);
-		}
+		
 
 		//画面右下にローディングアイコン描画
 		spriteLogo->Render(dc, positionX, positionY, 0.0f,

@@ -21,7 +21,8 @@ SceneTitle::~SceneTitle()
 }
 void SceneTitle::Initialize()
 {
-	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_capsule_start_128.png");
+	spriteGame = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_capsule_start_128.png");
+	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_exit_128.png");
 
 }
 void SceneTitle::Finalize()
@@ -45,15 +46,22 @@ void SceneTitle::Update(float elapsedTime)
 	S_W / 10, S_H / 1.7f;
 
 	//左クリックの押下情報を記録
-	static bool prev = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
+	static bool prev = false;
 	bool now = (GetAsyncKeyState(VK_LBUTTON) & 0x8000);
-	if (mx >= 400 && mx <= 528&& now!=prev && now==true)
+	if ((my >= 500 && my <= 628) && !now)
 	{
-		if (my >= 500 && my <= 628)
+		if (mx >= 400 && mx <= 528 && prev)
 		{
+			
 			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
-
+			
 		}
+		if (mx >= 700 && mx <= 828 && prev)
+		{
+			
+			PostMessage(Graphics::Instance().GetWindowHandle(), WM_CLOSE, 0, 0);
+		}
+
 	}
 	prev = now;
 }
@@ -72,6 +80,8 @@ void SceneTitle::Render(float elapsedTime)
 	// ブレンドステート設定
 	dc->OMSetBlendState(rc.renderState->GetBlendState(BlendState::Transparency), nullptr, 0xFFFFFFFF);
 	
-	sprite->Render(dc, 400, 500, 0, 128, 128, 0, 0, 128 , 128, 0, 1, 1, 1, 1);
+	spriteGame->Render(dc, 400, 500, 0, 128, 128, 0, 0, 128 , 128, 0, 1, 1, 1, 1);
+	sprite->Render(dc, 700, 500, 0, 128, 128, 0, 0, 128 , 128, 0, 1, 1, 1, 1);
+
 }
 

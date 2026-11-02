@@ -14,6 +14,7 @@ class Player
 {
 public:
 
+<<<<<<< HEAD
     Player();
     ~Player() = default;
     void Initialize();
@@ -97,6 +98,10 @@ private:
     Weapon weapon = Weapon::Sword;
 
 	/*std::unique_ptr<Sprite> spriteGauge = nullptr;
+=======
+	std::unique_ptr<Sprite> spriteHPGauge = nullptr;
+	std::unique_ptr<Sprite> spriteGauge = nullptr;
+>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
 	std::unique_ptr<Sprite> spriteHP = nullptr;
 	std::unique_ptr<Sprite> spriteWP = nullptr;
 	std::unique_ptr<Sprite> spriteW[3];

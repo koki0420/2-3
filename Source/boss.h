@@ -83,9 +83,13 @@ private:
 
 	//エフェクト
 	Effect* midle_effect=nullptr;
+	Effect* boss_jump_effect = nullptr;
+	Effect* boss_slash_effect = nullptr;
 
 	//ジャンプ用
 	bool jump_effect_play;
+	bool boss_jump;
+	bool boss_slash;
 
 	Effekseer::Handle Effect_handle = -1;
 };

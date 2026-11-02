@@ -20,7 +20,7 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	middle_boss.scale = { 0.5f,0.5f,0.5f };
 	middle_boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_midle.mdl");
 
-	boss_count = 2;
+	boss_count = 0;
 
 	boss_anime= std::make_unique<Animation>(*boss.model);
 	middle_boss_anime = std::make_unique<Animation>(*middle_boss.model);
@@ -30,8 +30,12 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	//-3, 43,0.495
 
 	midle_effect = EffectManager::Instance().CreateEffect("Data/Effect/midle_enemy_smash.efkefc");
+	boss_jump_effect = EffectManager::Instance().CreateEffect("Data/Effect/enemy_lastboss_sowrd.efkefc");
+	boss_slash_effect = EffectManager::Instance().CreateEffect("Data/Effect/enemy_lastboss_slash.efkefc");
 
 	jump_effect_play = true;
+	boss_jump = true;
+	boss_slash = true;
 
 }
 
@@ -115,15 +119,17 @@ void Boss::Update(float elapsedTime)
 			{
 				
 				int i = rand() % 2;
-				if (i == 0)boss_anime->PlayAnimation("Attack", false);
+				if (i == 0)
+				{
+					boss_anime->PlayAnimation("Attack", false);
+					boss_slash = false;
+				}
+
+
 				if (i == 1)
 				{
 					boss_anime->PlayAnimation("Jump_Attack", false);
-					/*if (Effect_handle < 0)
-					{
-						assert(boss_effect != nullptr);
-						Effect_handle = boss_effect->Play(boss.position, 1.0f);
-					}*/
+					boss_jump = false;
 				}
 
 				attack_anime = false;
@@ -149,7 +155,7 @@ void Boss::Update(float elapsedTime)
 	}
 
 	
-	if (boss_count >= 3)clear=true;
+	if (boss_count >= 2)clear=true;
 	if (alive)
 	{
 		if (boss_count < 2)
@@ -195,7 +201,18 @@ void Boss::Update(float elapsedTime)
 		jump_effect_play = true;
 	}
 
+	if (boss_anime->GetCurrentFrame() >= 50 && !boss_jump)
+	{
+		boss_jump_effect->Play({boss.position.x,boss.position.y,boss.position.z-60.0f}, 6.0f);
+		boss_jump = true;
+	}
 	
+	if (boss_anime->GetCurrentFrame() >= 20 && !boss_slash)
+	{
+		boss_slash_effect->Play({ boss.position.x,boss.position.y + 30,boss.position.z-30 }, 15.0f);
+		boss_slash = true;
+	}
+
 }
 
 void Boss::Render(const RenderContext& immediate_context, ModelRenderer* renderer)

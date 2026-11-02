@@ -70,6 +70,6 @@ void EnemyManager::Enemy_Set(int i, bool Alive)
 	if (enemy_num % 10 == 0)enemy_respawn_h += 1;
 	enemy_respawn_w += 1;
 	if (enemy_respawn_w > 10)enemy_respawn_w = 0;
-	enemies[i]->SetPos({ -260 + 52.0f * enemy_respawn_w, -10, -260 + 52.0f * enemy_respawn_h });
+	enemies[i]->SetPos({ -260 + 52.0f * enemy_respawn_w, -25, -260 + 52.0f * enemy_respawn_h });
 	enemy_num += 1;
 }

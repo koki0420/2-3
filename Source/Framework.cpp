@@ -251,6 +251,7 @@ bool Framework::initialize()
 		blend_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
 		blend_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
 		blend_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		
 		blend_desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 		hr = device->CreateBlendState(&blend_desc, blend_state.GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
@@ -548,7 +549,7 @@ void Framework::Update(float elapsedTime)
 	// シーン更新
 	SceneManager::Instance().Update(elapsedTime);
 
-	EffectManager::Instance().Update(elapsedTime);
+	
 }
 
 // 描画処理
@@ -857,6 +858,9 @@ if (skymap_sprite)
 		0);
 
 
+
+	
+	
 
 	// シーン描画
 	//scene->Render(elapsedTime);

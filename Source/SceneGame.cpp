@@ -35,6 +35,7 @@ SceneGame::~SceneGame()
 
 void SceneGame::Initialize()
 {
+	
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 
 	enemy_num = 0;
@@ -59,8 +60,19 @@ void SceneGame::Initialize()
 		EnemyManager::Instance().Register(std::move(enemies[i]));
 		enemy_num += 1;
 	}
+<<<<<<< HEAD
 	
 	
+=======
+	p = std::make_unique<Player>();
+	p->Initialize();
+	
+	if(boss->Clear())
+	{
+		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
+	}
+
+>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
 }	
 
 void SceneGame::Finalize()
@@ -93,12 +105,20 @@ void SceneGame::Update(float elapsedTime)
 
 	camera.Update();
 	stage.UpdateTransform();
-
+	
 
 	EnemyManager::Instance().Update(elapsedTime);
 
 	EffectManager::Instance().Update(elapsedTime);
 
+	if (boss->Clear())
+	{
+		if(clearTimer>5)
+		{
+			SceneManager::Instance().ChangeScene(new SceneResult);
+		}
+		clearTimer += elapsedTime;
+	}
 }
 
 void SceneGame::Render(float elapsedTime)
@@ -115,10 +135,14 @@ void SceneGame::Render(float elapsedTime)
 	rc.renderState = renderState;
 	rc.camera = &camera;
 
+	
+
 	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
 	EnemyManager::Instance().Render(rc, modelRenderer);
 
 	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetProjection());
+
+	
 
 	boss->Render(rc, modelRenderer);
 
