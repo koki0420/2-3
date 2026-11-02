@@ -55,7 +55,7 @@ private:
 	Camera								camera;
 	TestCameraController				cameraController;
 	Object								stage;
-	
+	Player								player;
 
 	std::vector<std::unique_ptr<Enemy>> enemies;
 	std::unique_ptr<Boss> boss;
