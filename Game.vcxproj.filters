@@ -1,188 +1,490 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <FxCompile Include="Shader\BasicPS.hlsl" />
-    <FxCompile Include="Shader\BasicVS.hlsl" />
-    <FxCompile Include="Shader\environment_mapping_shader_ps.hlsl" />
-    <FxCompile Include="Shader\environment_mapping_shader_vs.hlsl" />
-    <FxCompile Include="Shader\geometric_primitive_ps.hlsl" />
-    <FxCompile Include="Shader\geometric_primitive_vs.hlsl" />
-    <FxCompile Include="Shader\LambertPS.hlsl" />
-    <FxCompile Include="Shader\LambertVS.hlsl" />
-    <FxCompile Include="Shader\phong.hlsl" />
-    <FxCompile Include="Shader\phong_shader_ps.hlsl" />
-    <FxCompile Include="Shader\phong_shader_vs.hlsl" />
-    <FxCompile Include="Shader\skymap_ps.hlsl" />
-    <FxCompile Include="Shader\ramp_shader_ps.hlsl" />
-    <FxCompile Include="Shader\ramp_shader_vs.hlsl" />
-    <FxCompile Include="Shader\shadowmap_caster_vs.hlsl" />
-    <FxCompile Include="Shader\ShapeRendererPS.hlsl" />
-    <FxCompile Include="Shader\ShapeRendererVS.hlsl" />
-    <FxCompile Include="Shader\PrimitiveRendererPS.hlsl" />
-    <FxCompile Include="Shader\PrimitiveRendererVS.hlsl" />
-    <FxCompile Include="Shader\skymap_vs.hlsl" />
-    <FxCompile Include="Shader\SpritePS.hlsl" />
-    <FxCompile Include="Shader\SpriteVS.hlsl" />
-    <FxCompile Include="Shader\static_mesh_ps.hlsl" />
-    <FxCompile Include="Shader\static_mesh_vs.hlsl" />
+    <FxCompile Include="Shader\BasicPS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\BasicVS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\environment_mapping_shader_ps.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\environment_mapping_shader_vs.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\geometric_primitive_ps.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\geometric_primitive_vs.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\LambertPS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\LambertVS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\phong.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\phong_shader_ps.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\phong_shader_vs.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\PrimitiveRendererPS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\PrimitiveRendererVS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\ramp_shader_ps.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\ramp_shader_vs.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\shadowmap_caster_vs.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\ShapeRendererPS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\ShapeRendererVS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\skymap_ps.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\skymap_vs.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\SpritePS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\SpriteVS.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\static_mesh_ps.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\static_mesh_vs.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="External\imgui-docking\imgui.cpp" />
-    <ClCompile Include="External\imgui-docking\imgui_demo.cpp" />
-    <ClCompile Include="External\imgui-docking\imgui_draw.cpp" />
-    <ClCompile Include="External\imgui-docking\imgui_impl_dx11.cpp" />
-    <ClCompile Include="External\imgui-docking\imgui_impl_win32.cpp" />
-    <ClCompile Include="External\imgui-docking\imgui_widgets.cpp" />
-    <ClCompile Include="External\ImGuizmo\ImCurveEdit.cpp" />
-    <ClCompile Include="External\ImGuizmo\ImGradient.cpp" />
-    <ClCompile Include="External\ImGuizmo\ImGuizmo.cpp" />
-    <ClCompile Include="External\ImGuizmo\ImSequencer.cpp" />
-    <ClCompile Include="Source\Animation.cpp" />
-    <ClCompile Include="Source\audio.cpp" />
-    <ClCompile Include="Source\BasicShader.cpp" />
-    <ClCompile Include="Source\boss.cpp" />
-    <ClCompile Include="Source\Camera.cpp" />
-    <ClCompile Include="Source\Collision.cpp" />
-    <ClCompile Include="Source\Dialog.cpp" />
-    <ClCompile Include="Source\Effect.cpp" />
-    <ClCompile Include="Source\EffectManager.cpp" />
-    <ClCompile Include="Source\Enemy.cpp" />
-    <ClCompile Include="Source\EnemyManager.cpp" />
-    <ClCompile Include="Source\Framework.cpp" />
-    <ClCompile Include="Source\FreeCameraController.cpp" />
-    <ClCompile Include="Source\geometric_primitive.cpp" />
-    <ClCompile Include="Source\ModelRenderer.cpp" />
-    <ClCompile Include="Source\LambertShader.cpp" />
-    <ClCompile Include="Source\ModelResource.cpp" />
-    <ClCompile Include="Source\Player.cpp" />
-    <ClCompile Include="Source\ResourceManager.cpp" />
-    <ClCompile Include="Source\SceneCameraTest.cpp" />
-    <ClCompile Include="Source\SceneGame.cpp" />
-    <ClCompile Include="Source\SceneLoading.cpp" />
-    <ClCompile Include="Source\SceneManager.cpp" />
-    <ClCompile Include="Source\SceneResult.cpp" />
-    <ClCompile Include="Source\SceneTitle.cpp" />
-    <ClCompile Include="Source\Scene\AnimationScene.cpp" />
-    <ClCompile Include="Source\Scene\AttachWeaponScene.cpp" />
-    <ClCompile Include="Source\Scene\HitStopScene.cpp" />
-    <ClCompile Include="Source\Scene\SlideMoveScene.cpp" />
-    <ClCompile Include="Source\Scene\MoveFloorScene.cpp" />
-    <ClCompile Include="Source\Scene\RayCastScene.cpp" />
-    <ClCompile Include="Source\Scene\ResourceManagementScene.cpp" />
-    <ClCompile Include="Source\Scene\LandWalkScene.cpp" />
-    <ClCompile Include="Source\Scene\TerrainAlignScene.cpp" />
-    <ClCompile Include="Source\Scene\ProjectScreenScene.cpp" />
-    <ClCompile Include="Source\Scene\UIAnimScene.cpp" />
-    <ClCompile Include="Source\shader_sprite.cpp" />
-    <ClCompile Include="Source\ShapeRenderer.cpp" />
-    <ClCompile Include="Source\GpuResourceUtils.cpp" />
-    <ClCompile Include="Source\Graphics.cpp" />
-    <ClCompile Include="Source\ImGuiRenderer.cpp" />
-    <ClCompile Include="Source\Main.cpp" />
-    <ClCompile Include="Source\Model.cpp" />
-    <ClCompile Include="Source\PrimitiveRenderer.cpp" />
-    <ClCompile Include="Source\RenderState.cpp" />
-    <ClCompile Include="Source\Scene.cpp" />
-    <ClCompile Include="Source\Sprite.cpp" />
-    <ClCompile Include="Source\static_mesh.cpp" />
-    <ClCompile Include="Source\texture.cpp" />
-    <ClCompile Include="Source\Timer.cpp" />
-    <ClCompile Include="Source\TransformUtils.cpp" />
-    <ClCompile Include="Source\Shader.cpp" />
+    <ClCompile Include="Source\Animation.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\audio.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BasicShader.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\boss.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Camera.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Collision.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Dialog.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Effect.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EffectManager.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Enemy.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EnemyManager.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Framework.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FreeCameraController.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\geometric_primitive.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GpuResourceUtils.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\ImGuizmo\ImGradient.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui-docking\imgui.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui-docking\imgui_demo.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui-docking\imgui_draw.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui-docking\imgui_impl_dx11.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui-docking\imgui_impl_win32.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\imgui-docking\imgui_widgets.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ImGuiRenderer.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\ImGuizmo\ImGuizmo.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="External\ImGuizmo\ImSequencer.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LambertShader.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Main.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Model.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModelRenderer.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ModelResource.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PrimitiveRenderer.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RenderState.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ResourceManager.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneCameraTest.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneGame.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneLoading.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneManager.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneResult.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneTitle.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Shader.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\shader_sprite.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ShapeRenderer.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Sprite.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\static_mesh.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\texture.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Timer.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\TransformUtils.cpp">
+      <Filter>システム</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="External\imgui-docking\imconfig.h" />
-    <ClInclude Include="External\imgui-docking\imgui.h" />
-    <ClInclude Include="External\imgui-docking\imgui_impl_dx11.h" />
-    <ClInclude Include="External\imgui-docking\imgui_impl_win32.h" />
-    <ClInclude Include="External\imgui-docking\imgui_internal.h" />
-    <ClInclude Include="External\imgui-docking\imstb_rectpack.h" />
-    <ClInclude Include="External\imgui-docking\imstb_textedit.h" />
-    <ClInclude Include="External\imgui-docking\imstb_truetype.h" />
-    <ClInclude Include="External\ImGuizmo\ImCurveEdit.h" />
-    <ClInclude Include="External\ImGuizmo\ImGradient.h" />
-    <ClInclude Include="External\ImGuizmo\ImGuizmo.h" />
-    <ClInclude Include="External\ImGuizmo\ImSequencer.h" />
-    <ClInclude Include="External\SphereCast\Include\SphereCast.h" />
-    <ClInclude Include="Source\Animation.h" />
-    <ClInclude Include="Source\audio.h" />
-    <ClInclude Include="Source\AudioResource.h" />
-    <ClInclude Include="Source\BasicShader.h" />
-    <ClInclude Include="Source\boss.h" />
-    <ClInclude Include="Source\Camera.h" />
-    <ClInclude Include="Source\CameraMove_test.h" />
-    <ClInclude Include="Source\SceneCameraTest.h" />
-    <ClInclude Include="Source\Collision.h" />
-    <ClInclude Include="Source\Dialog.h" />
-    <ClInclude Include="Source\Effect.h" />
-    <ClInclude Include="Source\EffectManager.h" />
-    <ClInclude Include="Source\Enemy.h" />
-    <ClInclude Include="Source\EnemyManager.h" />
-    <ClInclude Include="Source\Framework.h" />
-    <ClInclude Include="Source\FreeCameraController.h" />
-    <ClInclude Include="Source\geometric_primitive.h" />
-    <ClInclude Include="Source\Interaction.h" />
-    <ClInclude Include="Source\Light.h" />
-    <ClInclude Include="Source\ModelRenderer.h" />
-    <ClInclude Include="Source\LambertShader.h" />
-    <ClInclude Include="Source\ModelResource.h" />
-    <ClInclude Include="Source\Object.h" />
-    <ClInclude Include="Source\Player.h" />
-    <ClInclude Include="Source\ResourceManager.h" />
-    <ClInclude Include="Source\SceneGame.h" />
-    <ClInclude Include="Source\SceneLoading.h" />
-    <ClInclude Include="Source\SceneManager.h" />
-    <ClInclude Include="Source\SceneResult.h" />
-    <ClInclude Include="Source\SceneTitle.h" />
-    <ClInclude Include="Source\Scene\AnimationScene.h" />
-    <ClInclude Include="Source\Scene\AttachWeaponScene.h" />
-    <ClInclude Include="Source\Scene\HitStopScene.h" />
-    <ClInclude Include="Source\Scene\SlideMoveScene.h" />
-    <ClInclude Include="Source\Scene\MoveFloorScene.h" />
-    <ClInclude Include="Source\Scene\RayCastScene.h" />
-    <ClInclude Include="Source\Scene\ResourceManagementScene.h" />
-    <ClInclude Include="Source\Scene\LandWalkScene.h" />
-    <ClInclude Include="Source\Scene\TerrainAlignScene.h" />
-    <ClInclude Include="Source\Scene\ProjectScreenScene.h" />
-    <ClInclude Include="Source\Scene\UIAnimScene.h" />
-    <ClInclude Include="Source\shader_sprite.h" />
-    <ClInclude Include="Source\ShapeRenderer.h" />
-    <ClInclude Include="Source\GpuResourceUtils.h" />
-    <ClInclude Include="Source\Graphics.h" />
-    <ClInclude Include="Source\HighResolutionTimer.h" />
-    <ClInclude Include="Source\ImGuiRenderer.h" />
-    <ClInclude Include="Source\Misc.h" />
-    <ClInclude Include="Source\Model.h" />
-    <ClInclude Include="Source\PrimitiveRenderer.h" />
-    <ClInclude Include="Source\RenderContext.h" />
-    <ClInclude Include="Source\RenderState.h" />
-    <ClInclude Include="Source\Scene.h" />
-    <ClInclude Include="Source\Shader.h" />
-    <ClInclude Include="Source\Sprite.h" />
-    <ClInclude Include="Source\static_mesh.h" />
-    <ClInclude Include="Source\texture.h" />
-    <ClInclude Include="Source\Timer.h" />
-    <ClInclude Include="Source\TransformUtils.h" />
-    <ClInclude Include="Source\GameplayMath.h" />
+    <ClInclude Include="Source\Animation.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\audio.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\AudioResource.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BasicShader.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\boss.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Camera.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CameraMove_test.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Collision.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Dialog.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Effect.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EffectManager.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Enemy.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EnemyManager.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Framework.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FreeCameraController.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GameplayMath.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\geometric_primitive.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GpuResourceUtils.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\HighResolutionTimer.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui-docking\imconfig.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\ImGuizmo\ImCurveEdit.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\ImGuizmo\ImGradient.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui-docking\imgui.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui-docking\imgui_impl_dx11.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui-docking\imgui_impl_win32.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui-docking\imgui_internal.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ImGuiRenderer.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\ImGuizmo\ImGuizmo.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\ImGuizmo\ImSequencer.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui-docking\imstb_rectpack.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui-docking\imstb_textedit.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\imgui-docking\imstb_truetype.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Interaction.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LambertShader.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Light.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Misc.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Model.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModelRenderer.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ModelResource.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Object.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PrimitiveRenderer.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\RenderContext.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\RenderState.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ResourceManager.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="External\SphereCast\Include\SphereCast.h">
+      <Filter>シェーダー</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\TransformUtils.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Shader.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\shader_sprite.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ShapeRenderer.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Sprite.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\static_mesh.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\texture.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Timer.h">
+      <Filter>システム</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneCameraTest.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneGame.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneLoading.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneManager.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneResult.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneTitle.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\Basic.hlsli" />
-    <None Include="Shader\environment_mapping_shader.hlsli" />
-    <None Include="Shader\filter_functions.hlsli" />
-    <None Include="Shader\geometric_primitive.hlsli" />
-    <None Include="Shader\Lambert.hlsli" />
-    <None Include="Shader\lights.hlsli" />
-    <None Include="Shader\phong_shader.hlsli" />
-    <None Include="Shader\phong_shader_ps.cso" />
-    <None Include="Shader\phong_shader_vs.cso" />
-    <None Include="Shader\ramp_shader.hlsli" />
-    <None Include="Shader\Scene.hlsli" />
-    <None Include="Shader\shading_functions.hlsli" />
-    <None Include="Shader\ShapeRenderer.hlsli" />
-    <None Include="Shader\PrimitiveRenderer.hlsli" />
-    <None Include="Shader\Skinning.hlsli" />
-    <None Include="Shader\skymap.hlsli" />
-    <None Include="Shader\Sprite.hlsli" />
-    <None Include="Shader\static_mesh.hlsli" />
+    <None Include="Shader\Basic.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\environment_mapping_shader.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\filter_functions.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\geometric_primitive.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\Lambert.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\lights.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\phong_shader.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\phong_shader_ps.cso">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\phong_shader_vs.cso">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\PrimitiveRenderer.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\ramp_shader.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\Scene.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\shading_functions.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\ShapeRenderer.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\Skinning.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\skymap.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\Sprite.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+    <None Include="Shader\static_mesh.hlsli">
+      <Filter>シェーダー</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="シェーダー">
+      <UniqueIdentifier>{64224960-045b-4934-8b1e-e8a1228a6431}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="システム">
+      <UniqueIdentifier>{543cc7f3-da50-41e8-87ce-158a18bf0c74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CPP">
+      <UniqueIdentifier>{5f357cf7-abb2-4f68-9509-f578f82da9c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{6ad37791-4623-48fb-86e1-41bf5e0c732f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
