@@ -494,7 +494,7 @@ void Player::DrawGUI()
 				break;
 
 			case State::SwordAttack2:
-				animation->PlayAnimation("SwordAttack2", true);
+				animation->PlayAnimation("Sword_Attack2", true);
 				break;
 			}
 		}
