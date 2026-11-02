@@ -7,9 +7,9 @@
 
 Player::Player()
 {
-//<<<<<<< HEAD
+
 	Initialize();
-//=======
+
 	/*spriteHPGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
 	spriteGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar-square_black_01_ff4444_128.png");
 	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_44cc44_128.png");
@@ -19,7 +19,7 @@ Player::Player()
 	spriteW[1] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent.png");
 	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");*/
 
-//>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
+
 }
 
 void Player::Initialize()
@@ -104,13 +104,6 @@ void Player::Render(float elapsedTime, RenderContext rc)
 //	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");
 //
 //}
-
-//void Player::Initialize()
-//{
-//	
-//
-//}
-
 
 
 bool Player::InputMove(float elapsedTime, Camera camera)
@@ -370,16 +363,16 @@ bool Player::CheckTakeAttack(
 	float dy = center.y - enemyPosition.y;
 	float dz = center.z - enemyPosition.z;
 
-//<<<<<<< HEAD
+
 	float radius = playerRadius + enemyRadius;
-//=======
+
 	/*spriteHPGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteHP->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteW[wt]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	spriteGauge->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteWP->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);*/
 	
-//>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
+
 
 	if (dx * dx + dy * dy + dz * dz <= radius * radius)
 	{

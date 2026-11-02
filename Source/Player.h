@@ -41,6 +41,7 @@ public:
         float enemyRadius);
 
 protected:
+    //プレイヤー
     Object player;
 
     float playerHP = 100.0f;
@@ -53,23 +54,29 @@ protected:
     float enemyHP = 100.0f;
     //
 
+    //攻撃
     //仮の値
     float attackStartTime = 0.4f;
     float attackEndTime = 1.0f;
-
-    //現在攻撃判定が有効か
-    bool IsAttackActive()const;
-
-    std::unordered_set<size_t> hitEnemies;
 
     DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撃判定の中心
     float attackRadius = 2.0f;//球の半径
     float attackDistance = 2.5f;//プレイヤーから前方への距離
     float attackHeight = 3.0f;//地面からの高さ
 
-    float attackTime=0;//攻撃を始めてからの経過時間
-    float attackDuration=2.4f;//攻撃が終わるまでの時間
-    bool isAttacking=false;
+    float attackTime = 0;//攻撃を始めてからの経過時間
+    float attackDuration = 2.4f;//攻撃が終わるまでの時間
+    bool isAttacking = false;
+
+    //現在攻撃判定が有効か
+    bool IsAttackActive()const;
+
+
+    //敵
+    std::unordered_set<size_t> hitEnemies;
+
+
+    
     void StartAttack();//攻撃の開始処理
     void UpdateAttack(float elapsedTime);
 
@@ -99,10 +106,10 @@ private:
     Weapon weapon = Weapon::Sword;
 
 //	std::unique_ptr<Sprite> spriteGauge = nullptr;
-////=======
+
 //	std::unique_ptr<Sprite> spriteHPGauge = nullptr;
 //	std::unique_ptr<Sprite> spriteGauge = nullptr;
-////>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
+
 //	std::unique_ptr<Sprite> spriteHP = nullptr;
 //	std::unique_ptr<Sprite> spriteWP = nullptr;
 //	std::unique_ptr<Sprite> spriteW[3];

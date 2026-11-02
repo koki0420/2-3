@@ -15,6 +15,9 @@
 
 #include "boss.h"
 
+#include "Player.h"
+#include "CameraMove_test.h"
+
 // XAUDIO2
 //#include "audio.h"
 //#include <vector> //ñ¢égópÇÃÇΩÇﬂçÌèú
@@ -50,8 +53,9 @@ public:
 private:
 	
 	Camera								camera;
-	FreeCameraController				cameraController;
+	TestCameraController				cameraController;
 	Object								stage;
+	Player*								player;
 
 	std::vector<std::unique_ptr<Enemy>> enemies;
 	std::unique_ptr<Boss> boss;
