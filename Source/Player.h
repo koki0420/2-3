@@ -16,10 +16,11 @@ public:
 
 
     Player();
-    ~Player() = default;
+    ~Player();
     void Initialize();
     void Update(float elapsedTime, Object& stage, const Camera& camera);
     void Render(float elapsedTime, RenderContext rc);
+    void UIRender(float elapsedTime, ID3D11DeviceContext* dc);
     void DrawGUI();
   
     DirectX::XMFLOAT3 GetVelocity() { return player.velocity; }
@@ -41,6 +42,7 @@ public:
         float enemyRadius);
 
 protected:
+    //プレイヤー
     Object player;
     Object Weapon[2];
 
@@ -54,24 +56,30 @@ protected:
     float enemyHP = 100.0f;
     //
 
+    //攻�?
     //仮の値
     float attackStartTime = 0.4f;
     float attackEndTime = 1.0f;
 
-    //現在攻撃判定が有効か
-    bool IsAttackActive()const;
-
-    std::unordered_set<size_t> hitEnemies;
-
-    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撃判定の中心
-    float attackRadius = 2.0f;//球の半径
+    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻�?��定�?中�?
+    float attackRadius = 2.0f;//�??半�?
     float attackDistance = 2.5f;//プレイヤーから前方への距離
     float attackHeight = 3.0f;//地面からの高さ
 
-    float attackTime=0;//攻撃を始めてからの経過時間
-    float attackDuration=2.4f;//攻撃が終わるまでの時間
-    bool isAttacking=false;
-    void StartAttack();//攻撃の開始処理
+    float attackTime = 0;//攻�?��始めてからの経過時間
+    float attackDuration = 2.4f;//攻�?��終わるまでの時間
+    bool isAttacking = false;
+
+    //現在攻�?��定が有効�?
+    bool IsAttackActive()const;
+
+
+    //敵
+    std::unordered_set<size_t> hitEnemies;
+
+
+    
+    void StartAttack();//攻�??開始�?�?
     void UpdateAttack(float elapsedTime);
 
     bool InputMove(float elapsedTime,Camera camera);
@@ -100,30 +108,34 @@ private:
     WEAPON weapon = WEAPON::Sword;
     int weapon_num = 0;;
 
+
+
 //	std::unique_ptr<Sprite> spriteGauge = nullptr;
-////=======
-//	std::unique_ptr<Sprite> spriteHPGauge = nullptr;
-//	std::unique_ptr<Sprite> spriteGauge = nullptr;
-////>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
+
+
+    std::unique_ptr<Sprite> spriteGauge = nullptr;
+    std::unique_ptr<Sprite> spriteHPGauge = nullptr;
+    std::unique_ptr<Sprite> spriteHP = nullptr;
+    std::unique_ptr<Sprite> spriteWP = nullptr;
+    std::unique_ptr<Sprite> spriteW[3];
+
+
 //	std::unique_ptr<Sprite> spriteHP = nullptr;
 //	std::unique_ptr<Sprite> spriteWP = nullptr;
 //	std::unique_ptr<Sprite> spriteW[3];
 
+//std::unique_ptr<Sprite> spriteGauge = nullptr;
+//std::unique_ptr<Sprite> spriteHPGauge = nullptr;
+//std::unique_ptr<Sprite> spriteHP = nullptr;
+//std::unique_ptr<Sprite> spriteWP = nullptr;
+//std::unique_ptr<Sprite> spriteW[3];
+
+
+
 	int wt=0;
 
 
-//public:
-//	Player();
-//	~Player() {};
-//
-//	void Initialize();
-//
-//
-//	// �X�V����
-//	void Update(float elapsedTime, Object& S, const Camera& C);
-//	// �`�揈��
-//	void Render(float elapsedTime, RenderContext rc,bool Pause);
-//	void UIRender(float elapsedTime, ID3D11DeviceContext* dc);
+
 
 
     //debug

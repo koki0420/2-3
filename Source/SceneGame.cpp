@@ -35,7 +35,7 @@ SceneGame::~SceneGame()
 
 void SceneGame::Initialize()
 {
-	
+
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 
 	enemy_num = 0;
@@ -47,6 +47,9 @@ void SceneGame::Initialize()
 	stage.position.y = -20;
 
 	boss=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
+
+
+	cameraController.SyncCameraToController(camera);
 
 	for (int i = 0;i < 10;i += 1)
 	{
@@ -60,19 +63,12 @@ void SceneGame::Initialize()
 		EnemyManager::Instance().Register(std::move(enemies[i]));
 		enemy_num += 1;
 	}
-//<<<<<<< HEAD
-	
-	
-//=======
-	p = std::make_unique<Player>();
-	p->Initialize();
 	
 	if(boss->Clear())
 	{
 		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
 	}
-
-//>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
+	player.Initialize();
 }	
 
 void SceneGame::Finalize()
@@ -82,6 +78,13 @@ void SceneGame::Finalize()
 
 void SceneGame::Update(float elapsedTime)
 {
+	DirectX::XMFLOAT3 focus = player.GetPosition();
+	focus.y += 1.0f;
+	cameraController.SetFocus(focus);
+	cameraController.Update();
+	cameraController.SyncControllerToCamera(camera);
+
+
 	if (Boss_Dead)
 	{
 		boss->Boss_Dead(Boss_Dead);
@@ -106,11 +109,13 @@ void SceneGame::Update(float elapsedTime)
 		}
 	}
 
-	camera.Update();
+	
 	stage.UpdateTransform();
 	
 
 	EnemyManager::Instance().Update(elapsedTime);
+
+	player.Update(elapsedTime,stage,camera);
 
 	EffectManager::Instance().Update(elapsedTime);
 
@@ -145,10 +150,20 @@ void SceneGame::Render(float elapsedTime)
 
 	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetProjection());
 
-	
+	player.Render(elapsedTime, rc);
 
 	boss->Render(rc, modelRenderer);
 
+
+	shapeRenderer->Render(
+		rc.deviceContext,
+		rc.camera->GetView(),
+		rc.camera->GetProjection()
+	);
+
+	{
+		player.UIRender(elapsedTime, dc);
+	}
 
 
 }
@@ -191,6 +206,56 @@ void SceneGame::DrawGUI()
 				Boss_Dead = true;
 			}
 		}
+
+		ImGui::Separator();
+
+		if (ImGui::CollapsingHeader("Camera",
+			ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			// ビュー行列の逆行列から、カメラのワールド座標を求める
+			DirectX::XMFLOAT4X4 view = camera.GetView();
+
+			DirectX::XMMATRIX inverseView = DirectX::XMMatrixInverse(
+				nullptr,
+				DirectX::XMLoadFloat4x4(&view));
+
+			DirectX::XMFLOAT3 cameraPosition;
+
+			DirectX::XMStoreFloat3(
+				&cameraPosition,
+				inverseView.r[3]);
+
+			DirectX::XMFLOAT3 front = camera.GetFront();
+			DirectX::XMFLOAT3 right = camera.GetRight();
+
+			ImGui::Text("Position");
+			ImGui::Text("X: %.2f  Y: %.2f  Z: %.2f",
+				cameraPosition.x,
+				cameraPosition.y,
+				cameraPosition.z);
+
+			ImGui::Text("Front direction");
+			ImGui::Text("X: %.3f  Y: %.3f  Z: %.3f",
+				front.x, front.y, front.z);
+
+			ImGui::Text("Right direction");
+			ImGui::Text("X: %.3f  Y: %.3f  Z: %.3f",
+				right.x, right.y, right.z);
+
+			DirectX::XMFLOAT3 playerPosition = player.GetPosition();
+
+			float dx = cameraPosition.x - playerPosition.x;
+			float dy = cameraPosition.y - playerPosition.y;
+			float dz = cameraPosition.z - playerPosition.z;
+
+			float distance = sqrtf(dx * dx + dy * dy + dz * dz);
+
+			ImGui::Text("Distance to player: %.2f", distance);
+		}
+
+		player.DrawGUI();
+
+
 	}
 	ImGui::End();
 }
