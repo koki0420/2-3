@@ -35,7 +35,7 @@ SceneGame::~SceneGame()
 
 void SceneGame::Initialize()
 {
-	player = new Player;
+	p = std::make_unique<Player>() ;
 
 	stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 
@@ -69,7 +69,7 @@ void SceneGame::Initialize()
 	{
 		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
 	}
-
+	p->Initialize();
 }	
 
 void SceneGame::Finalize()
@@ -79,7 +79,7 @@ void SceneGame::Finalize()
 
 void SceneGame::Update(float elapsedTime)
 {
-	DirectX::XMFLOAT3 focus = player->GetPosition();
+	DirectX::XMFLOAT3 focus = p->GetPosition();
 	focus.y += 1.0f;
 	cameraController.SetFocus(focus);
 	cameraController.Update();
@@ -116,7 +116,7 @@ void SceneGame::Update(float elapsedTime)
 
 	EnemyManager::Instance().Update(elapsedTime);
 
-	player->Update(elapsedTime,stage,camera);
+	p->Update(elapsedTime,stage,camera);
 
 	EffectManager::Instance().Update(elapsedTime);
 
@@ -151,7 +151,7 @@ void SceneGame::Render(float elapsedTime)
 
 	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetProjection());
 
-	player->Render(elapsedTime, rc);
+	p->Render(elapsedTime, rc);
 
 	boss->Render(rc, modelRenderer);
 
@@ -243,7 +243,7 @@ void SceneGame::DrawGUI()
 			ImGui::Text("X: %.3f  Y: %.3f  Z: %.3f",
 				right.x, right.y, right.z);
 
-			DirectX::XMFLOAT3 playerPosition = player->GetPosition();
+			DirectX::XMFLOAT3 playerPosition = p->GetPosition();
 
 			float dx = cameraPosition.x - playerPosition.x;
 			float dy = cameraPosition.y - playerPosition.y;
@@ -254,7 +254,7 @@ void SceneGame::DrawGUI()
 			ImGui::Text("Distance to player: %.2f", distance);
 		}
 
-		player->DrawGUI();
+		p->DrawGUI();
 
 
 	}
