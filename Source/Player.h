@@ -42,6 +42,7 @@ public:
 
 protected:
     Object player;
+    Object Weapon[2];
 
     float playerHP = 100.0f;
     float playerRadius = 5.0f;
@@ -90,13 +91,14 @@ private:
     };
     State state = State::Idle;
 
-    enum class Weapon
+    enum class WEAPON
     {
-        Sword,
-        Fist,
+        Sword=0,
         Scythe,
+        Fist,
     };
-    Weapon weapon = Weapon::Sword;
+    WEAPON weapon = WEAPON::Sword;
+    int weapon_num = 0;;
 
 //	std::unique_ptr<Sprite> spriteGauge = nullptr;
 ////=======
