@@ -38,7 +38,7 @@ void Enemy::Update(float elapsedTime)
 		walk_anime = false;
 	}
 
-	if (direction <= 50)
+	if (direction <= 30)
 	{
 		arrive_position = enemy.position;
 		if (attack_anime)

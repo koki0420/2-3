@@ -20,7 +20,7 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	middle_boss.scale = { 0.5f,0.5f,0.5f };
 	middle_boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_midle.mdl");
 
-	boss_count = 2;
+	boss_count = 0;
 
 	boss_anime= std::make_unique<Animation>(*boss.model);
 	middle_boss_anime = std::make_unique<Animation>(*middle_boss.model);
