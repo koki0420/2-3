@@ -55,21 +55,21 @@ protected:
     float enemyHP = 100.0f;
     //
 
-    //攻撃
+    //攻�?
     //仮の値
     float attackStartTime = 0.4f;
     float attackEndTime = 1.0f;
 
-    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撃判定の中心
-    float attackRadius = 2.0f;//球の半径
+    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻�?��定�?中�?
+    float attackRadius = 2.0f;//�??半�?
     float attackDistance = 2.5f;//プレイヤーから前方への距離
     float attackHeight = 3.0f;//地面からの高さ
 
-    float attackTime = 0;//攻撃を始めてからの経過時間
-    float attackDuration = 2.4f;//攻撃が終わるまでの時間
+    float attackTime = 0;//攻�?��始めてからの経過時間
+    float attackDuration = 2.4f;//攻�?��終わるまでの時間
     bool isAttacking = false;
 
-    //現在攻撃判定が有効か
+    //現在攻�?��定が有効�?
     bool IsAttackActive()const;
 
 
@@ -78,7 +78,7 @@ protected:
 
 
     
-    void StartAttack();//攻撃の開始処理
+    void StartAttack();//攻�??開始�?�?
     void UpdateAttack(float elapsedTime);
 
     bool InputMove(float elapsedTime,Camera camera);
@@ -106,7 +106,7 @@ private:
     };
     Weapon weapon = Weapon::Sword;
 
-<<<<<<< HEAD
+
 //	std::unique_ptr<Sprite> spriteGauge = nullptr;
 
 //	std::unique_ptr<Sprite> spriteHPGauge = nullptr;
@@ -115,13 +115,13 @@ private:
 //	std::unique_ptr<Sprite> spriteHP = nullptr;
 //	std::unique_ptr<Sprite> spriteWP = nullptr;
 //	std::unique_ptr<Sprite> spriteW[3];
-=======
+
 std::unique_ptr<Sprite> spriteGauge = nullptr;
 std::unique_ptr<Sprite> spriteHPGauge = nullptr;
 std::unique_ptr<Sprite> spriteHP = nullptr;
 std::unique_ptr<Sprite> spriteWP = nullptr;
 std::unique_ptr<Sprite> spriteW[3];
->>>>>>> 303d263448f2486aa2fd015c6473ac6530329f0c
+
 
 	int wt=0;
 

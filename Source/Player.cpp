@@ -8,13 +8,12 @@
 Player::Player()
 {
 
-<<<<<<< HEAD
 	Initialize();
 
-	/*spriteHPGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
-=======
 	spriteHPGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
->>>>>>> 303d263448f2486aa2fd015c6473ac6530329f0c
+
+	spriteHPGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
+
 	spriteGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar-square_black_01_ff4444_128.png");
 	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_44cc44_128.png");
 	spriteWP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar-square_blue-gold_01_ff4444_128.png");
@@ -23,10 +22,7 @@ Player::Player()
 	spriteW[1] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent.png");
 	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 303d263448f2486aa2fd015c6473ac6530329f0c
 }
 Player::~Player()
 {
@@ -56,7 +52,7 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	if (IsDead)return;
 
 
-	// debugプレビュー中はアニメーションだけ更新する
+	// debug
 	if (previewState)
 	{
 		animation->Update(elapsedTime);
@@ -127,15 +123,10 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 }
 
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 303d263448f2486aa2fd015c6473ac6530329f0c
 
 bool Player::InputMove(float elapsedTime, Camera camera)
 {
-	// 入力処理
+	// 入力�?�?
 	float axisX = 0.0f;
 	float axisY = 0.0f;
 	if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
@@ -143,7 +134,7 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
 	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
 
-	// カメラの方向
+	// カメラの方�?
 	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
 	const DirectX::XMFLOAT3& camemraRight = camera.GetRight();
 	float cameraFrontLengthXZ = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
@@ -153,7 +144,7 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	float cameraRightX = camemraRight.x / cameraRightLengthXZ;
 	float cameraRightZ = camemraRight.z / cameraRightLengthXZ;
 
-	// 移動ベクトル
+	// 移動�?クトル
 	const float speed = 5.0f * elapsedTime;
 	float vecX = cameraFrontX * axisY + cameraRightX * axisX;
 	float vecZ = cameraFrontZ * axisY + cameraRightZ * axisX;
@@ -164,7 +155,7 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	player.position.x += moveX;
 	player.position.z += moveZ;
 
-	//移動しているときだけその方向へ向く
+	//移動して�?��ときだけその方向へ向く
 	if (moveLength > 0.0f)
 	{
 		player.angle.y = atan2f(moveX, moveZ);
@@ -209,7 +200,7 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 
 }
 
-//攻撃開始処理
+//攻�?��始�?�?
 void Player::StartAttack()
 {
 	if (isAttacking)return;
@@ -232,7 +223,7 @@ void Player::UpdateAttack(float elapsedTime)
 
 	if (isAttacking)
 	{
-		//playerが向いている方向の前方へ配置
+		//playerが向�?���?��方向�?前方へ配置
 		attackPosition.x = player.position.x + sinf(player.angle.y) * attackDistance;
 		attackPosition.y = player.position.y + attackHeight;
 		attackPosition.z = player.position.z + cosf(player.angle.y) * attackDistance;
@@ -251,13 +242,13 @@ void Player::UpdateAttack(float elapsedTime)
 bool Player::CheckAttackHit(
 	size_t enemyIndex,DirectX::XMFLOAT3 enemyPosition, float enemyRadius)
 {
-	//攻撃していない、または命中済みなら判定しない
+	//攻�?��て�?���?��また�?命中済みなら判定しな�?
 	if (!IsAttackActive())return false;
 
-	//今回すでに当たった敵なら判定しない
+	//今回すでに当たった敵なら判定しな�?
 	if (hitEnemies.count(enemyIndex) > 0)return false;
 
-	//2つの球の中心の差
+	//2つの�??中�??差
 	float dx = attackPosition.x - enemyPosition.x;
 	float dy = attackPosition.y - enemyPosition.y;
 	float dz = attackPosition.z - enemyPosition.z;
@@ -266,7 +257,7 @@ bool Player::CheckAttackHit(
 
 	if (dx * dx + dy * dy + dz * dz <= radius * radius)
 	{
-		//この敵に当たったことを記録する
+		//こ�?敵に当たったことを記録する
 		hitEnemies.insert(enemyIndex);
 		return true;
 	}
@@ -295,7 +286,7 @@ void Player::takeDamage(float damage)
 		playerHP = 0.0f;
 		IsDead = true;
 
-		//死亡したら攻撃を止める
+		//死亡したら攻�?��止める
 		isAttacking = false;
 		hitEnemies.clear();
 		attackTime = 0.0f;
@@ -314,25 +305,19 @@ bool Player::CheckTakeAttack(
 	DirectX::XMFLOAT3 center = player.position;
 	center.y += 2.0f;
 	
-	//2つの球の中心の差
+	//2つの�??中�??差
 	float dx = center.x - enemyPosition.x;
 	float dy = center.y - enemyPosition.y;
 	float dz = center.z - enemyPosition.z;
 
 
 	float radius = playerRadius + enemyRadius;
-<<<<<<< HEAD
 
 	/*spriteHPGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteHP->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteW[wt]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	spriteGauge->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteWP->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);*/
-=======
-//=======
-	/**/
->>>>>>> 303d263448f2486aa2fd015c6473ac6530329f0c
-	
 
 
 	if (dx * dx + dy * dy + dz * dz <= radius * radius)
@@ -369,7 +354,7 @@ void Player::DrawGUI()
 			player.position.y,
 			player.position.z);
 
-		// 保存されているラジアンを、見やすい度数法に変換する
+		// 保存されて�?��ラジアンを、見やすい度数法に変換する
 		ImGui::Text("Rotation (degrees)");
 		ImGui::Text("X: %.1f  Y: %.1f  Z: %.1f",
 			DirectX::XMConvertToDegrees(player.angle.x),
@@ -415,13 +400,13 @@ void Player::DrawGUI()
 	ImGui::SliderFloat(
 		"Hit end", &attackEndTime, 0.0f, attackDuration);
 
-	// 攻撃全体の時間を短くした場合も、範囲内に収める
+	// 攻�??体�?時間を短くした場合も、�?���?��収め�?
 	if (attackEndTime > attackDuration)
 	{
 		attackEndTime = attackDuration;
 	}
 
-	// 開始時間が終了時間を超えないようにする
+	// 開始時間が終�?��間を�?��な�?���?��する
 	if (attackStartTime > attackEndTime)
 	{
 		attackStartTime = attackEndTime;
@@ -432,7 +417,7 @@ void Player::DrawGUI()
 
 	ImGui::Separator();
 
-	// チェックを変更した瞬間に実行する
+	// チェ�?��を変更した瞬間に実行す�?
 	if (ImGui::Checkbox("State preview", &previewState))
 	{
 		state = State::Idle;
@@ -447,7 +432,7 @@ void Player::DrawGUI()
 	{
 		int selectedState = static_cast<int>(state);
 
-		// 選択を変更した瞬間に実行する
+		// 選択を変更した瞬間に実行す�?
 		if (ImGui::Combo("Preview state", &selectedState,
 			stateNames, IM_ARRAYSIZE(stateNames)))
 		{

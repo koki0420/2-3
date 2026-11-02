@@ -155,17 +155,17 @@ void SceneGame::Render(float elapsedTime)
 
 	boss->Render(rc, modelRenderer);
 
-<<<<<<< HEAD
+
 	shapeRenderer->Render(
 		rc.deviceContext,
 		rc.camera->GetView(),
 		rc.camera->GetProjection()
 	);
-=======
+
 	{
-		p->UIRender(elapsedTime, dc);
+		player->UIRender(elapsedTime, dc);
 	}
->>>>>>> 303d263448f2486aa2fd015c6473ac6530329f0c
+
 
 }
 

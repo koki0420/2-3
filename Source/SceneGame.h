@@ -101,7 +101,7 @@ private:
 
 	
 
-	std::unique_ptr <Player> p = nullptr;
+	
 	std::unique_ptr<Sprite> pauseSprite;
 
 	Object   Light[LIGHT_MAX];
