@@ -155,7 +155,7 @@ void Boss::Update(float elapsedTime)
 	}
 
 	
-	if (boss_count >= 3)clear=true;
+	if (boss_count >= 2)clear=true;
 	if (alive)
 	{
 		if (boss_count < 2)

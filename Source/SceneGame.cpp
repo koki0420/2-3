@@ -63,6 +63,10 @@ void SceneGame::Initialize()
 	p = std::make_unique<Player>();
 	p->Initialize();
 	
+	if(boss->Clear())
+	{
+		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
+	}
 
 }	
 
