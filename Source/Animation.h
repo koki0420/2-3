@@ -36,6 +36,7 @@ public:
 		return static_cast<int>(animationSeconds*FPS);
 	}
 
+
 private:
 	// アニメーション更新処理
 	void UpdateAnimation(float elapsedTime);

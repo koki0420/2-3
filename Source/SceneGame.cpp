@@ -95,7 +95,10 @@ void SceneGame::Update(float elapsedTime)
 		}
 	}
 	{
-		if (enemy_num > 0)boss->Boss_Set(false);
+		if (enemy_num > 0)
+		{
+			boss->Boss_Set(false);
+		}
 		else
 		{
 			boss->Boss_Set(true);
@@ -113,7 +116,7 @@ void SceneGame::Update(float elapsedTime)
 
 	if (boss->Clear())
 	{
-		if(clearTimer>5)
+		if(clearTimer>7)
 		{
 			SceneManager::Instance().ChangeScene(new SceneResult);
 		}

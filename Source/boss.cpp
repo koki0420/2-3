@@ -49,30 +49,11 @@ void Boss::Update(float elapsedTime)
 	timer += elapsedTime;
 	
 	
-	if (dead)
+	
+	if(!(dead))
 	{
-		if (!dyingStarted)
-		{
-			middle_boss_anime->PlayAnimation("Death", false);
-			boss_anime->PlayAnimation("Death", false);
-			dyingStarted = true;
-		}
-		if (!boss_anime->IsPlaying() && boss_count >= 2)
-		{
-			alive = false;
-			dyingStarted = false;
-		}
-
-		if (!middle_boss_anime->IsPlaying()&&boss_count<2)
-		{
-			alive = false;
-			dyingStarted = false;
-		}
-
-		
-	}
-	else
-	{
+	
+		dyingStarted = false;
 		//’†ƒ{ƒX
 		{
 			float direction = DirectX::XMVectorGetX
@@ -153,11 +134,51 @@ void Boss::Update(float elapsedTime)
 
 
 	}
+	else
+	{
+		if (!(middle_boss_anime->IsPlaying("Death"))|| !(boss_anime->IsPlaying("Death")))
+		{
+			if (dyingStarted)
+			{
+				dead = false;
+				if (middle_boss_anime->GetCurrentFrame() >= 250)
+				{
+					alive = false;
+				}
+				if (boss_anime->GetCurrentFrame() >= 100)
+				{
+					alive = false;
+				}
+			}
+		}
+
+		if (boss_count >= 2)
+		{
+		
+			if (!dyingStarted)
+			{
+				boss_anime->PlayAnimation("Death", false);
+				dyingStarted = true;
+			}
+		}
+		else
+		{
+			if (!dyingStarted)
+			{
+				middle_boss_anime->PlayAnimation("Death", false);
+				dyingStarted = true;
+			}
+		}
+	}
+
+
+	
 
 	
 	if (boss_count >= 2)clear=true;
 	if (alive)
 	{
+		
 		if (boss_count < 2)
 		{
 			middle_boss.UpdateTransform();
