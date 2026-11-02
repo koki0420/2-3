@@ -442,7 +442,7 @@ void Player::DrawGUI()
 		"SwordAttack1"
 	};
 
-	ImGui::Text("State: %s", stateNames[static_cast<int>(state)]);
+	//ImGui::Text("State: %s", stateNames[static_cast<int>(state)]);
 	ImGui::Text("Attacking: %s", isAttacking ? "Yes" : "No");
 	ImGui::Text("Hit enemies: %d", static_cast<int>(hitEnemies.size()));
 	ImGui::Text("Attack time: %.2f / %.2f",
