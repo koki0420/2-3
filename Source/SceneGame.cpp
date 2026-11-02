@@ -149,7 +149,9 @@ void SceneGame::Render(float elapsedTime)
 
 	boss->Render(rc, modelRenderer);
 
-
+	{
+		p->UIRender(elapsedTime, dc);
+	}
 
 }
 

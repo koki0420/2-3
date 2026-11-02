@@ -16,10 +16,11 @@ public:
 
 
     Player();
-    ~Player() = default;
+    ~Player();
     void Initialize();
     void Update(float elapsedTime, Object& stage, const Camera& camera);
     void Render(float elapsedTime, RenderContext rc);
+    void UIRender(float elapsedTime, ID3D11DeviceContext* dc);
     void DrawGUI();
   
     DirectX::XMFLOAT3 GetVelocity() { return player.velocity; }
@@ -98,30 +99,16 @@ private:
     };
     Weapon weapon = Weapon::Sword;
 
-//	std::unique_ptr<Sprite> spriteGauge = nullptr;
-////=======
-//	std::unique_ptr<Sprite> spriteHPGauge = nullptr;
-//	std::unique_ptr<Sprite> spriteGauge = nullptr;
-////>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
-//	std::unique_ptr<Sprite> spriteHP = nullptr;
-//	std::unique_ptr<Sprite> spriteWP = nullptr;
-//	std::unique_ptr<Sprite> spriteW[3];
+std::unique_ptr<Sprite> spriteGauge = nullptr;
+std::unique_ptr<Sprite> spriteHPGauge = nullptr;
+std::unique_ptr<Sprite> spriteHP = nullptr;
+std::unique_ptr<Sprite> spriteWP = nullptr;
+std::unique_ptr<Sprite> spriteW[3];
 
 	int wt=0;
 
 
-//public:
-//	Player();
-//	~Player() {};
-//
-//	void Initialize();
-//
-//
-//	// �X�V����
-//	void Update(float elapsedTime, Object& S, const Camera& C);
-//	// �`�揈��
-//	void Render(float elapsedTime, RenderContext rc,bool Pause);
-//	void UIRender(float elapsedTime, ID3D11DeviceContext* dc);
+
 
 
     //debug
