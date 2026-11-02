@@ -19,7 +19,7 @@ void EnemyManager::Update(float elapsedTime)
 				XMVectorGetX(XMVector3Length
 				(XMVectorSubtract(e_pos2, e_pos1)));
 
-			float radius = 10;
+			float radius = 15;
 			if (direction <= radius)
 			{
 				// 正規化（方向ベクトル）

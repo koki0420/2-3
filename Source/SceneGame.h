@@ -55,7 +55,7 @@ private:
 	Camera								camera;
 	TestCameraController				cameraController;
 	Object								stage;
-	
+	Player								player;
 
 	std::vector<std::unique_ptr<Enemy>> enemies;
 	std::unique_ptr<Boss> boss;
@@ -101,7 +101,7 @@ private:
 
 	
 
-	std::unique_ptr <Player> p = nullptr;
+	
 	std::unique_ptr<Sprite> pauseSprite;
 
 	Object   Light[LIGHT_MAX];
