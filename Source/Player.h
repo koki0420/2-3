@@ -106,22 +106,13 @@ private:
     };
     Weapon weapon = Weapon::Sword;
 
-<<<<<<< HEAD
-//	std::unique_ptr<Sprite> spriteGauge = nullptr;
 
-//	std::unique_ptr<Sprite> spriteHPGauge = nullptr;
-//	std::unique_ptr<Sprite> spriteGauge = nullptr;
+    std::unique_ptr<Sprite> spriteGauge = nullptr;
+    std::unique_ptr<Sprite> spriteHPGauge = nullptr;
+    std::unique_ptr<Sprite> spriteHP = nullptr;
+    std::unique_ptr<Sprite> spriteWP = nullptr;
+    std::unique_ptr<Sprite> spriteW[3];
 
-//	std::unique_ptr<Sprite> spriteHP = nullptr;
-//	std::unique_ptr<Sprite> spriteWP = nullptr;
-//	std::unique_ptr<Sprite> spriteW[3];
-=======
-std::unique_ptr<Sprite> spriteGauge = nullptr;
-std::unique_ptr<Sprite> spriteHPGauge = nullptr;
-std::unique_ptr<Sprite> spriteHP = nullptr;
-std::unique_ptr<Sprite> spriteWP = nullptr;
-std::unique_ptr<Sprite> spriteW[3];
->>>>>>> 303d263448f2486aa2fd015c6473ac6530329f0c
 
 	int wt=0;
 
