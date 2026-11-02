@@ -68,7 +68,7 @@ void SceneGame::Initialize()
 	{
 		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
 	}
-	p->Initialize();
+	player.Initialize();
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
 }	
 
@@ -128,7 +128,7 @@ void SceneGame::Update(float elapsedTime)
 		}
 		clearTimer += elapsedTime;
 	}
-	if (p->GetPlayerHP()<=0)
+	if (player.GetPlayerHP()<=0)
 	{
 		if(clearTimer>7)
 		{
@@ -171,8 +171,8 @@ void SceneGame::Render(float elapsedTime)
 	);
 
 	{
-		p->UIRender(elapsedTime, dc);
-		if (p->GetPlayerHP() <= 0)
+		player.UIRender(elapsedTime, dc);
+		if (player.GetPlayerHP() <= 0)
 		{
 			SpriteOVER->Render(dc, 300, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
