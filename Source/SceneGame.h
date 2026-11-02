@@ -133,7 +133,7 @@ private:
 
 	bool goalReached = false;
 	float clearTimer = 0.0f;
-
+	std::unique_ptr<Sprite> SpriteOVER;
 	
 
 	
