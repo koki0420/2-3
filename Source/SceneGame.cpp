@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "SceneGame.h"
 #include <imgui.h>
@@ -60,10 +60,10 @@ void SceneGame::Initialize()
 		EnemyManager::Instance().Register(std::move(enemies[i]));
 		enemy_num += 1;
 	}
-<<<<<<< HEAD
+//<<<<<<< HEAD
 	
 	
-=======
+//=======
 	p = std::make_unique<Player>();
 	p->Initialize();
 	
@@ -72,7 +72,7 @@ void SceneGame::Initialize()
 		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
 	}
 
->>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
+//>>>>>>> 302028f4317cdc9fb9b45fcff7960d7030713289
 }	
 
 void SceneGame::Finalize()
