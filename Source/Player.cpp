@@ -95,6 +95,8 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	{
 		isMoving = InputMove(elapsedTime, camera);
 	}
+
+	WeaponChange();
 	UpdateAttack(elapsedTime);
 	pAnimation(elapsedTime, isMoving);
 
@@ -303,27 +305,26 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 void Player::StartAttack()
 {
 	if (isAttacking)return;
+	if (!(GetAsyncKeyState('J') & 0x8000))return;
 
 	State next;
 	float duration;
 
-	if (GetAsyncKeyState('J') & 0x8000)
+	switch (weapon)
 	{
+	case WEAPON::Sword:
 		next = State::Sword_Attack1;
 		duration = 2.4f;
-	}
-	else if (GetAsyncKeyState('K') & 0x8000)
-	{
+		break;
+	case WEAPON::Fist:
 		next = State::Fight_Punch1;
-		duration = 0.9f;
-	}
-	else if (GetAsyncKeyState('L') & 0x8000)
-	{
+		duration = 0.87f;
+		break;
+	case WEAPON::Scythe:
 		next = State::Scythe_Attack;
 		duration = 1.1f;
-	}
-	else
-	{
+		break;
+	default:
 		return;
 	}
 
@@ -439,6 +440,16 @@ bool Player::CheckTakeAttack(
 	}
 
 	return false;
+
+}
+
+void Player::WeaponChange()
+{
+	if (isAttacking)return;
+
+	if (GetAsyncKeyState('1') & 0x8000)weapon = WEAPON::Sword;
+	else if (GetAsyncKeyState('2') & 0x8000)weapon = WEAPON::Fist;
+	else if (GetAsyncKeyState('3') & 0x8000)weapon = WEAPON::Scythe; 
 
 }
 

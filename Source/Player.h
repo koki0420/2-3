@@ -42,6 +42,8 @@ public:
         DirectX::XMFLOAT3 enemyPosition,
         float enemyRadius);
 
+    void WeaponChange();
+
 protected:
     //ƒvƒŒƒCƒ„[
     Object player;

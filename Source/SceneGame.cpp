@@ -81,7 +81,7 @@ void SceneGame::Finalize()
 void SceneGame::Update(float elapsedTime)
 {
 	DirectX::XMFLOAT3 focus = player.GetPosition();
-	focus.y += 1.0f;
+	focus.y += 10.0f;
 	cameraController.SetFocus(focus);
 	cameraController.Update();
 	cameraController.SyncControllerToCamera(camera);
@@ -291,7 +291,7 @@ void SceneGame::DrawGUI()
 
 			ImGui::Text("Distance to player: %.2f", distance);
 		}
-
+		
 		player.DrawGUI();
 
 
