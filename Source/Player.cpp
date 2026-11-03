@@ -110,6 +110,10 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(Weapon[weapon_num].position.x, Weapon[weapon_num].position.y, Weapon[weapon_num].position.z);
 	DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, S * R * T);
 
+
+	swordLine.Update(Weapon[weapon_num].transform);
+
+
 	for (const Model::Node& node : player.model->GetNodes())
 	{
 		if (strcmp(node.name, rightHandName) == 0)

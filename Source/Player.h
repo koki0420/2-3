@@ -9,6 +9,7 @@
 #include "Object.h"
 #include "Animation.h"
 #include "Sprite.h"
+#include "Sword_Line.h"
 
 class Player
 {
@@ -142,6 +143,8 @@ private:
     bool showAttackCollision = true;
     bool previewState = false;
 
+
+	Sword_Line swordLine;
  
 
 };
