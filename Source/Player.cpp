@@ -33,20 +33,23 @@ Player::Player()
 
 
 }
-Player::~Player()
-{
-	if (animation)
-	{
-		delete animation;
-	}
-}
+Player::~Player() = default;
+
 void Player::Initialize()
 {
+
+	animation.reset();
+    player.position = { 0, -15, 0 };
+
     player.position = { 0, -28, 0 };
+
     player.angle = { 0, 0, 0 };
     player.scale = { 0.25, 0.25, 0.25 };
     player.velocity = { 0, 0, 0 };
     player.model = std::make_unique<Model>("Data/Model/Player/Player.mdl");
+
+	animation = std::make_unique<Animation>(*player.model);
+
 
 	Weapon[0].model = std::make_unique<Model>("Data/Model/Weapon/Sword.mdl");
 	Weapon[0].scale = { 0.5f,0.5f,0.5f };
@@ -55,7 +58,6 @@ void Player::Initialize()
 
 	weapon_num = 0;
 
-	animation = new Animation(*player.model);
 
 	state = State::Idle;
 	animation->PlayAnimation("Idle", true);
@@ -65,8 +67,11 @@ void Player::Initialize()
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 {
 
-	if (IsDead)return;
-
+	if (IsDead)
+	{
+		animation->Update(elapsedTime);
+		return;
+	}
 
 	// debug
 	if (previewState)
@@ -143,7 +148,7 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 	DirectX::XMFLOAT3 pPos = player.position;
 
-	pPos.y += 2.0f;
+	pPos.y += playerRadiusHeight;
 
 	Graphics::Instance().GetShapeRenderer()->DrawSphere(
 		pPos,
@@ -207,7 +212,7 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	player.position.x += moveX;
 	player.position.z += moveZ;
 
-	//遘ｻ蜍輔＠縺ｦ縺?ｋ縺ｨ縺阪□縺代◎縺ｮ譁ｹ蜷代∈蜷代￥
+	//移動しているときだけその方向へ向く
 	if (moveLength > 0.0f)
 	{
 		player.angle.y = atan2f(moveX, moveZ);
@@ -223,50 +228,93 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	return moveLength > 0.0f;
 }
 
+const char* const Player::animationNames[13] =
+{
+	"Idle","Death","Drunk_Idle","Drunk_Scythe","Drunk_Sword",
+	"Fight_Idle","Fight_Punch1","Fight_Punch2","Fight_Kick",
+	"Scythe_Attack","Sword_Attack1","Sword_Attack2","Sword_Walk"
+};
+
+void Player::setState(State next, bool loop)
+{
+	if (state == next)return;
+
+	state = next;
+	animation->PlayAnimation(animationNames[static_cast<int>(state)], loop);
+}
 
 
 void Player::pAnimation(float elapsedTime,bool isMoving)
 {
-	switch (state)
+	/*switch (state)
 	{
 	case State::Idle:
 	{
 		if (isMoving)
 		{
-			state = State::Run;
+			state = State::Sword_Walk;
 			animation->PlayAnimation("Sword_Walk", true);
 		}
 		break;
 	}
-	case State::Run:
+	case State::Sword_Walk:
 		if (!isMoving)
 		{
 			state = State::Idle;
 			animation->PlayAnimation("Idle", true);
 		}
 		break;
+	}*/
+	
+	/*if (!isMoving)
+	{
+		state = State::Idle;
+		animation->PlayAnimation("Idle", true);
+	}*/
 
+	if (!isAttacking)
+	{
+		setState(isMoving ? State::Sword_Walk : State::Idle, true);
 	}
 
 	animation->Update(elapsedTime);
 
 }
 
-//謾ｻ謦?幕蟋句?逅?
+//攻撃開始処理
 void Player::StartAttack()
 {
 	if (isAttacking)return;
 
+	State next;
+	float duration;
+
 	if (GetAsyncKeyState('J') & 0x8000)
 	{
-		state = State::SwordAttack1;
-		isAttacking = true;
-		attackTime = 0.0f;
-		hitEnemies.clear();
-		animation->PlayAnimation("Sword_Attack1", false);
+		next = State::Sword_Attack1;
+		duration = 2.4f;
 	}
-	
-	
+	else if (GetAsyncKeyState('K') & 0x8000)
+	{
+		next = State::Fight_Punch1;
+		duration = 0.9f;
+	}
+	else if (GetAsyncKeyState('L') & 0x8000)
+	{
+		next = State::Scythe_Attack;
+		duration = 1.1f;
+	}
+	else
+	{
+		return;
+	}
+
+	attackDuration = duration;
+	isAttacking = true;
+	attackTime = 0.0f;
+	hitEnemies.clear();
+	setState(next, false);
+
 }
 
 void Player::UpdateAttack(float elapsedTime)
@@ -275,17 +323,16 @@ void Player::UpdateAttack(float elapsedTime)
 
 	if (isAttacking)
 	{
-		//player縺悟髄縺?※縺?ｋ譁ｹ蜷代?蜑肴婿縺ｸ驟咲ｽｮ
+		//playerが向いている方向の前方へ配置
 		attackPosition.x = player.position.x + sinf(player.angle.y) * attackDistance;
 		attackPosition.y = player.position.y + attackHeight;
 		attackPosition.z = player.position.z + cosf(player.angle.y) * attackDistance;
 
 		attackTime += elapsedTime;
-		if (attackTime > attackDuration)
+		if (attackTime >= attackDuration)
 		{
-			state = State::Idle;
 			isAttacking = false;
-			animation->PlayAnimation("Idle", true);
+			setState(State::Idle, true);
 		}
 	}
 
@@ -294,13 +341,13 @@ void Player::UpdateAttack(float elapsedTime)
 bool Player::CheckAttackHit(
 	size_t enemyIndex,DirectX::XMFLOAT3 enemyPosition, float enemyRadius)
 {
-	//謾ｻ謦?＠縺ｦ縺?↑縺?√∪縺溘?蜻ｽ荳ｭ貂医∩縺ｪ繧牙愛螳壹＠縺ｪ縺?
+	//攻撃していない、または命中済みなら判定しない
 	if (!IsAttackActive())return false;
 
-	//莉雁屓縺吶〒縺ｫ蠖薙◆縺｣縺滓雰縺ｪ繧牙愛螳壹＠縺ｪ縺?
+	//すでに当たったなら判定しない
 	if (hitEnemies.count(enemyIndex) > 0)return false;
 
-	//2縺､縺ｮ逅??荳ｭ蠢??蟾ｮ
+	
 	float dx = attackPosition.x - enemyPosition.x;
 	float dy = attackPosition.y - enemyPosition.y;
 	float dz = attackPosition.z - enemyPosition.z;
@@ -309,7 +356,7 @@ bool Player::CheckAttackHit(
 
 	if (dx * dx + dy * dy + dz * dz <= radius * radius)
 	{
-		//縺薙?謨ｵ縺ｫ蠖薙◆縺｣縺溘％縺ｨ繧定ｨ倬鹸縺吶ｋ
+		//この敵に当たったことを記録する
 		hitEnemies.insert(enemyIndex);
 		return true;
 	}
@@ -337,8 +384,11 @@ void Player::takeDamage(float damage)
 	{
 		playerHP = 0.0f;
 		IsDead = true;
+		previewState = false;
+		state = State::Death;
+		animation->PlayAnimation("Death", false);
 
-		//豁ｻ莠｡縺励◆繧画判謦?ｒ豁｢繧√ｋ
+		//死亡したら攻撃を止める
 		isAttacking = false;
 		hitEnemies.clear();
 		attackTime = 0.0f;
@@ -355,26 +405,14 @@ bool Player::CheckTakeAttack(
 	if (IsDead || previewState || invincibleTime)return false;
 
 	DirectX::XMFLOAT3 center = player.position;
-	center.y += 2.0f;
+	center.y += playerRadiusHeight;
 	
-	//2縺､縺ｮ逅??荳ｭ蠢??蟾ｮ
 	float dx = center.x - enemyPosition.x;
 	float dy = center.y - enemyPosition.y;
 	float dz = center.z - enemyPosition.z;
 
 
 	float radius = playerRadius + enemyRadius;
-
-
-	/*spriteHPGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteHP->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteW[wt]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-	spriteGauge->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 50, 82, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);*/
-
-	
-
-
 
 	if (dx * dx + dy * dy + dz * dz <= radius * radius)
 	{
@@ -410,7 +448,7 @@ void Player::DrawGUI()
 			player.position.y,
 			player.position.z);
 
-		// 菫晏ｭ倥＆繧後※縺?ｋ繝ｩ繧ｸ繧｢繝ｳ繧偵∬ｦ九ｄ縺吶＞蠎ｦ謨ｰ豕輔↓螟画鋤縺吶ｋ
+		// ラジアンを見やすい度数法に変換する
 		ImGui::Text("Rotation (degrees)");
 		ImGui::Text("X: %.1f  Y: %.1f  Z: %.1f",
 			DirectX::XMConvertToDegrees(player.angle.x),
@@ -430,14 +468,8 @@ void Player::DrawGUI()
 			attackPosition.z);
 	}
 
-	const char* stateNames[] =
-	{
-		"Idle",
-		"Run",
-		"SwordAttack1"
-	};
-
-	//ImGui::Text("State: %s", stateNames[static_cast<int>(state)]);
+	
+	ImGui::Text("State: %s", animationNames[static_cast<int>(state)]);
 	ImGui::Text("Attacking: %s", isAttacking ? "Yes" : "No");
 	ImGui::Text("Hit enemies: %d", static_cast<int>(hitEnemies.size()));
 	ImGui::Text("Attack time: %.2f / %.2f",
@@ -445,24 +477,18 @@ void Player::DrawGUI()
 
 	ImGui::Checkbox("Show attack collision", &showAttackCollision);
 
-	ImGui::SliderFloat("Attack radius", &attackRadius, 0.1f, 10.0f);
-	ImGui::SliderFloat("Attack distance", &attackDistance, 0.0f, 10.0f);
-	ImGui::SliderFloat("Attack height", &attackHeight, -30.0f, 10.0f);
-	ImGui::SliderFloat("Attack duration", &attackDuration, 0.1f, 5.0f);
+	ImGui::SliderFloat("Attack radius", &attackRadius, 1.0f, 20.0f);
+	ImGui::SliderFloat("Attack distance", &attackDistance, 0.0f, 20.0f);
+	ImGui::SliderFloat("Attack height", &attackHeight, 1.0f, 30.0f);
+	ImGui::Text("Clip duration: %.2f s", attackDuration);
 
 	ImGui::SliderFloat(
-		"Hit start", &attackStartTime, 0.0f, attackDuration);
+		"Hit start", &attackStartTime, 0.0f, 2.4f);
 
 	ImGui::SliderFloat(
-		"Hit end", &attackEndTime, 0.0f, attackDuration);
+		"Hit end", &attackEndTime, 0.0f, 2.4f);
 
-	// 謾ｻ謦??菴薙?譎る俣繧堤洒縺上＠縺溷ｴ蜷医ｂ縲∫ｯ?峇蜀?↓蜿弱ａ繧?
-	if (attackEndTime > attackDuration)
-	{
-		attackEndTime = attackDuration;
-	}
-
-	// 髢句ｧ区凾髢薙′邨ゆｺ?凾髢薙ｒ雜?∴縺ｪ縺?ｈ縺?↓縺吶ｋ
+	// 開始時間が終了時間を越えないようにする
 	if (attackStartTime > attackEndTime)
 	{
 		attackStartTime = attackEndTime;
@@ -473,46 +499,24 @@ void Player::DrawGUI()
 
 	ImGui::Separator();
 
-	// 繝√ぉ繝?け繧貞､画峩縺励◆迸ｬ髢薙↓螳溯｡後☆繧?
+	if (IsDead)return;
+
+	// チェックを変更した瞬間に実行する
 	if (ImGui::Checkbox("State preview", &previewState))
 	{
-		state = State::Idle;
 		isAttacking = false;
-		
 		attackTime = 0.0f;
-
-		animation->PlayAnimation("Idle", true);
+		hitEnemies.clear();
+		setState(State::Idle, true);
 	}
 
 	if (previewState)
 	{
 		int selectedState = static_cast<int>(state);
-
-		// 驕ｸ謚槭ｒ螟画峩縺励◆迸ｬ髢薙↓螳溯｡後☆繧?
 		if (ImGui::Combo("Preview state", &selectedState,
-			stateNames, IM_ARRAYSIZE(stateNames)))
+			animationNames, IM_ARRAYSIZE(animationNames)))
 		{
-			state = static_cast<State>(selectedState);
-
-			switch (state)
-			{
-			case State::Idle:
-				animation->PlayAnimation("Idle", true);
-				break;
-
-			case State::Run:
-				animation->PlayAnimation("Sword_Walk", true);
-				break;
-
-			case State::SwordAttack1:
-				// 遒ｺ隱咲畑縺ｪ縺ｮ縺ｧ郢ｰ繧願ｿ斐＠蜀咲函縺吶ｋ
-				animation->PlayAnimation("Sword_Attack1", true);
-				break;
-
-			case State::SwordAttack2:
-				animation->PlayAnimation("Sword_Attack2", true);
-				break;
-			}
+			setState(static_cast<State>(selectedState), true);
 		}
 	}
 }

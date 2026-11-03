@@ -55,25 +55,26 @@ void SceneGame::Initialize()
 	{
 		for (int j = 0;j < 10;j += 1)
 		{
-			enemies.emplace_back(std::make_unique<Enemy>(DirectX::XMFLOAT3{ -260 + 52.0f * j, 0, -260 + 52.0f * i }));
+			auto enemy = std::make_unique<Enemy>(
+				DirectX::XMFLOAT3{ -260 + 52.0f * j, 0, -260 + 52.0f * i });
+			enemies.push_back({ enemy.get(), enemyMaxHP });
+			EnemyManager::Instance().Register(std::move(enemy));
+			++enemy_num;
 		}
-	}
-	for (size_t i = 0; i < enemies.size(); i++)
-	{
-		EnemyManager::Instance().Register(std::move(enemies[i]));
-		enemy_num += 1;
 	}
 	
 	if(boss->Clear())
 	{
 		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
 	}
+	
 	player.Initialize();
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
 }	
 
 void SceneGame::Finalize()
 {
+	enemies.clear();
 	EnemyManager::Instance().Clear();
 }
 
@@ -117,6 +118,19 @@ void SceneGame::Update(float elapsedTime)
 	EnemyManager::Instance().Update(elapsedTime);
 
 	player.Update(elapsedTime,stage,camera);
+
+	//ìGÇ÷ÇÃÉ_ÉÅÅ[ÉW
+	for (size_t i = 0;i < enemies.size();++i)
+	{
+		auto& target = enemies[i];
+		if (!target.enemy->Alive())continue;
+		if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
+			enemyHitRadius))
+		{
+			target.hp -= player.GetPAtkDmg();
+			if (target.hp <= 0.0f)DefeatEnemy(i);
+		}
+	}
 
 	EffectManager::Instance().Update(elapsedTime);
 
@@ -170,6 +184,17 @@ void SceneGame::Render(float elapsedTime)
 		rc.camera->GetProjection()
 	);
 
+
+	if (showEnemyHitBoxes)
+	{
+		for (const auto& target : enemies)
+		{
+			if (!target.enemy->Alive()) continue;
+			shapeRenderer->DrawSphere(
+				GetEnemyHitCenter(*target.enemy), enemyHitRadius, { 0, 1, 0, 1 });
+		}
+	}
+
 	{
 		player.UIRender(elapsedTime, dc);
 		if (player.GetPlayerHP() <= 0)
@@ -194,24 +219,21 @@ void SceneGame::DrawGUI()
 	{
 		if (ImGui::Button("enemy"))
 		{
-			if (enemy_num > 0)
+			for (size_t i = 0; i < enemies.size(); ++i)
 			{
-				EnemyManager::Instance().Enemy_Set(enemy_num_debug,false);
-				enemy_num -= 1;
-				enemy_num_debug += 1;
+				if (!enemies[i].enemy->Alive()) continue;
+				DefeatEnemy(i);
+				break;
 			}
 		}
 		if (ImGui::Button("all_enemy"))
 		{
-			if (enemy_num > 0)
-			{
-				for (size_t i = 0;i < enemies.size();i += 1)
-				{
-					EnemyManager::Instance().Enemy_Set(i, false);
-					enemy_num -= 1;
-				}
-			}
+			for (size_t i = 0; i < enemies.size(); ++i) DefeatEnemy(i);
 		}
+		ImGui::Text("Enemies alive: %d", enemy_num);
+		ImGui::Checkbox("Show enemy hitboxes", &showEnemyHitBoxes);
+		ImGui::SliderFloat("Enemy hit radius", &enemyHitRadius, 0.1f, 30.0f);
+		ImGui::SliderFloat("Enemy hit height", &enemyHitHeight, 0.0f, 30.0f);
 		if (ImGui::Button("boss"))
 		{
 			if (boss->Boss_Alive()&&enemy_num<=0)
@@ -273,11 +295,31 @@ void SceneGame::DrawGUI()
 	ImGui::End();
 }
 
+DirectX::XMFLOAT3 SceneGame::GetEnemyHitCenter(const Enemy& enemy)const
+{
+	auto center = enemy.GetPos();
+	center.y += enemyHitHeight;
+	return center;
+}
+
+void SceneGame::DefeatEnemy(size_t index)
+{
+	auto& target = enemies[index];
+	if (!target.enemy->Alive())return;
+
+	target.hp = 0.0f;
+	EnemyManager::Instance().Enemy_Set(static_cast<int>(index),false);
+	--enemy_num;
+
+}
+
 void SceneGame::Respawn()
 {
+	enemy_num = 0;
 	for (size_t i = 0; i < enemies.size(); i++)
 	{
-		EnemyManager::Instance().Enemy_Set(i,true);
+		enemies[i].hp = enemyMaxHP;
+		EnemyManager::Instance().Enemy_Set(static_cast<int>(i), true);
 		enemy_num += 1;
 	}
 
