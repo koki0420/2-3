@@ -42,7 +42,7 @@ public:
         float enemyRadius);
 
 protected:
-    //繝励Ξ繧､繝､繝ｼ
+    //プレイヤー
     Object player;
 
     float playerHP = 100.0f;
@@ -55,47 +55,59 @@ protected:
     float enemyHP = 100.0f;
     //
 
-    //謾ｻ謦?
-    //莉ｮ縺ｮ蛟､
+    //攻撃
+    //仮値
     float attackStartTime = 0.4f;
     float attackEndTime = 1.0f;
 
-    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//謾ｻ謦?愛螳壹?荳ｭ蠢?
-    float attackRadius = 2.0f;//逅??蜊雁ｾ?
-    float attackDistance = 2.5f;//繝励Ξ繧､繝､繝ｼ縺九ｉ蜑肴婿縺ｸ縺ｮ霍晞屬
-    float attackHeight = 3.0f;//蝨ｰ髱｢縺九ｉ縺ｮ鬮倥＆
+    DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撃判定の中心
+    float attackRadius = 2.0f;//球の半径
+    float attackDistance = 2.5f;//プレイヤーから前方への距離
+    float attackHeight = 3.0f;//地面からの高さ
 
-    float attackTime = 0;//謾ｻ謦?ｒ蟋九ａ縺ｦ縺九ｉ縺ｮ邨碁℃譎る俣
-    float attackDuration = 2.4f;//謾ｻ謦?′邨ゅｏ繧九∪縺ｧ縺ｮ譎る俣
+    float attackTime = 0;//攻撃を始めてからの経過時間
+    float attackDuration = 2.4f;//攻撃が終わるまでの時間
     bool isAttacking = false;
 
-    //迴ｾ蝨ｨ謾ｻ謦?愛螳壹′譛牙柑縺?
+    //攻撃しているか
     bool IsAttackActive()const;
 
 
-    //謨ｵ
+    //敵
     std::unordered_set<size_t> hitEnemies;
 
 
     
-    void StartAttack();//謾ｻ謦??髢句ｧ句?逅?
+    void StartAttack();//攻撃開始処理
     void UpdateAttack(float elapsedTime);
 
     bool InputMove(float elapsedTime,Camera camera);
 
-    Animation* animation = nullptr;
+    std::unique_ptr<Animation> animation;
     void pAnimation(float elapsedTime,bool isMoving);
 
 private:
-    //繧｢繝九Γ繝ｼ繧ｷ繝ｧ繝ｳState
+    //アニメーションstate
     enum class State
     {
         Idle,
-        Run,
-        Dead,
-        SwordAttack1,
-        SwordAttack2,
+        Death,
+        Drunk_Idle,//Drunk=酔っ払い
+        Drunk_Scythe,
+        Drunk_Sword,
+        Fight_Idle,
+        Fight_Punch1,
+        Fight_Punch2,
+        Fight_Kick,
+        Scythe_Attack,
+        Sword_Attack1,
+        Sword_Attack2,
+        Sword_Walk,
+
+        
     };
+    void setState(State next, bool loop);
+    static const char* const animationNames[13];
     State state = State::Idle;
 
     enum class Weapon

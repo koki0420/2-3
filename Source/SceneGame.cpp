@@ -68,7 +68,7 @@ void SceneGame::Initialize()
 	{
 		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
 	}
-	player.Initialize();
+	
 }	
 
 void SceneGame::Finalize()
