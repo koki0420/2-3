@@ -166,7 +166,11 @@ void SceneGame::Render(float elapsedTime)
 	rc.renderState = renderState;
 	rc.camera = &camera;
 
-	
+	DirectX::XMFLOAT4X4 vp;
+
+	DirectX::XMStoreFloat4x4(&vp,
+		DirectX::XMLoadFloat4x4(&camera.GetView()) *
+		DirectX::XMLoadFloat4x4(&camera.GetProjection()));
 
 	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
 	EnemyManager::Instance().Render(rc, modelRenderer);

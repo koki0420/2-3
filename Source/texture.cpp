@@ -3,6 +3,7 @@
 
 #include <WICTextureLoader.h>
 
+#include <cassert>
 
 using namespace DirectX;
 
@@ -39,6 +40,8 @@ HRESULT load_texture_from_file(ID3D11Device* device, const wchar_t* filename, ID
 	ComPtr<ID3D11Texture2D> texture2d;
 	hr = resource.Get()->QueryInterface<ID3D11Texture2D>(texture2d.GetAddressOf());
 	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+
+	assert(texture2d != nullptr);
 	texture2d->GetDesc(texture2d_desc);
 
 	return hr;

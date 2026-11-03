@@ -157,7 +157,7 @@ private:
     bool previewState = false;
 
 
-	Sword_Line swordLine;
+	Sword_Line sword_Line;
  
 
 };
