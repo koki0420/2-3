@@ -11,6 +11,8 @@ SamplerState sky_sampler_state : register(s5);
 cbuffer CbMesh : register(b1)
 {
     float4 materialColor;
+    float highlight;
+    float3 padding;
 };
 
 Texture2D DiffuseMap : register(t0);
@@ -117,8 +119,17 @@ float4 main(VS_OUT pin) : SV_TARGET
     }
     
    
+    if (highlight>0.5f)
+    {
+        float rim = 1.0f - saturate(dot(V, N));
+        
+        rim = pow(rim, 4.0f);
+        
+        color.rgb += rim * float3(0.3f,0.8f,0.2f);
+    }
+    
 
-    return saturate(color);
+        return saturate(color);
 }
 
 //float4 main(VS_OUT pin) : SV_TARGET

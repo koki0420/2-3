@@ -44,6 +44,7 @@ public:
 protected:
     //ÉvÉåÉCÉÑÅ[
     Object player;
+    Object Weapon[2];
 
     float playerHP = 100.0f;
     float playerRadius = 5.0f;
@@ -110,13 +111,14 @@ private:
     static const char* const animationNames[13];
     State state = State::Idle;
 
-    enum class Weapon
+    enum class WEAPON
     {
-        Sword,
-        Fist,
+        Sword=0,
         Scythe,
+        Fist,
     };
-    Weapon weapon = Weapon::Sword;
+    WEAPON weapon = WEAPON::Sword;
+    int weapon_num = 0;;
 
 
 
@@ -151,5 +153,7 @@ private:
     //debug
     bool showAttackCollision = true;
     bool previewState = false;
+
+ 
 
 };

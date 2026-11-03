@@ -52,6 +52,9 @@ void BasicShader::Update(const RenderContext& rc, const ModelResource::Material&
 	// マテリアル用定数バッファ更新
 	CbMaterial cbMaterial{};
 	cbMaterial.materialColor = material.color;
+
+	cbMaterial.highlight = 1.0f;
+
 	dc->UpdateSubresource(constantBuffer.Get(), 0, 0, &cbMaterial, 0, 0);
 
 	// シェーダーリソースビュー設定

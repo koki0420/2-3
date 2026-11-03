@@ -21,6 +21,9 @@ private:
 	struct CbMaterial
 	{
 		DirectX::XMFLOAT4		materialColor;
+
+		float highlight;
+		float padding[3];
 	};
 
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>		vertexShader;
