@@ -48,6 +48,7 @@ protected:
 
     float playerHP = 100.0f;
     float playerRadius = 5.0f;
+    float playerRadiusHeight = 15.0f;
     float pAtkDmg = 200.0f;
     bool IsDead = false;
     float invincibleTime = 0.5f;
@@ -62,9 +63,9 @@ protected:
     float attackEndTime = 1.0f;
 
     DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撃判定の中心
-    float attackRadius = 2.0f;//球の半径
-    float attackDistance = 2.5f;//プレイヤーから前方への距離
-    float attackHeight = 3.0f;//地面からの高さ
+    float attackRadius = 10.0f;//球の半径
+    float attackDistance = 10.0f;//プレイヤーから前方への距離
+    float attackHeight = 15.0f;//地面からの高さ
 
     float attackTime = 0;//攻撃を始めてからの経過時間
     float attackDuration = 2.4f;//攻撃が終わるまでの時間

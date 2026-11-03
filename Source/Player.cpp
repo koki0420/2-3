@@ -37,19 +37,19 @@ Player::~Player() = default;
 
 void Player::Initialize()
 {
-<<<<<<< HEAD
+
 	animation.reset();
     player.position = { 0, -15, 0 };
-=======
+
     player.position = { 0, -28, 0 };
->>>>>>> fd3674f884b270c6ad84994695b0da956044cb68
+
     player.angle = { 0, 0, 0 };
     player.scale = { 0.25, 0.25, 0.25 };
     player.velocity = { 0, 0, 0 };
     player.model = std::make_unique<Model>("Data/Model/Player/Player.mdl");
-<<<<<<< HEAD
+
 	animation = std::make_unique<Animation>(*player.model);
-=======
+
 
 	Weapon[0].model = std::make_unique<Model>("Data/Model/Weapon/Sword.mdl");
 	Weapon[0].scale = { 0.5f,0.5f,0.5f };
@@ -58,8 +58,6 @@ void Player::Initialize()
 
 	weapon_num = 0;
 
-	animation = new Animation(*player.model);
->>>>>>> fd3674f884b270c6ad84994695b0da956044cb68
 
 	state = State::Idle;
 	animation->PlayAnimation("Idle", true);
@@ -146,7 +144,7 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 	DirectX::XMFLOAT3 pPos = player.position;
 
-	pPos.y += 2.0f;
+	pPos.y += playerRadiusHeight;
 
 	Graphics::Instance().GetShapeRenderer()->DrawSphere(
 		pPos,
@@ -403,7 +401,7 @@ bool Player::CheckTakeAttack(
 	if (IsDead || previewState || invincibleTime)return false;
 
 	DirectX::XMFLOAT3 center = player.position;
-	center.y += 2.0f;
+	center.y += playerRadiusHeight;
 	
 	float dx = center.x - enemyPosition.x;
 	float dy = center.y - enemyPosition.y;
@@ -475,9 +473,9 @@ void Player::DrawGUI()
 
 	ImGui::Checkbox("Show attack collision", &showAttackCollision);
 
-	ImGui::SliderFloat("Attack radius", &attackRadius, 0.1f, 10.0f);
-	ImGui::SliderFloat("Attack distance", &attackDistance, 0.0f, 10.0f);
-	ImGui::SliderFloat("Attack height", &attackHeight, -30.0f, 10.0f);
+	ImGui::SliderFloat("Attack radius", &attackRadius, 1.0f, 20.0f);
+	ImGui::SliderFloat("Attack distance", &attackDistance, 0.0f, 20.0f);
+	ImGui::SliderFloat("Attack height", &attackHeight, 1.0f, 30.0f);
 	ImGui::Text("Clip duration: %.2f s", attackDuration);
 
 	ImGui::SliderFloat(

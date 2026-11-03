@@ -57,7 +57,22 @@ private:
 	Object								stage;
 	Player								player;
 
-	std::vector<std::unique_ptr<Enemy>> enemies;
+	struct EnemyTarget
+	{
+		Enemy* enemy;
+		float hp;
+	};
+	std::vector<EnemyTarget> enemies;
+	static constexpr float enemyMaxHP = 100.0f;
+	float enemyHitRadius = 8.0f;
+	float enemyHitHeight = 10.0f;
+	bool showEnemyHitBoxes = false;
+
+	DirectX::XMFLOAT3 GetEnemyHitCenter(const Enemy& enemy)const;
+	void DefeatEnemy(size_t index);
+	
+
+	//std::vector<std::unique_ptr<Enemy>> enemies;
 	std::unique_ptr<Boss> boss;
 	int enemy_num = 0;
 
