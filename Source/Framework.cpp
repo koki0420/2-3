@@ -960,7 +960,7 @@ int Framework::Run()
 	}
 	MSG msg = {};
 #if DEBUG
-	ToggleFullscreen();
+	//ToggleFullscreen();
 #endif
 
 	while (WM_QUIT != msg.message)

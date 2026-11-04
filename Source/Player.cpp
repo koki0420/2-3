@@ -7,7 +7,7 @@
 #define PLAYERHPMAX 300
 Player::Player()
 {
-
+	
 
 	Initialize();
 
