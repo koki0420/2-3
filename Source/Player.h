@@ -138,6 +138,8 @@ private:
     float bloodGauge[3] = {};//0:Sword,1:Scythe,2:Fist
     bool IsMusou = false;
     float bloodAttackMultiplier = 1.0f;
+    //UŒ‚‚ÌÄ¶”{—¦
+    float attackSpeedMultiplier = 1.0f;
 
     std::unique_ptr<Sprite> spriteGauge = nullptr;
     std::unique_ptr<Sprite> spriteHPGauge = nullptr;
