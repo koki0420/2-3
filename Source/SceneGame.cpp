@@ -150,9 +150,42 @@ void SceneGame::Update(float elapsedTime)
 		{
 			player.CheckTakeAttack(target.enemy->GetPos(), 20.0f);
 		}
+	}
+
+	//“G‚Ö‚Ìƒ_ƒ[ƒW
+	if (boss.BOSS->Boss_Alive())
+	{
+		if (player.CheckAttackHit(0, boss.BOSS->GetPos(),
+			40.0f))
+		{
+			boss.hp -= player.GetPAtkDmg();
+			if (boss.hp <= 0.0f)Boss_Dead = true;
+		}
+		//“G‚©‚ç‚ÌUŒ‚
+		if (boss.BOSS->GetMiddleAnimation()->IsPlaying("Jump")
+			&& boss.BOSS->GetMiddleAnimation()->GetCurrentFrame() >= 70 &&
+			boss.BOSS->GetMiddleAnimation()->GetCurrentFrame() <= 90)
+		{
+			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+		}
+
+		//“G‚©‚ç‚ÌUŒ‚
+		if (boss.BOSS->GetBossAnimation()->IsPlaying("Attack")
+			&& boss.BOSS->GetBossAnimation()->GetCurrentFrame() >= 36 &&
+			boss.BOSS->GetBossAnimation()->GetCurrentFrame() <= 45)
+		{
+			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+		}
+
+		//“G‚©‚ç‚ÌUŒ‚
+		if (boss.BOSS->GetBossAnimation()->IsPlaying("Jump_Attack")
+			&& boss.BOSS->GetBossAnimation()->GetCurrentFrame() >= 48 &&
+			boss.BOSS->GetBossAnimation()->GetCurrentFrame() <= 70)
+		{
+			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+		}
 
 	}
-	
 	EffectManager::Instance().Update(elapsedTime);
 
 	if (boss.BOSS->Clear())
