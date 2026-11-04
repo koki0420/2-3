@@ -173,6 +173,24 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		sword_Line.Render(Graphics::Instance().GetDeviceContext(), VP);
 
 	}
+
+	if (animation->GetCurrentFrame() >= 0 && !IsSwrod)
+	{
+		Sword_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 7.0f);
+		IsSwrod = true;
+	}
+
+	if (animation->GetCurrentFrame() >= 20.0f && !IsFight)
+	{
+		Fight_Effect->Play({ attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, 7.0f);
+		IsFight = true;
+	}
+
+	if (animation->GetCurrentFrame() >= 15.0f && !IsSlash)
+	{
+		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 4.0f);
+		IsSlash = true;
+	}
 }
 	
 
@@ -325,14 +343,23 @@ void Player::StartAttack()
 	case WEAPON::Sword:
 		next = State::Sword_Attack1;
 		duration = 2.4f;
+
+		IsSwrod = false;
+
 		break;
 	case WEAPON::Scythe:
 		next = State::Scythe_Attack;
 		duration = 1.1f;
+
+		IsSlash = false;
+
 		break;
 	case WEAPON::Fist:
 		next = State::Fight_Punch1;
 		duration = 0.87f;
+
+		IsFight = false;
+
 		break;
 	default:
 		return;
