@@ -305,7 +305,7 @@ void Player::StartAttack()
 	if (!normalPressed && !bloodPressed)return;
 
 
-	pAtkDmg = 20.0f;
+	pAtkDmg = PAD;
 	bloodAttackMultiplier = 1.0f;
 
 	if (bloodPressed && !BloodAttack())return;
@@ -584,6 +584,7 @@ void Player::DrawGUI()
 	ImGui::Text("Invincible time: %.2f", invincibleTime);
 
 	ImGui::SliderFloat("Attack damage", &pAtkDmg, 0.0f, 100.0f);
+	ImGui::SliderFloat("PAD", &PAD, 0.0f, 100.0f);
 	ImGui::SliderFloat("Player radius", &playerRadius, 0.1f, 10.0f);
 
 	if (ImGui::Button("Take damage 10"))

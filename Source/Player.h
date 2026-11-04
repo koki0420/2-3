@@ -57,7 +57,10 @@ protected:
     float playerMoveSpeed = 10.0f;
     float playerRadius = 5.0f;
     float playerRadiusHeight = 15.0f;
-    float pAtkDmg = 20.0f;
+    //
+    float PAD = 20.0f;
+    //
+    float pAtkDmg = PAD;
     bool IsDead = false;
     float invincibleTime = 0.5f;
 
