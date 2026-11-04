@@ -59,7 +59,7 @@ protected:
     float playerRadius = 5.0f;
     float playerRadiusHeight = 15.0f;
     //
-    float PAD = 20.0f;
+    float PAD = 100.0f;
     //
     float pAtkDmg = PAD;
     bool IsDead = false;

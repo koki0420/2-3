@@ -47,7 +47,7 @@ void SceneGame::Initialize()
 	stage.position.y = -20;
 
 	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
-
+	boss.hp = 200.0f;
 
 	cameraController.SyncCameraToController(camera);
 
