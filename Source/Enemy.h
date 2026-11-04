@@ -27,10 +27,18 @@ public:
 		enemy.position = pos;
 	}
 
+	void TargetPos(DirectX::XMFLOAT3 pos)
+	{
+		Target = pos;
+	}
+
 
 private:
 	Object enemy;
 	unique_ptr<Animation> enemy_anime;
+
+	DirectX::XMFLOAT3 Target;
+
 	DirectX::XMFLOAT3 arrive_position = { 0,0,0 };
 
 	bool idle_anime = true;

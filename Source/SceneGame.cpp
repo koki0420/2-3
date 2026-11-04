@@ -70,6 +70,7 @@ void SceneGame::Initialize()
 	
 	player.Initialize();
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
+	EnemyManager::Instance().Target(player.GetPosition());
 }	
 
 void SceneGame::Finalize()
@@ -80,6 +81,7 @@ void SceneGame::Finalize()
 
 void SceneGame::Update(float elapsedTime)
 {
+	EnemyManager::Instance().Target(player.GetPosition());
 	DirectX::XMFLOAT3 focus = player.GetPosition();
 	focus.y += 10.0f;
 	cameraController.SetFocus(focus);

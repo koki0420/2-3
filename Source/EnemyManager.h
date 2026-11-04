@@ -32,6 +32,14 @@ public:
 
 	void Clear() { enemies.clear(); }
 
+	void Target(DirectX::XMFLOAT3 pos)
+	{
+		for (auto& enemy : enemies)
+		{
+			enemy->TargetPos(pos);
+		}
+	}
+
 private:
 	std::vector<std::unique_ptr<Enemy>> enemies;
 	int enemy_respawn_w = 0;

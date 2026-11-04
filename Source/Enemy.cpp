@@ -17,6 +17,8 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	alive = true;
 	timer = 0;
 	nextTimer = (float)(rand() % 10 + 1);
+
+	Target = { 0.0f,0.0f,0.0f };
 }
 
 Enemy::~Enemy()
@@ -30,7 +32,7 @@ void Enemy::Update(float elapsedTime)
 	float direction = DirectX::XMVectorGetX
 	(DirectX::XMVector3Length
 	(DirectX::XMVectorSubtract
-	({0,0,-1}, DirectX::XMLoadFloat3(&enemy.position))));
+	(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&enemy.position))));
 
 	if (walk_anime)
 	{
@@ -69,8 +71,8 @@ void Enemy::Update(float elapsedTime)
 	}
 	else if (direction <= 100)
 	{
-		arrive_position = { 0,-25,0 };
-		
+		arrive_position = Target;
+		arrive_position.y = -25;
 	}
 	else
 	{
@@ -124,8 +126,8 @@ void Enemy::Update(float elapsedTime)
 	if (arrive_position.x == enemy.position.x&&
 		arrive_position.z == enemy.position.z)
 	{
-		dx = 0- enemy.position.x;   // 0 - pos.x
-		dz = 0- enemy.position.z;   // 0 - pos.z
+		dx = Target.x- enemy.position.x;   // 0 - pos.x
+		dz = Target.z- enemy.position.z;   // 0 - pos.z
 
 		
 	}
