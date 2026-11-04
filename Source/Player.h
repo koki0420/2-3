@@ -103,6 +103,9 @@ protected:
     void UpdateMusouMode(float elapsedTime);
 
     bool InputMove(float elapsedTime,Camera camera);
+    bool wasMoving = false;
+    DirectX::XMFLOAT3 moveFront = { 0,0,1 };
+    DirectX::XMFLOAT3 moveRight = { 1,0,0 };
 
     std::unique_ptr<Animation> animation;
     void pAnimation(float elapsedTime,bool isMoving);
