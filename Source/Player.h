@@ -42,7 +42,20 @@ public:
         DirectX::XMFLOAT3 enemyPosition,
         float enemyRadius);
 
+    //ïêäÌêÿÇËë÷Ç¶
     void WeaponChange();
+
+    void AddBlood(float amount)
+    {
+        float& gauge = bloodGauge[weapon_num];
+        gauge += amount;
+
+        if (gauge > 100.0f)
+        {
+            gauge = 100.0f;
+        }
+
+    }
 
 protected:
     //ÉvÉåÉCÉÑÅ[
@@ -123,7 +136,7 @@ private:
     };
     WEAPON weapon = WEAPON::Sword;
     int weapon_num = 0;;
-
+    float bloodGauge[3] = {};
 
 
 //	std::unique_ptr<Sprite> spriteGauge = nullptr;

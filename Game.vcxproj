@@ -177,6 +177,7 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
     <ClInclude Include="Source\Shader.h" />
     <ClInclude Include="Source\Sprite.h" />
     <ClInclude Include="Source\static_mesh.h" />
+    <ClInclude Include="Source\Sword_Line.h" />
     <ClInclude Include="Source\texture.h" />
     <ClInclude Include="Source\Timer.h" />
     <ClInclude Include="Source\TransformUtils.h" />
@@ -235,6 +236,7 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Sprite.cpp" />
     <ClCompile Include="Source\static_mesh.cpp" />
+    <ClCompile Include="Source\Sword_Line.cpp" />
     <ClCompile Include="Source\texture.cpp" />
     <ClCompile Include="Source\Timer.cpp" />
     <ClCompile Include="Source\TransformUtils.cpp" />

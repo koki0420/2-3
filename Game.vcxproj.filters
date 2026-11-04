@@ -228,6 +228,9 @@
     <ClCompile Include="Source\TransformUtils.cpp">
       <Filter>システム</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Sword_Line.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation.h">
@@ -414,6 +417,9 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneTitle.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Sword_Line.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

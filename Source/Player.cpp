@@ -440,6 +440,16 @@ void Player::DrawGUI()
 	ImGui::Separator();
 	ImGui::Text("Player");
 	ImGui::Text("HP: %.0f", playerHP);
+	ImGui::Text("Blood gauges");
+
+	for (int i = 0; i < 3; ++i)
+	{
+		const float blood = bloodGauge[i];
+
+		ImGui::Text("Weapon %d%s: %.0f / 100",
+			i, i == weapon_num ? " (Equipped)" : "", blood);
+		ImGui::ProgressBar(blood / 100.0f);
+	}
 	ImGui::Text("Dead: %s", IsDead ? "Yes" : "No");
 	ImGui::Text("Invincible time: %.2f", invincibleTime);
 
