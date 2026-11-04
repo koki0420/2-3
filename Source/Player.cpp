@@ -29,6 +29,13 @@ Player::Player()
 
 
 
+	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
+	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
+	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
+
+	IsSwrod = true;
+	IsFight = true;
+	IsSlash = true; 
 
 
 
