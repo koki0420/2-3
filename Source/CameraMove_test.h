@@ -153,7 +153,7 @@ public:
 		DirectX::XMMATRIX World = DirectX::XMMatrixTranspose(View);
 		// ワールド行列から方向を算出
 		Right = DirectX::XMVector3TransformNormal(DirectX::XMVectorSet(1, 0, 0, 0), World);
-		Up = DirectX::XMVector3TransformNormal(DirectX::XMVectorSet(0, 1, 0, 0), World);
+		Up = DirectX::XMVectorSet(0, 1, 0, 0);
 		// 結果を格納
 		DirectX::XMStoreFloat3(&eye, Eye);
 		DirectX::XMStoreFloat3(&up, Up);
