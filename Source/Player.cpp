@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "ShapeRenderer.h"
-#define PLAYERHPMAX 100
+#define PLAYERHPMAX 10000
 Player::Player()
 {
 
@@ -68,7 +68,7 @@ void Player::Initialize()
 
 	state = State::Idle;
 	animation->PlayAnimation("Idle", true);
-    
+	playerHP = PLAYERHPMAX;
 }
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
@@ -172,6 +172,27 @@ void Player::Render(float elapsedTime, RenderContext rc)
 	{
 		sword_Line.Render(Graphics::Instance().GetDeviceContext(), VP);
 
+	}
+
+	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad)
+	{
+		Sword_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 7.0f);
+		IsSwrod = true;
+		Blad = false;
+	}
+
+	if (animation->GetCurrentFrame() >= 20.0f && !IsFight && Blad)
+	{
+		Fight_Effect->Play({ attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, 7.0f);
+		IsFight = true;
+		Blad = false;
+	}
+
+	if (animation->GetCurrentFrame() >= 15.0f && !IsSlash && Blad)
+	{
+		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 4.0f);
+		IsSlash = true;
+		Blad = false;
 	}
 }
 	
@@ -335,12 +356,13 @@ void Player::StartAttack()
 	if (!normalPressed && !bloodPressed)return;
 
 
+
 	pAtkDmg = PAD;
 	bloodAttackMultiplier = 1.0f;
 	float AttackRadius = atkR;
 
 	if (bloodPressed && !BloodAttack())return;
-
+	
 	State next;
 	float duration;
 
@@ -349,15 +371,26 @@ void Player::StartAttack()
 	case WEAPON::Sword:
 		next = State::Sword_Attack1;
 		duration = 2.4f;
+
+		IsSwrod = false;
+
 		break;
 	case WEAPON::Scythe:
 		next = State::Scythe_Attack;
 		duration = 1.1f;
+
+
+		IsSlash = false;
+
+
 		if (bloodPressed)AttackRadius = 50.0f;
 		break;
 	case WEAPON::Fist:
 		next = State::Fight_Punch1;
 		duration = 0.87f;
+
+		IsFight = false;
+
 		break;
 	default:
 		return;
@@ -528,6 +561,9 @@ bool Player::BloodAttack()
 
 	gauge -= costs[index];
 	bloodAttackMultiplier = multipliers[index];
+
+	Blad = true;
+
 	return true;
 
 }

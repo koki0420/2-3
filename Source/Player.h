@@ -174,4 +174,6 @@ private:
     bool IsFight;
     bool IsSlash;
 
+    bool Blad = false;
+
 };
