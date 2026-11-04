@@ -85,6 +85,11 @@ void SceneGame::Finalize()
 void SceneGame::Update(float elapsedTime)
 {
 	EnemyManager::Instance().Target(player.GetPosition());
+	EnemyManager::Instance().Update(elapsedTime);
+	stage.UpdateTransform();
+	player.Update(elapsedTime, stage, camera);
+
+
 	DirectX::XMFLOAT3 focus = player.GetPosition();
 	focus.y += 10.0f;
 	cameraController.SetFocus(focus);
@@ -99,9 +104,9 @@ void SceneGame::Update(float elapsedTime)
 
 		if (!(boss->Boss_Alive()))
 		{
-			Respawn();
 			boss->Boss_Chage();
 			Boss_Dead = false;
+			if (!(boss->Clear()))Respawn();
 		}
 	}
 	{
@@ -117,13 +122,6 @@ void SceneGame::Update(float elapsedTime)
 	}
 
 	
-	stage.UpdateTransform();
-	
-
-	EnemyManager::Instance().Update(elapsedTime);
-
-	player.Update(elapsedTime,stage,camera);
-
 	//“G‚Ö‚Ìƒ_ƒ[ƒW
 	for (size_t i = 0;i < enemies.size();++i)
 	{

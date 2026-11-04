@@ -58,7 +58,7 @@ void EnemyManager::Render(const RenderContext& immediate_context, ModelRenderer*
 void EnemyManager::Enemy_Set(int i, bool Alive)
 {
 	enemies[i]->enemy_set(Alive);
-	if(!(enemies[i]->Alive()))
+	if(Alive)
 	{
 		enemy_respawn_h = i / 10;
 		enemy_respawn_w = i % 10;
