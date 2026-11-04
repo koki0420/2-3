@@ -453,13 +453,13 @@ bool Framework::initialize()
 
 			//ライティング
 			create_vs_from_cso(Graphics::Instance().GetDevice(),
-				"LambertVS.cso",
+				"Data/Shader/LambertVS.cso",
 				mesh_vertex_shader.GetAddressOf(),
 				mesh_input_layout.GetAddressOf(),
 				input_element_desc,
 				ARRAYSIZE(input_element_desc));
 			create_ps_from_cso(Graphics::Instance().GetDevice(),
-				"phong_shader_ps.cso",
+				"Data/Shader/phong_shader_ps.cso",
 				mesh_pixel_shader.GetAddressOf());
 
 			
