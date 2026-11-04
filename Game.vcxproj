@@ -137,7 +137,7 @@ C:\Users\2250036\Documents\GitHub\2-3\External\DirectXTK-master\Bin\Desktop_2019
     <ClInclude Include="Source\BasicShader.h" />
     <ClInclude Include="Source\boss.h" />
     <ClInclude Include="Source\Camera.h" />
-    <ClInclude Include="Source\CameraMove_test.h" />
+    <ClInclude Include="Source\CameraController.h" />
     <ClInclude Include="Source\GameplayMath.h" />
     <ClInclude Include="Source\SceneCameraTest.h" />
     <ClInclude Include="Source\Collision.h" />
