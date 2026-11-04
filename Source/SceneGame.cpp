@@ -127,10 +127,10 @@ void SceneGame::Update(float elapsedTime)
 	}
 
 	
-	//敵へのダメージ
 	for (size_t i = 0;i < enemies.size();++i)
 	{
 		auto& target = enemies[i];
+		//敵へのダメージ
 		if (!target.enemy->Alive())continue;
 		if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
 			enemyHitRadius))
@@ -142,8 +142,17 @@ void SceneGame::Update(float elapsedTime)
 				player.AddBlood(10.0f);
 			}
 		}
-	}
+		//敵からの攻撃
 
+		if (target.enemy->GetEnemyAnimation()->IsPlaying("Punch")
+			&&target.enemy->GetEnemyAnimation()->GetCurrentFrame() >= 24&&
+			target.enemy->GetEnemyAnimation()->GetCurrentFrame() <=48)
+		{
+			player.CheckTakeAttack(target.enemy->GetPos(), 20.0f);
+		}
+
+	}
+	
 	EffectManager::Instance().Update(elapsedTime);
 
 	if (boss.BOSS->Clear())

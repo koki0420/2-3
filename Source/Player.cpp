@@ -442,7 +442,7 @@ void Player::takeDamage(float damage)
 }
 
 bool Player::CheckTakeAttack(
-	size_t enemyIndex, DirectX::XMFLOAT3 enemyPosition, float enemyRadius)
+	DirectX::XMFLOAT3 enemyPosition, float enemyRadius)
 {
 
 	if (IsDead || previewState || invincibleTime)return false;

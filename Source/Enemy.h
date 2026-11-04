@@ -32,6 +32,8 @@ public:
 		Target = pos;
 	}
 
+	Animation* GetEnemyAnimation() { return enemy_anime.get(); }
+
 
 private:
 	Object enemy;
