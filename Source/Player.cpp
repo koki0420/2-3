@@ -66,7 +66,7 @@ void Player::Initialize()
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 {
-
+	//Ž€‚ñ‚Å‚¢‚½‚çŽÀs‚µ‚È‚¢
 	if (IsDead)
 	{
 		animation->Update(elapsedTime);
@@ -80,6 +80,7 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		return;
 	}
 
+	//–³“GŽžŠÔ
 	if (invincibleTime > 0.0f)
 	{
 		invincibleTime -= elapsedTime;
@@ -103,23 +104,10 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	const char* rightHandName = "mixamorig:RightHand";
 	
 
-	if (weapon == WEAPON::Sword)
-	{
-		weapon_num = 0;
-	}
-	if (weapon == WEAPON::Scythe)
-	{
-		weapon_num = 1;
-	}
-
 	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(Weapon[weapon_num].scale.x, Weapon[weapon_num].scale.y, Weapon[weapon_num].scale.z);
 	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(Weapon[weapon_num].angle.x, Weapon[weapon_num].angle.y, Weapon[weapon_num].angle.z);
 	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(Weapon[weapon_num].position.x, Weapon[weapon_num].position.y, Weapon[weapon_num].position.z);
 	DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, S * R * T);
-
-
-	
-
 
 	for (const Model::Node& node : player.model->GetNodes())
 	{
@@ -206,10 +194,10 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	// å…¥åŠ›å?ç?
 	float axisX = 0.0f;
 	float axisY = 0.0f;
-	if (GetAsyncKeyState('W') & 0x8000) axisY += 3.0f;
-	if (GetAsyncKeyState('S') & 0x8000) axisY -= 3.0f;
-	if (GetAsyncKeyState('D') & 0x8000) axisX += 3.0f;
-	if (GetAsyncKeyState('A') & 0x8000) axisX -= 3.0f;
+	if (GetAsyncKeyState('W') & 0x8000) axisY += playerMoveSpeed;
+	if (GetAsyncKeyState('S') & 0x8000) axisY -= playerMoveSpeed;
+	if (GetAsyncKeyState('D') & 0x8000) axisX += playerMoveSpeed;
+	if (GetAsyncKeyState('A') & 0x8000) axisX -= playerMoveSpeed;
 
 	// ã‚«ãƒ¡ãƒ©ã®æ–¹å?
 	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
@@ -305,7 +293,18 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 void Player::StartAttack()
 {
 	if (isAttacking)return;
-	if (!(GetAsyncKeyState('J') & 0x8000))return;
+	pAtkDmg = 20.0f;
+	bloodAttackMultiplier = 1.0f;
+	const bool normalPressed = (GetAsyncKeyState('J') & 0x8000) != 0;
+	const bool bloodPressed = (GetAsyncKeyState('K') & 0x8000) != 0;
+
+	if (!normalPressed && !bloodPressed)return;
+
+
+	pAtkDmg = 200.0f;
+	bloodAttackMultiplier = 1.0f;
+
+	if (bloodPressed && !BloodAttack())return;
 
 	State next;
 	float duration;
@@ -316,18 +315,19 @@ void Player::StartAttack()
 		next = State::Sword_Attack1;
 		duration = 2.4f;
 		break;
-	case WEAPON::Fist:
-		next = State::Fight_Punch1;
-		duration = 0.87f;
-		break;
 	case WEAPON::Scythe:
 		next = State::Scythe_Attack;
 		duration = 1.1f;
+		break;
+	case WEAPON::Fist:
+		next = State::Fight_Punch1;
+		duration = 0.87f;
 		break;
 	default:
 		return;
 	}
 
+	pAtkDmg *= bloodAttackMultiplier;
 	attackDuration = duration;
 	isAttacking = true;
 	attackTime = 0.0f;
@@ -447,10 +447,61 @@ void Player::WeaponChange()
 {
 	if (isAttacking)return;
 
-	if (GetAsyncKeyState('1') & 0x8000)weapon = WEAPON::Sword;
-	else if (GetAsyncKeyState('2') & 0x8000)weapon = WEAPON::Fist;
-	else if (GetAsyncKeyState('3') & 0x8000)weapon = WEAPON::Scythe; 
+	if (GetAsyncKeyState('1') & 0x8000)
+	{
+		weapon = WEAPON::Sword;
+		weapon_num = 0;
+	}
+	else if (GetAsyncKeyState('2') & 0x8000)
+	{
+		weapon = WEAPON::Scythe;
+		weapon_num = 1;
+	}
+	else if (GetAsyncKeyState('3') & 0x8000)
+	{
+		weapon = WEAPON::Fist;
+		//weapon_num = 2;
+	}
 
+}
+
+void Player::AddBlood(float amount)
+{
+	float& gauge = bloodGauge[GetBloodGaugeIndex()];
+	gauge += amount;
+
+	if (gauge > 100.0f)
+	{
+		gauge = 100.0f;
+	}
+
+}
+
+bool Player::BloodAttack()
+{
+	const int index = GetBloodGaugeIndex();
+	const float costs[] = { 30.0f,40.0f,10.0f };
+	const float multipliers[] = { 1.3f,1.5f,1.1f };
+
+	float& gauge = bloodGauge[index];
+
+	if (gauge < costs[index])return false;
+
+	gauge -= costs[index];
+	bloodAttackMultiplier = multipliers[index];
+	return true;
+
+}
+
+int Player::GetBloodGaugeIndex()const
+{
+	switch (weapon)
+	{
+	case WEAPON::Sword:return 0;
+	case WEAPON::Scythe:return 1;
+	case WEAPON::Fist:return 2;
+	}
+	return 0;
 }
 
 void Player::DrawGUI()
@@ -458,16 +509,41 @@ void Player::DrawGUI()
 	ImGui::Separator();
 	ImGui::Text("Player");
 	ImGui::Text("HP: %.0f", playerHP);
+	ImGui::Separator();
 	ImGui::Text("Blood gauges");
+
+	const char* weaponNames[] = { "Sword", "Scythe", "Fist" };
+	const int equipped = GetBloodGaugeIndex();
 
 	for (int i = 0; i < 3; ++i)
 	{
 		const float blood = bloodGauge[i];
 
-		ImGui::Text("Weapon %d%s: %.0f / 100",
-			i, i == weapon_num ? " (Equipped)" : "", blood);
+		ImGui::Text("%s%s: %.0f / 100",
+			weaponNames[i],
+			i == equipped ? " (Equipped)" : "",
+			blood);
+
 		ImGui::ProgressBar(blood / 100.0f);
 	}
+
+	if (ImGui::Button("Add blood +15"))
+	{
+		AddBlood(15.0f);
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Fill blood"))
+	{
+		AddBlood(100.0f);
+	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Reset blood"))
+	{
+		bloodGauge[equipped] = 0.0f;
+	}
+
 	ImGui::Text("Dead: %s", IsDead ? "Yes" : "No");
 	ImGui::Text("Invincible time: %.2f", invincibleTime);
 

@@ -30,6 +30,7 @@ public:
     DirectX::XMFLOAT3 GetAngle() { return player.angle; }
     float GetPAtkDmg() { return pAtkDmg; }
     float GetPlayerHP() { return playerHP; }
+    float GetPlayerMoveSpeed() { return playerMoveSpeed; }
 
     bool CheckAttackHit(
         size_t enemyIndex,
@@ -45,17 +46,7 @@ public:
     //武器切り替え
     void WeaponChange();
 
-    void AddBlood(float amount)
-    {
-        float& gauge = bloodGauge[weapon_num];
-        gauge += amount;
-
-        if (gauge > 100.0f)
-        {
-            gauge = 100.0f;
-        }
-
-    }
+    void AddBlood(float amount);
 
 protected:
     //プレイヤー
@@ -63,9 +54,10 @@ protected:
     Object Weapon[2];
 
     float playerHP = 100.0f;
+    float playerMoveSpeed = 10.0f;
     float playerRadius = 5.0f;
     float playerRadiusHeight = 15.0f;
-    float pAtkDmg = 200.0f;
+    float pAtkDmg = 20.0f;
     bool IsDead = false;
     float invincibleTime = 0.5f;
 
@@ -98,6 +90,10 @@ protected:
     
     void StartAttack();//攻撃開始処理
     void UpdateAttack(float elapsedTime);
+    //血液攻撃
+    bool BloodAttack();
+    //血ゲージの番号だけを求める関数
+    int GetBloodGaugeIndex() const;
 
     bool InputMove(float elapsedTime,Camera camera);
 
@@ -136,11 +132,8 @@ private:
     };
     WEAPON weapon = WEAPON::Sword;
     int weapon_num = 0;;
-    float bloodGauge[3] = {};
-
-
-//	std::unique_ptr<Sprite> spriteGauge = nullptr;
-
+    float bloodGauge[3] = {};//0:Sword,1:Scythe,2:Fist
+    float bloodAttackMultiplier = 1.0f;
 
     std::unique_ptr<Sprite> spriteGauge = nullptr;
     std::unique_ptr<Sprite> spriteHPGauge = nullptr;
@@ -148,24 +141,7 @@ private:
     std::unique_ptr<Sprite> spriteWP = nullptr;
     std::unique_ptr<Sprite> spriteW[3];
 
-
-//	std::unique_ptr<Sprite> spriteHP = nullptr;
-//	std::unique_ptr<Sprite> spriteWP = nullptr;
-//	std::unique_ptr<Sprite> spriteW[3];
-
-//std::unique_ptr<Sprite> spriteGauge = nullptr;
-//std::unique_ptr<Sprite> spriteHPGauge = nullptr;
-//std::unique_ptr<Sprite> spriteHP = nullptr;
-//std::unique_ptr<Sprite> spriteWP = nullptr;
-//std::unique_ptr<Sprite> spriteW[3];
-
-
-
 	int wt=0;
-
-
-
-
 
     //debug
     bool showAttackCollision = true;
