@@ -42,6 +42,15 @@ public:
 
 	bool Clear() { return clear; }
 
+	DirectX::XMFLOAT3 GetPos() { return boss.position; }
+
+
+	Animation* GetMiddleAnimation() { return middle_boss_anime.get(); }
+
+
+	Animation* GetBossAnimation() { return boss_anime.get(); }
+
+
 private:
 	//É{ÉX
 	Object boss;
