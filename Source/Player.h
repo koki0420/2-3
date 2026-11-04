@@ -41,8 +41,7 @@ public:
 
     void takeDamage(float damage);
 
-    bool CheckTakeAttack(size_t enemyIndex,
-        DirectX::XMFLOAT3 enemyPosition,
+    bool CheckTakeAttack(DirectX::XMFLOAT3 enemyPosition,
         float enemyRadius);
 
     //•ŠíØ‚è‘Ö‚¦

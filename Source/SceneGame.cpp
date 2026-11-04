@@ -127,10 +127,10 @@ void SceneGame::Update(float elapsedTime)
 	}
 
 	
-	//“G‚Ö‚Ìƒ_ƒ[ƒW
 	for (size_t i = 0;i < enemies.size();++i)
 	{
 		auto& target = enemies[i];
+		//“G‚Ö‚Ìƒ_ƒ[ƒW
 		if (!target.enemy->Alive())continue;
 		if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
 			enemyHitRadius))
@@ -138,8 +138,17 @@ void SceneGame::Update(float elapsedTime)
 			target.hp -= player.GetPAtkDmg();
 			if (target.hp <= 0.0f)DefeatEnemy(i);
 		}
-	}
+		//“G‚©‚ç‚ÌUŒ‚
 
+		if (target.enemy->GetEnemyAnimation()->IsPlaying("Punch")
+			&&target.enemy->GetEnemyAnimation()->GetCurrentFrame() >= 24&&
+			target.enemy->GetEnemyAnimation()->GetCurrentFrame() <=48)
+		{
+			player.CheckTakeAttack(target.enemy->GetPos(), 20.0f);
+		}
+
+	}
+	
 	EffectManager::Instance().Update(elapsedTime);
 
 	if (boss.BOSS->Clear())

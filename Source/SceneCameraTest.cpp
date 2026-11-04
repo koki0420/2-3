@@ -119,7 +119,7 @@ void SceneCameraTest::Update(float elapsedTime)
             }
         }
 
-        player->CheckTakeAttack(i, enemyPosition, enemyRadius);
+        //player->CheckTakeAttack(i, enemyPosition, enemyRadius);
 
     }
     
