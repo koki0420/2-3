@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "ShapeRenderer.h"
-#define PLAYERHPMAX 100
+#define PLAYERHPMAX 10000
 Player::Player()
 {
 
@@ -68,7 +68,7 @@ void Player::Initialize()
 
 	state = State::Idle;
 	animation->PlayAnimation("Idle", true);
-    
+	playerHP = PLAYERHPMAX;
 }
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
