@@ -174,22 +174,25 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 	}
 
-	if (animation->GetCurrentFrame() >= 0 && !IsSwrod)
+	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad)
 	{
 		Sword_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 7.0f);
 		IsSwrod = true;
+		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 20.0f && !IsFight)
+	if (animation->GetCurrentFrame() >= 20.0f && !IsFight && Blad)
 	{
 		Fight_Effect->Play({ attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, 7.0f);
 		IsFight = true;
+		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 15.0f && !IsSlash)
+	if (animation->GetCurrentFrame() >= 15.0f && !IsSlash && Blad)
 	{
 		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 4.0f);
 		IsSlash = true;
+		Blad = false;
 	}
 }
 	
@@ -350,12 +353,13 @@ void Player::StartAttack()
 	if (!normalPressed && !bloodPressed)return;
 
 
+
 	pAtkDmg = PAD;
 	bloodAttackMultiplier = 1.0f;
 	float AttackRadius = atkR;
 
 	if (bloodPressed && !BloodAttack())return;
-
+	
 	State next;
 	float duration;
 
@@ -371,13 +375,12 @@ void Player::StartAttack()
 	case WEAPON::Scythe:
 		next = State::Scythe_Attack;
 		duration = 1.1f;
-<<<<<<< HEAD
+
 
 		IsSlash = false;
 
-=======
+
 		if (bloodPressed)AttackRadius = 50.0f;
->>>>>>> e972e1bedc9f5090faf69c94424688530a16908a
 		break;
 	case WEAPON::Fist:
 		next = State::Fight_Punch1;
@@ -555,6 +558,9 @@ bool Player::BloodAttack()
 
 	gauge -= costs[index];
 	bloodAttackMultiplier = multipliers[index];
+
+	Blad = true;
+
 	return true;
 
 }
