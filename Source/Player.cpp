@@ -29,6 +29,13 @@ Player::Player()
 
 
 
+	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
+	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
+	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
+
+	IsSwrod = true;
+	IsFight = true;
+	IsSlash = true; 
 
 
 
@@ -173,9 +180,9 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 {
 	spriteHPGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteHP->Render(dc, 50, 50, 0, 480 * (playerHP / PLAYERHPMAX), 32, 0, 48, 128 * (playerHP / PLAYERHPMAX), 32, 0, 1, 1, 1, 1);
-	spriteW[weapon_num]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+	spriteW[GetBloodGaugeIndex()]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	spriteGauge->Render(dc, 50, 82, 0, 280 , 28, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[weapon_num] / 100), 28, 0, 48, 128 * (bloodGauge[weapon_num] / 100), 32, 0, 1, 1, 1, 1);
+	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
 
 	spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteWP->Render(dc, 80, 500, 0, 280 * (bloodGauge[0] / 100), 28, 0, 48, 128 * (bloodGauge[0] / 100), 32, 0, 1, 1, 1, 1);

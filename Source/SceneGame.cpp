@@ -108,9 +108,9 @@ void SceneGame::Update(float elapsedTime)
 
 		if (!(boss->Boss_Alive()))
 		{
+			Respawn();
 			boss->Boss_Chage();
 			Boss_Dead = false;
-			if (!(boss->Clear()))Respawn();
 		}
 	}
 	{
@@ -118,7 +118,7 @@ void SceneGame::Update(float elapsedTime)
 		{
 			boss->Boss_Set(false);
 		}
-		else
+		else 
 		{
 			boss->Boss_Set(true);
 			boss->Update(elapsedTime);
@@ -143,7 +143,7 @@ void SceneGame::Update(float elapsedTime)
 
 	if (boss->Clear())
 	{
-		if(clearTimer>7)
+		if(clearTimer>4)
 		{
 			SceneManager::Instance().ChangeScene(new SceneResult);
 		}
@@ -330,13 +330,19 @@ void SceneGame::DefeatEnemy(size_t index)
 
 void SceneGame::Respawn()
 {
-	enemy_num = 0;
-	for (size_t i = 0; i < enemies.size(); i++)
+	if (!(boss->Clear()))
 	{
-		enemies[i].hp = enemyMaxHP;
-		EnemyManager::Instance().Enemy_Set(static_cast<int>(i), true);
+		enemy_num = 0;
+		for (size_t i = 0; i < enemies.size(); i++)
+		{
+			enemies[i].hp = enemyMaxHP;
+			EnemyManager::Instance().Enemy_Set(static_cast<int>(i), true);
+			enemy_num += 1;
+		}
+	}
+	else
+	{
 		enemy_num += 1;
 	}
-
 }
 
