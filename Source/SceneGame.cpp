@@ -73,6 +73,7 @@ void SceneGame::Initialize()
 	
 	player.Initialize();
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
+	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
 	EnemyManager::Instance().Target(player.GetPosition());
 }	
 
@@ -204,9 +205,13 @@ void SceneGame::Render(float elapsedTime)
 
 	{
 		player.UIRender(elapsedTime, dc);
+		if (boss->Clear())
+		{
+			SpriteCLEAR->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+		}
 		if (player.GetPlayerHP() <= 0)
 		{
-			SpriteOVER->Render(dc, 300, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+			SpriteOVER->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
 	}
 

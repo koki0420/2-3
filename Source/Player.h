@@ -57,7 +57,10 @@ protected:
     float playerMoveSpeed = 10.0f;
     float playerRadius = 5.0f;
     float playerRadiusHeight = 15.0f;
-    float pAtkDmg = 20.0f;
+    //
+    float PAD = 20.0f;
+    //
+    float pAtkDmg = PAD;
     bool IsDead = false;
     float invincibleTime = 0.5f;
 
@@ -138,6 +141,8 @@ private:
     float bloodGauge[3] = {};//0:Sword,1:Scythe,2:Fist
     bool IsMusou = false;
     float bloodAttackMultiplier = 1.0f;
+    //çUåÇÇÃçƒê∂î{ó¶
+    float attackSpeedMultiplier = 1.0f;
 
     std::unique_ptr<Sprite> spriteGauge = nullptr;
     std::unique_ptr<Sprite> spriteHPGauge = nullptr;
@@ -145,7 +150,7 @@ private:
     std::unique_ptr<Sprite> spriteWP = nullptr;
     std::unique_ptr<Sprite> spriteW[3];
 
-	int wt=0;
+	
 
     //debug
     bool showAttackCollision = true;

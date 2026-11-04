@@ -74,7 +74,7 @@ public:
 
 
 		// マウス左ボタン押下中
-		if (io.MouseDown[ImGuiMouseButton_Right])
+		if (!(io.MouseDown[ImGuiMouseButton_Right]))
 		{
 			// Y軸回転
 			angleY += moveX * 0.5f;
@@ -97,34 +97,36 @@ public:
 				angleX += DirectX::XM_2PI;
 			}
 		}
+		
 		// マウス中ボタン押下中
-		else if (io.MouseDown[ImGuiMouseButton_Middle])
-		{
-			// 平行移動
-			float s = distance * 0.035f;
-			float x = moveX * s;
-			float y = moveY * s;
+		//else if (io.MouseDown[ImGuiMouseButton_Middle])
+		//{
+		//	// 平行移動
+		//	float s = distance * 0.035f;
+		//	float x = moveX * s;
+		//	float y = moveY * s;
 
-			focus.x -= right.x * x;
-			focus.y -= right.y * x;
-			focus.z -= right.z * x;
+		//	focus.x -= right.x * x;
+		//	focus.y -= right.y * x;
+		//	focus.z -= right.z * x;
 
-			focus.x += up.x * y;
-			focus.y += up.y * y;
-			focus.z += up.z * y;
-		}
+		//	focus.x += up.x * y;
+		//	focus.y += up.y * y;
+		//	focus.z += up.z * y;
+		//}
 		// マウス右ボタン押下中
-		else if (io.MouseDown[ImGuiMouseButton_Left] && io.MouseDown[ImGuiMouseButton_Right])
-		{
-			// ズーム
-			distance += (-moveY - moveX) * distance * 0.1f;
-		}
-		// マウスホイール
-		else if (io.MouseWheel != 0)
-		{
-			// ズーム
-			distance -= io.MouseWheel * distance * 0.1f;
-		}
+		//else if (io.MouseDown[ImGuiMouseButton_Left] && io.MouseDown[ImGuiMouseButton_Right])
+		//{
+		//	// ズーム
+		//	distance += (-moveY - moveX) * distance * 0.1f;
+		//}
+		//// マウスホイール
+		//else if (io.MouseWheel != 0)
+		//{
+		//	// ズーム
+		//	distance -= io.MouseWheel * distance * 0.1f;
+		//}
+		distance = 100.0f;
 
 		//X軸のカメラ回転を制限
 		if (angleX > maxAngleX) { angleX = maxAngleX; }
@@ -153,7 +155,7 @@ public:
 		DirectX::XMMATRIX World = DirectX::XMMatrixTranspose(View);
 		// ワールド行列から方向を算出
 		Right = DirectX::XMVector3TransformNormal(DirectX::XMVectorSet(1, 0, 0, 0), World);
-		Up = DirectX::XMVector3TransformNormal(DirectX::XMVectorSet(0, 1, 0, 0), World);
+		Up = DirectX::XMVectorSet(0, 1, 0, 0);
 		// 結果を格納
 		DirectX::XMStoreFloat3(&eye, Eye);
 		DirectX::XMStoreFloat3(&up, Up);
