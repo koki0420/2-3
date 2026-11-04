@@ -197,10 +197,10 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	// 入力�?�?
 	float axisX = 0.0f;
 	float axisY = 0.0f;
-	if (GetAsyncKeyState('W') & 0x8000) axisY += playerMoveSpeed;
-	if (GetAsyncKeyState('S') & 0x8000) axisY -= playerMoveSpeed;
-	if (GetAsyncKeyState('D') & 0x8000) axisX += playerMoveSpeed;
-	if (GetAsyncKeyState('A') & 0x8000) axisX -= playerMoveSpeed;
+	if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
+	if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;
+	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
+	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
 
 	// カメラの方�?
 	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
@@ -213,7 +213,8 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	float cameraRightZ = camemraRight.z / cameraRightLengthXZ;
 
 	// 移動�?クトル
-	const float speed = 5.0f * elapsedTime;
+	const float moveMultiplier = IsMusou ? 2.0f : 1.0f;
+	const float speed = playerMoveSpeed * moveMultiplier * elapsedTime;
 	float vecX = cameraFrontX * axisY + cameraRightX * axisX;
 	float vecZ = cameraFrontZ * axisY + cameraRightZ * axisX;
 	float moveX = vecX * speed;
@@ -288,7 +289,8 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 		setState(isMoving ? State::Sword_Walk : State::Idle, true);
 	}
 
-	animation->Update(elapsedTime);
+	const float animationSpeed = isAttacking ? attackSpeedMultiplier : 1.0f;
+	animation->Update(elapsedTime * animationSpeed);
 
 }
 
@@ -330,6 +332,8 @@ void Player::StartAttack()
 	}
 
 	pAtkDmg *= bloodAttackMultiplier;
+	if (IsMusou)pAtkDmg *= 1.5;
+	attackSpeedMultiplier = IsMusou ? 1.3f : 1.0f;
 	attackDuration = duration;
 	isAttacking = true;
 	attackTime = 0.0f;
@@ -349,7 +353,7 @@ void Player::UpdateAttack(float elapsedTime)
 		attackPosition.y = player.position.y + attackHeight;
 		attackPosition.z = player.position.z + cosf(player.angle.y) * attackDistance;
 
-		attackTime += elapsedTime;
+		attackTime += elapsedTime * attackSpeedMultiplier;
 		if (attackTime >= attackDuration)
 		{
 			isAttacking = false;
@@ -482,7 +486,7 @@ void Player::AddBlood(float amount)
 bool Player::BloodAttack()
 {
 	const int index = GetBloodGaugeIndex();
-	const float costs[] = { 30.0f,40.0f,10.0f };
+	const float costs[] = { 5.0f,10.0f,2.5f };
 	const float multipliers[] = { 1.3f,1.5f,1.1f };
 
 	float& gauge = bloodGauge[index];
@@ -511,7 +515,7 @@ void Player::ChangeMusouMode()
 	if (IsMusou || isAttacking)return;
 	if (!(GetAsyncKeyState('R') & 0x8000))return;
 
-	if (bloodGauge[GetBloodGaugeIndex()] <= 90.0f)
+	if (bloodGauge[GetBloodGaugeIndex()] >= 90.0f)
 	{
 		IsMusou = true;
 	}
@@ -521,44 +525,18 @@ void Player::ChangeMusouMode()
 
 void Player::UpdateMusouMode(float elapsedTime)
 {
-
 	ChangeMusouMode();
 
-	if (!IsMusou)return;
+	if (!IsMusou) return;
 
-	bloodGauge[GetBloodGaugeIndex()] -= 10.0f * elapsedTime;
-	if (bloodGauge[GetBloodGaugeIndex()] <= 0.0f)
+	float& gauge = bloodGauge[GetBloodGaugeIndex()];
+	gauge -= 10.0f * elapsedTime;
+
+	if (gauge <= 0.0f)
 	{
-		bloodGauge[GetBloodGaugeIndex()] = 0.0f;
+		gauge = 0.0f;
 		IsMusou = false;
 	}
-
-	/*switch (weapon)
-	{
-	case WEAPON::Sword:
-		bloodGauge[GetBloodGaugeIndex()] -= 10.0f * elapsedTime;
-		if (bloodGauge[GetBloodGaugeIndex()] <= 0.0f)
-		{
-			bloodGauge[GetBloodGaugeIndex()] = 0.0f;
-			IsMusou = false;
-		}
-	case WEAPON::Scythe:
-		bloodGauge[GetBloodGaugeIndex()] -= 10.0f * elapsedTime;
-		if (bloodGauge[GetBloodGaugeIndex()] <= 0.0f)
-		{
-			bloodGauge[GetBloodGaugeIndex()] = 0.0f;
-			IsMusou = false;
-		}
-	case WEAPON::Fist:
-		bloodGauge[GetBloodGaugeIndex()] -= 10.0f * elapsedTime;
-		if (bloodGauge[GetBloodGaugeIndex()] <= 0.0f)
-		{
-			bloodGauge[GetBloodGaugeIndex()] = 0.0f;
-			IsMusou = false;
-		}
-	}*/
-
-
 }
 
 ///////////////////////////////////////////////////////
