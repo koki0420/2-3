@@ -49,8 +49,6 @@ void SceneGame::Initialize()
 	boss=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
 
 
-	cameraController.SyncCameraToController(camera);
-
 	for (int i = 0;i < 10;i += 1)
 	{
 		for (int j = 0;j < 10;j += 1)
@@ -72,6 +70,11 @@ void SceneGame::Initialize()
 	}
 	
 	player.Initialize();
+
+	cameraController.Reset(player.GetPosition(), player.GetAngle().y);
+
+	cameraController.SyncControllerToCamera(camera);
+
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
 	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
 	EnemyManager::Instance().Target(player.GetPosition());
@@ -91,10 +94,10 @@ void SceneGame::Update(float elapsedTime)
 	player.Update(elapsedTime, stage, camera);
 
 
-	DirectX::XMFLOAT3 focus = player.GetPosition();
-	focus.y += 10.0f;
-	cameraController.SetFocus(focus);
-	cameraController.Update();
+	cameraController.SetFocus(player.GetPosition());
+
+	cameraController.Update(elapsedTime, player.GetAngle().y);
+
 	cameraController.SyncControllerToCamera(camera);
 
 

@@ -51,92 +51,74 @@ public:
 	}
 
 	// 更新処理
-	void Update()
+	void Update(float elapsedTime, float playerYaw)
 	{
 		// デバッグウインドウ操作中は処理しない
 		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow))
 		{
 			return;
 		}
+		if (elapsedTime <= 0.0f)return;
+
+		//ゆっくり追いかける
+		const float positionRate =
+			1.0f - std::exp(-followSpeed * elapsedTime);
+
+		focus.x += (targetFocus.x - focus.x) * positionRate;
+		focus.y += (targetFocus.y - focus.y) * positionRate;
+		focus.z += (targetFocus.z - focus.z) * positionRate;
+
+		//角度差を抑えて、近い方向へ回転
+		const float difference = playerYaw - followYaw;
+		const float angleDifference =
+			std::atan2(std::sin(difference), std::cos(difference));
+
+		const float rotationRate =
+			1.0f - std::exp(-turnSpeed * elapsedTime);
+
+		followYaw += angleDifference * rotationRate;
 
 		// IMGUIのマウス入力値を使ってカメラ操作する
-		ImGuiIO io = ImGui::GetIO();
+		const ImGuiIO io = ImGui::GetIO();
 
-		// マウスカーソルの移動量を求める
-		float moveX = io.MouseDelta.x * 0.02f;
-		float moveY = io.MouseDelta.y * 0.02f;
-
-		//Y軸のカメラ回転を-3.14～3.14に収まるようにする
-		if (angleX < -DirectX::XM_PI) { angleY += DirectX::XM_2PI; }
-		if (angleX > DirectX::XM_PI) { angleY -= DirectX::XM_2PI; }
-
-
-		// マウス左ボタン押下中
-		if (!(io.MouseDown[ImGuiMouseButton_Right]))
+		// マウス右ボタン押下中
+		if (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]))
 		{
-			// Y軸回転
-			angleY += moveX * 0.5f;
-			if (angleY > DirectX::XM_PI)
-			{
-				angleY -= DirectX::XM_2PI;
-			}
-			else if (angleY < -DirectX::XM_PI)
-			{
-				angleY += DirectX::XM_2PI;
-			}
-			// X軸回転
-			angleX += moveY * 0.5f;
-			if (angleX > DirectX::XM_PI)
-			{
-				angleX -= DirectX::XM_2PI;
-			}
-			else if (angleX < -DirectX::XM_PI)
-			{
-				angleX += DirectX::XM_2PI;
-			}
+			mouseYaw += io.MouseDelta.x * 0.003f;
+			mousePitch += io.MouseDelta.y * 0.003f;
 		}
-		
-		//仮
-		//カメラ距離固定
-		distance = 100.0f;
 
-		//X軸のカメラ回転を制限
-		if (angleX > maxAngleX) { angleX = maxAngleX; }
-		if (angleX < minAngleX) { angleX = minAngleX; }
+		const float yawLimit = DirectX::XMConvertToRadians(25.0f);
+		const float pitchLimit = DirectX::XMConvertToRadians(10.0f);
 
-		//近づきすぎを防ぐ
-		if (distance < 1.0f) { distance = 1.0f; }
+		if (mouseYaw > yawLimit)mouseYaw = yawLimit;
+		if (mouseYaw < -yawLimit)mouseYaw = -yawLimit;
 
-		float sx = ::sinf(angleX);
-		float cx = ::cosf(angleX);
-		float sy = ::sinf(angleY);
-		float cy = ::cosf(angleY);
+		if (mousePitch > pitchLimit)mousePitch = pitchLimit;
+		if (mousePitch < -pitchLimit)mousePitch = -pitchLimit;
 
-		
+		const float yaw = followYaw + mouseYaw;
+		const float pitch = basePitch + mousePitch;
 
-		// カメラの方向を算出
-		DirectX::XMVECTOR Front = DirectX::XMVectorSet(-cx * sy, -sx, -cx * cy, 0.0f);
-		DirectX::XMVECTOR Right = DirectX::XMVectorSet(cy, 0, -sy, 0.0f);
-		DirectX::XMVECTOR Up = DirectX::XMVector3Cross(Right, Front);
-		// カメラの視点＆注視点を算出
-		DirectX::XMVECTOR Focus = DirectX::XMLoadFloat3(&focus);
-		DirectX::XMVECTOR Distance = DirectX::XMVectorSet(distance, distance, distance, 0.0f);
-		DirectX::XMVECTOR Eye = DirectX::XMVectorSubtract(Focus, DirectX::XMVectorMultiply(Front, Distance));
-		// ビュー行列からワールド行列を算出
-		DirectX::XMMATRIX View = DirectX::XMMatrixLookAtLH(Eye, Focus, Up);
-		DirectX::XMMATRIX World = DirectX::XMMatrixTranspose(View);
-		// ワールド行列から方向を算出
-		Right = DirectX::XMVectorSet(1, 0, 0, 0);
-		Up = DirectX::XMVectorSet(0, 1, 0, 0);
-		// 結果を格納
-		DirectX::XMStoreFloat3(&eye, Eye);
-		DirectX::XMStoreFloat3(&up, Up);
-		DirectX::XMStoreFloat3(&right, Right);
-		
-		}
+		//注視点からプレイヤーの背後上方へ離す
+		const float horizontalDistance =
+			cameraDistance * std::cos(pitch);
+
+		eye.x = focus.x - std::sin(yaw) * horizontalDistance;
+		eye.y = focus.y + std::sin(pitch) * cameraDistance;
+		eye.z = focus.z - std::cos(yaw) * horizontalDistance;
+
+		up = { 0,1,0 };
+
+
+	}
 
 		//注視点をプレイヤーの位置に設定
-		void SetFocus(const DirectX::XMFLOAT3& position) { focus = position; }
+	void SetFocus(const DirectX::XMFLOAT3& position)
+	{
+		targetFocus = position;
+		targetFocus.y += focusHeight;
+	}
 
 	void DrawGUI() {
 	
@@ -145,6 +127,29 @@ public:
 			ImGui::DragFloat("cAngleX", &angleX, 0.1f);
 			ImGui::DragFloat("cAngleY", &angleY, 0.1f);
 		}
+	}
+
+	void Reset(const DirectX::XMFLOAT3& playerPosition,
+		float playerYaw)
+	{
+		SetFocus(playerPosition);
+		focus = targetFocus;
+
+		followYaw = playerYaw;
+		mouseYaw = 0.0f;
+		mousePitch = 0.0f;
+
+		const float horizontalDistance =
+			cameraDistance * std::cos(basePitch);
+
+		eye = {
+			focus.x - std::sin(followYaw) * horizontalDistance,
+			focus.y + std::sin(basePitch) * cameraDistance,
+			focus.z - std::cos(followYaw) * horizontalDistance
+		};
+
+		up = { 0,1,0 };
+
 	}
 
 private:
@@ -159,6 +164,22 @@ private:
 
 	float maxAngleX = DirectX::XMConvertToRadians(70.0f);
 	float minAngleX = DirectX::XMConvertToRadians(10.0f);
+
+	DirectX::XMFLOAT3 targetFocus = { 0,0,0 };
+	//プレイヤー背後への追従角度
+	float followYaw = 0.0f;
+
+	//マウスで調整する角度
+	float mouseYaw = 0.0f;
+	float mousePitch = 0.0f;
+
+	//調整用
+	float followSpeed = 5.0f;
+	float turnSpeed = 3.0f;
+	float cameraDistance = 100.0f;//playerからの距離
+	float focusHeight = 30.0f;//見る位置の高さ
+	float basePitch = DirectX::XMConvertToRadians(25.0f);//見下ろす角度
+
 };
 
 
