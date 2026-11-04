@@ -153,7 +153,7 @@ void Enemy::Update(float elapsedTime)
 	}
 	if (enemy_anime->IsPlaying("Death"))
 	{
-		enemy.position.y -= 0.1f;
+		enemy.position.y -= 0.05f;
 	}
 	else
 	{
