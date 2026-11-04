@@ -12,7 +12,7 @@ void SceneCameraTest::Initialize()
 {
     player = new Player();
     camera = new Camera();
-    CameraController = new TestCameraController;
+    cameraController = new CameraController;
     stage.model = std::make_unique<Model>("Data/Model/Stage/stage4.mdl");
 
     enemy_num = 0;
@@ -49,7 +49,7 @@ void SceneCameraTest::Initialize()
     spriteW3 = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent .png");*/
 
 
-    CameraController->SyncCameraToController(*camera);
+    cameraController->SyncCameraToController(*camera);
 
 }
 
@@ -66,9 +66,9 @@ void SceneCameraTest::Update(float elapsedTime)
 {
     DirectX::XMFLOAT3 focus = player->GetPosition();
     focus.y += 1.0f;
-    CameraController->SetFocus(focus);
-    CameraController->Update();
-    CameraController->SyncControllerToCamera(*camera);
+    cameraController->SetFocus(focus);
+    cameraController->Update();
+    cameraController->SyncControllerToCamera(*camera);
 
     if (Boss_Dead)
     {

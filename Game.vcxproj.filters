@@ -251,7 +251,7 @@
     <ClInclude Include="Source\Camera.h">
       <Filter>システム</Filter>
     </ClInclude>
-    <ClInclude Include="Source\CameraMove_test.h">
+    <ClInclude Include="Source\CameraController.h">
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Source\Collision.h">

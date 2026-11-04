@@ -8,7 +8,7 @@
 #include"Enemy.h"
 #include "boss.h"
 #include "Sprite.h"
-#include "CameraMove_test.h"
+#include "CameraController.h"
 
 class SceneCameraTest : public Scene
 {
@@ -31,7 +31,7 @@ public:
 private:
     
     Camera* camera = nullptr;
-    TestCameraController* CameraController=nullptr;
+    CameraController* cameraController=nullptr;
     Object stage;
     Player* player = nullptr;
 
