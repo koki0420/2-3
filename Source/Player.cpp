@@ -214,24 +214,24 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	float axisX = 0.0f;
 	float axisY = 0.0f;
 	if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
-	if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;
+	/*if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;*/
 	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
 	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
 
 	const bool isMoving = axisX != 0.0f||axisY != 0.0f;
 
 	//í‚é~Ç©ÇÁà⁄ìÆÇénÇﬂÇΩèuä‘ÇæÇØÅAäÓèÄï˚å¸Çï€ë∂Ç∑ÇÈ
-	if (isMoving && !wasMoving)
+	/*if (isMoving && !wasMoving)
 	{
 		moveFront = camera.GetFront();
 		moveRight = camera.GetRight();
-	}
+	}*/
 
 	wasMoving = isMoving;
 
 	// „Ç´„É°„É©„ÅÆÊñπÂê?
-	const DirectX::XMFLOAT3& cameraFront = moveFront;
-	const DirectX::XMFLOAT3& camemraRight = moveRight;
+	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
+	const DirectX::XMFLOAT3& camemraRight = camera.GetRight();
 	float cameraFrontLengthXZ = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
 	float cameraRightLengthXZ = sqrtf(camemraRight.x * camemraRight.x + camemraRight.z * camemraRight.z);
 	float cameraFrontX = cameraFront.x / cameraFrontLengthXZ;
@@ -334,6 +334,7 @@ void Player::StartAttack()
 
 	pAtkDmg = PAD;
 	bloodAttackMultiplier = 1.0f;
+	float AttackRadius = atkR;
 
 	if (bloodPressed && !BloodAttack())return;
 
@@ -349,6 +350,7 @@ void Player::StartAttack()
 	case WEAPON::Scythe:
 		next = State::Scythe_Attack;
 		duration = 1.1f;
+		if (bloodPressed)AttackRadius = 50.0f;
 		break;
 	case WEAPON::Fist:
 		next = State::Fight_Punch1;
@@ -358,6 +360,7 @@ void Player::StartAttack()
 		return;
 	}
 
+	attackRadius = AttackRadius;
 	pAtkDmg *= bloodAttackMultiplier;
 	if (IsMusou)pAtkDmg *= 1.5;
 	attackSpeedMultiplier = IsMusou ? 1.3f : 1.0f;

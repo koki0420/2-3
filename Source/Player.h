@@ -54,12 +54,12 @@ protected:
     Object player;
     Object Weapon[2];
 
-    float playerHP = 100.0f;
-    float playerMoveSpeed = 10.0f;
+    float playerHP = 10000.0f;
+    float playerMoveSpeed = 20.0f;
     float playerRadius = 5.0f;
     float playerRadiusHeight = 15.0f;
     //
-    float PAD = 100.0f;
+    float PAD = 34.0f;
     //
     float pAtkDmg = PAD;
     bool IsDead = false;
@@ -75,7 +75,8 @@ protected:
     float attackEndTime = 1.0f;
 
     DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撃判定の中心
-    float attackRadius = 10.0f;//球の半径
+    float atkR = 10.0f;
+    float attackRadius = atkR;//球の半径
     float attackDistance = 10.0f;//プレイヤーから前方への距離
     float attackHeight = 15.0f;//地面からの高さ
 
