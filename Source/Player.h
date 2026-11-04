@@ -94,6 +94,9 @@ protected:
     bool BloodAttack();
     //ŒŒƒQ[ƒW‚Ì”Ô†‚¾‚¯‚ğ‹‚ß‚éŠÖ”
     int GetBloodGaugeIndex() const;
+    //–³‘oó‘Ô‚Ö
+    void ChangeMusouMode();
+    void UpdateMusouMode(float elapsedTime);
 
     bool InputMove(float elapsedTime,Camera camera);
 
@@ -133,6 +136,7 @@ private:
     WEAPON weapon = WEAPON::Sword;
     int weapon_num = 0;;
     float bloodGauge[3] = {};//0:Sword,1:Scythe,2:Fist
+    bool IsMusou = false;
     float bloodAttackMultiplier = 1.0f;
 
     std::unique_ptr<Sprite> spriteGauge = nullptr;

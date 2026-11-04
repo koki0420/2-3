@@ -98,6 +98,9 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	}
 
 	WeaponChange();
+
+	UpdateMusouMode(elapsedTime);
+
 	UpdateAttack(elapsedTime);
 	pAnimation(elapsedTime, isMoving);
 
@@ -293,15 +296,14 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 void Player::StartAttack()
 {
 	if (isAttacking)return;
-	pAtkDmg = 20.0f;
-	bloodAttackMultiplier = 1.0f;
+	
 	const bool normalPressed = (GetAsyncKeyState('J') & 0x8000) != 0;
 	const bool bloodPressed = (GetAsyncKeyState('K') & 0x8000) != 0;
 
 	if (!normalPressed && !bloodPressed)return;
 
 
-	pAtkDmg = 200.0f;
+	pAtkDmg = 20.0f;
 	bloodAttackMultiplier = 1.0f;
 
 	if (bloodPressed && !BloodAttack())return;
@@ -504,6 +506,62 @@ int Player::GetBloodGaugeIndex()const
 	return 0;
 }
 
+void Player::ChangeMusouMode()
+{
+	if (IsMusou || isAttacking)return;
+	if (!(GetAsyncKeyState('R') & 0x8000))return;
+
+	if (bloodGauge[GetBloodGaugeIndex()] <= 90.0f)
+	{
+		IsMusou = true;
+	}
+	
+
+}
+
+void Player::UpdateMusouMode(float elapsedTime)
+{
+
+	ChangeMusouMode();
+
+	if (!IsMusou)return;
+
+	bloodGauge[GetBloodGaugeIndex()] -= 10.0f * elapsedTime;
+	if (bloodGauge[GetBloodGaugeIndex()] <= 0.0f)
+	{
+		bloodGauge[GetBloodGaugeIndex()] = 0.0f;
+		IsMusou = false;
+	}
+
+	/*switch (weapon)
+	{
+	case WEAPON::Sword:
+		bloodGauge[GetBloodGaugeIndex()] -= 10.0f * elapsedTime;
+		if (bloodGauge[GetBloodGaugeIndex()] <= 0.0f)
+		{
+			bloodGauge[GetBloodGaugeIndex()] = 0.0f;
+			IsMusou = false;
+		}
+	case WEAPON::Scythe:
+		bloodGauge[GetBloodGaugeIndex()] -= 10.0f * elapsedTime;
+		if (bloodGauge[GetBloodGaugeIndex()] <= 0.0f)
+		{
+			bloodGauge[GetBloodGaugeIndex()] = 0.0f;
+			IsMusou = false;
+		}
+	case WEAPON::Fist:
+		bloodGauge[GetBloodGaugeIndex()] -= 10.0f * elapsedTime;
+		if (bloodGauge[GetBloodGaugeIndex()] <= 0.0f)
+		{
+			bloodGauge[GetBloodGaugeIndex()] = 0.0f;
+			IsMusou = false;
+		}
+	}*/
+
+
+}
+
+///////////////////////////////////////////////////////
 void Player::DrawGUI()
 {
 	ImGui::Separator();
