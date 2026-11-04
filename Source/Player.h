@@ -145,7 +145,7 @@ private:
     std::unique_ptr<Sprite> spriteWP = nullptr;
     std::unique_ptr<Sprite> spriteW[3];
 
-	int wt=0;
+	
 
     //debug
     bool showAttackCollision = true;
