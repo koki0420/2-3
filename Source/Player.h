@@ -10,6 +10,8 @@
 #include "Animation.h"
 #include "Sprite.h"
 #include "Sword_Line.h"
+#include "Effect.h"
+#include "EffectManager.h"
 
 class Player
 {
@@ -159,5 +161,14 @@ private:
 
 	Sword_Line sword_Line;
  
+
+    //エフェクト用
+    Effect* Sword_Effect = nullptr;
+    Effect* Fight_Effect = nullptr;
+    Effect* Slash_Effect = nullptr;
+
+    bool IsSwrod;
+    bool IsFight;
+    bool IsSlash;
 
 };
