@@ -45,5 +45,5 @@ private:
 	int enemy_respawn_w = 0;
 	int enemy_respawn_h = 0;
 	//敵の数（シーンゲームとは使い方別）
-	int enemy_num=0;
+	
 };

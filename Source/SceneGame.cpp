@@ -57,11 +57,14 @@ void SceneGame::Initialize()
 		{
 			auto enemy = std::make_unique<Enemy>(
 				DirectX::XMFLOAT3{ -260 + 52.0f * j, 0, -260 + 52.0f * i });
+
 			enemies.push_back({ enemy.get(), enemyMaxHP });
 			EnemyManager::Instance().Register(std::move(enemy));
 			++enemy_num;
 		}
 	}
+
+	
 	
 	if(boss->Clear())
 	{

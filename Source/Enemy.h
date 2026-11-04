@@ -18,7 +18,7 @@ public:
 
 	bool Alive(){return alive;}
 
-	void enemy_set(bool alive) { this->alive = alive; }
+	void enemy_set(bool alive);
 
 	DirectX::XMFLOAT3 GetPos() const { return enemy.position; };
 
@@ -32,6 +32,7 @@ public:
 		Target = pos;
 	}
 
+	bool Dead();
 
 private:
 	Object enemy;
@@ -44,10 +45,12 @@ private:
 	bool idle_anime = true;
 	bool walk_anime = true;
 	bool attack_anime = true;
+	bool death_anime = true;
 
 	bool alive=true;
 	bool arrive = true;
 
 	float timer = 0;
 	float nextTimer = 0;
+
 };
