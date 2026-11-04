@@ -198,21 +198,30 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 {
 	spriteHPGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
 	spriteHP->Render(dc, 50, 50, 0, 480 * (playerHP / PLAYERHPMAX), 32, 0, 48, 128 * (playerHP / PLAYERHPMAX), 32, 0, 1, 1, 1, 1);
-	spriteW[weapon_num]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+	spriteW[GetBloodGaugeIndex()]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	spriteGauge->Render(dc, 50, 82, 0, 280 , 28, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[weapon_num] / 100), 28, 0, 48, 128 * (bloodGauge[weapon_num] / 100), 32, 0, 1, 1, 1, 1);
+	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
 
-	spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 500, 0, 280 * (bloodGauge[0] / 100), 28, 0, 48, 128 * (bloodGauge[0] / 100), 32, 0, 1, 1, 1, 1);
-	spriteW[0]->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+	switch (weapon_num)
+	{
 
-	spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 532, 0, 280 * (bloodGauge[1] / 100), 28, 0, 48, 128 * (bloodGauge[1] / 100), 32, 0, 1, 1, 1, 1);
-	spriteW[1]->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+	case 0:
+		spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteWP->Render(dc, 80, 500, 0, 280 * (bloodGauge[0] / 100), 28, 0, 48, 128 * (bloodGauge[0] / 100), 32, 0, 1, 1, 1, 1);
+		spriteW[0]->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+		break;
+	case 1:
 
-	spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 564, 0, 280 * (bloodGauge[2] / 100), 28, 0, 48, 128 * (bloodGauge[2] / 100), 32, 0, 1, 1, 1, 1);
-	spriteW[2]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+		spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteWP->Render(dc, 80, 532, 0, 280 * (bloodGauge[1] / 100), 28, 0, 48, 128 * (bloodGauge[1] / 100), 32, 0, 1, 1, 1, 1);
+		spriteW[1]->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+		break;
+	case 2:
+		spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+		spriteWP->Render(dc, 80, 564, 0, 280 * (bloodGauge[2] / 100), 28, 0, 48, 128 * (bloodGauge[2] / 100), 32, 0, 1, 1, 1, 1);
+		spriteW[2]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+		break;
+	}
 }
 
 
@@ -223,9 +232,20 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	float axisX = 0.0f;
 	float axisY = 0.0f;
 	if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
-	if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;
+	/*if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;*/
 	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
 	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
+
+	const bool isMoving = axisX != 0.0f||axisY != 0.0f;
+
+	//’â~‚©‚çˆÚ“®‚ğn‚ß‚½uŠÔ‚¾‚¯AŠî€•ûŒü‚ğ•Û‘¶‚·‚é
+	/*if (isMoving && !wasMoving)
+	{
+		moveFront = camera.GetFront();
+		moveRight = camera.GetRight();
+	}*/
+
+	wasMoving = isMoving;
 
 	// ã‚«ãƒ¡ãƒ©ã®æ–¹å?
 	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
@@ -332,6 +352,7 @@ void Player::StartAttack()
 
 	pAtkDmg = PAD;
 	bloodAttackMultiplier = 1.0f;
+	float AttackRadius = atkR;
 
 	if (bloodPressed && !BloodAttack())return;
 
@@ -350,9 +371,13 @@ void Player::StartAttack()
 	case WEAPON::Scythe:
 		next = State::Scythe_Attack;
 		duration = 1.1f;
+<<<<<<< HEAD
 
 		IsSlash = false;
 
+=======
+		if (bloodPressed)AttackRadius = 50.0f;
+>>>>>>> e972e1bedc9f5090faf69c94424688530a16908a
 		break;
 	case WEAPON::Fist:
 		next = State::Fight_Punch1;
@@ -365,6 +390,7 @@ void Player::StartAttack()
 		return;
 	}
 
+	attackRadius = AttackRadius;
 	pAtkDmg *= bloodAttackMultiplier;
 	if (IsMusou)pAtkDmg *= 1.5;
 	attackSpeedMultiplier = IsMusou ? 1.3f : 1.0f;
@@ -458,7 +484,7 @@ void Player::takeDamage(float damage)
 }
 
 bool Player::CheckTakeAttack(
-	size_t enemyIndex, DirectX::XMFLOAT3 enemyPosition, float enemyRadius)
+	DirectX::XMFLOAT3 enemyPosition, float enemyRadius)
 {
 
 	if (IsDead || previewState || invincibleTime)return false;

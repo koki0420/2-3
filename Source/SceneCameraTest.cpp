@@ -67,7 +67,7 @@ void SceneCameraTest::Update(float elapsedTime)
     DirectX::XMFLOAT3 focus = player->GetPosition();
     focus.y += 1.0f;
     cameraController->SetFocus(focus);
-    cameraController->Update();
+    cameraController->Update(elapsedTime,player->GetAngle().y);
     cameraController->SyncControllerToCamera(*camera);
 
     if (Boss_Dead)
@@ -119,7 +119,7 @@ void SceneCameraTest::Update(float elapsedTime)
             }
         }
 
-        player->CheckTakeAttack(i, enemyPosition, enemyRadius);
+        //player->CheckTakeAttack(i, enemyPosition, enemyRadius);
 
     }
     

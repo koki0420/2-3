@@ -46,32 +46,36 @@ void SceneGame::Initialize()
 
 	stage.position.y = -20;
 
-	boss=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
+	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
 
 
 	cameraController.SyncCameraToController(camera);
 
+	DirectX::XMFLOAT3 position;
 	for (int i = 0;i < 10;i += 1)
 	{
 		for (int j = 0;j < 10;j += 1)
 		{
-			auto enemy = std::make_unique<Enemy>(
-				DirectX::XMFLOAT3{ -260 + 52.0f * j, 0, -260 + 52.0f * i });
+			 position = {-260.0f+(520.0f/9.0f)*i,-25,-260.0f+(520.0f/9.0f)*j};
+			 auto enemy = std::make_unique<Enemy>(position);
 
-			enemies.push_back({ enemy.get(), enemyMaxHP });
-			EnemyManager::Instance().Register(std::move(enemy));
-			++enemy_num;
+			 enemies.push_back({ enemy.get(), enemyMaxHP });
+			 EnemyManager::Instance().Register(std::move(enemy));
+			 ++enemy_num;
 		}
 	}
-
 	
-	
-	if(boss->Clear())
+	if(boss.BOSS->Clear())
 	{
 		SceneManager::Instance().ChangeScene(new SceneLoading(new SceneResult));
 	}
 	
 	player.Initialize();
+
+	cameraController.Reset(player.GetPosition(), player.GetAngle().y);
+
+	cameraController.SyncControllerToCamera(camera);
+
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
 	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
 	EnemyManager::Instance().Target(player.GetPosition());
@@ -91,54 +95,100 @@ void SceneGame::Update(float elapsedTime)
 	player.Update(elapsedTime, stage, camera);
 
 
-	DirectX::XMFLOAT3 focus = player.GetPosition();
-	focus.y += 10.0f;
-	cameraController.SetFocus(focus);
-	cameraController.Update();
+	cameraController.SetFocus(player.GetPosition());
+
+	cameraController.Update(elapsedTime, player.GetAngle().y);
+
 	cameraController.SyncControllerToCamera(camera);
 
 
 	if (Boss_Dead)
 	{
-		boss->Boss_Dead(Boss_Dead);
+		boss.BOSS->Boss_Dead(Boss_Dead);
 	
 
-		if (!(boss->Boss_Alive()))
+		if (!(boss.BOSS->Boss_Alive()))
 		{
 			Respawn();
-			boss->Boss_Chage();
+			boss.BOSS->Boss_Chage();
 			Boss_Dead = false;
 		}
 	}
 	{
 		if (enemy_num > 0)
 		{
-			boss->Boss_Set(false);
+			boss.BOSS->Boss_Set(false);
 		}
 		else 
 		{
-			boss->Boss_Set(true);
-			boss->Update(elapsedTime);
+			boss.BOSS->Boss_Set(true);
+			boss.BOSS->Update(elapsedTime);
 		}
 	}
 
 	
-	//ìGÇ÷ÇÃÉ_ÉÅÅ[ÉW
 	for (size_t i = 0;i < enemies.size();++i)
 	{
 		auto& target = enemies[i];
+		//ìGÇ÷ÇÃÉ_ÉÅÅ[ÉW
 		if (!target.enemy->Alive())continue;
 		if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
 			enemyHitRadius))
 		{
 			target.hp -= player.GetPAtkDmg();
-			if (target.hp <= 0.0f)DefeatEnemy(i);
+			if (target.hp <= 0.0f)
+			{
+				DefeatEnemy(i);
+				player.AddBlood(10.0f);
+			}
+		}
+		//ìGÇ©ÇÁÇÃçUåÇ
+
+		if (target.enemy->GetEnemyAnimation()->IsPlaying("Punch")
+			&&target.enemy->GetEnemyAnimation()->GetCurrentFrame() >= 24&&
+			target.enemy->GetEnemyAnimation()->GetCurrentFrame() <=48)
+		{
+			player.CheckTakeAttack(target.enemy->GetPos(), 20.0f);
 		}
 	}
 
+	//ìGÇ÷ÇÃÉ_ÉÅÅ[ÉW
+	if (boss.BOSS->Boss_Alive())
+	{
+		if (player.CheckAttackHit(0, boss.BOSS->GetPos(),
+			40.0f))
+		{
+			boss.hp -= player.GetPAtkDmg();
+			if (boss.hp <= 0.0f)Boss_Dead = true;
+		}
+		//ìGÇ©ÇÁÇÃçUåÇ
+		if (boss.BOSS->GetMiddleAnimation()->IsPlaying("Jump")
+			&& boss.BOSS->GetMiddleAnimation()->GetCurrentFrame() >= 70 &&
+			boss.BOSS->GetMiddleAnimation()->GetCurrentFrame() <= 90)
+		{
+			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+		}
+
+		//ìGÇ©ÇÁÇÃçUåÇ
+		if (boss.BOSS->GetBossAnimation()->IsPlaying("Attack")
+			&& boss.BOSS->GetBossAnimation()->GetCurrentFrame() >= 36 &&
+			boss.BOSS->GetBossAnimation()->GetCurrentFrame() <= 45)
+		{
+			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+		}
+
+		//ìGÇ©ÇÁÇÃçUåÇ
+		if (boss.BOSS->GetBossAnimation()->IsPlaying("Jump_Attack")
+			&& boss.BOSS->GetBossAnimation()->GetCurrentFrame() >= 48 &&
+			boss.BOSS->GetBossAnimation()->GetCurrentFrame() <= 70)
+		{
+			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+		}
+
+	}
 	EffectManager::Instance().Update(elapsedTime);
 
-	if (boss->Clear())
+	if (boss.BOSS->Clear())
 	{
 		if(clearTimer>4)
 		{
@@ -183,7 +233,7 @@ void SceneGame::Render(float elapsedTime)
 
 	player.Render(elapsedTime, rc);
 
-	boss->Render(rc, modelRenderer);
+	boss.BOSS->Render(rc, modelRenderer);
 
 
 	shapeRenderer->Render(
@@ -205,7 +255,7 @@ void SceneGame::Render(float elapsedTime)
 
 	{
 		player.UIRender(elapsedTime, dc);
-		if (boss->Clear())
+		if (boss.BOSS->Clear())
 		{
 			SpriteCLEAR->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
@@ -248,7 +298,7 @@ void SceneGame::DrawGUI()
 		ImGui::SliderFloat("Enemy hit height", &enemyHitHeight, 0.0f, 30.0f);
 		if (ImGui::Button("boss"))
 		{
-			if (boss->Boss_Alive()&&enemy_num<=0)
+			if (boss.BOSS->Boss_Alive()&&enemy_num<=0)
 			{
 				Boss_Dead = true;
 			}
@@ -327,7 +377,7 @@ void SceneGame::DefeatEnemy(size_t index)
 
 void SceneGame::Respawn()
 {
-	if (!(boss->Clear()))
+	if (!(boss.BOSS->Clear()))
 	{
 		enemy_num = 0;
 		for (size_t i = 0; i < enemies.size(); i++)

@@ -63,6 +63,14 @@ private:
 		float hp;
 	};
 	std::vector<EnemyTarget> enemies;
+
+	struct BossTarget
+	{
+		std::unique_ptr<Boss> BOSS;
+		float hp;
+	};
+	BossTarget boss;
+
 	static constexpr float enemyMaxHP = 100.0f;
 	float enemyHitRadius = 8.0f;
 	float enemyHitHeight = 10.0f;
@@ -73,7 +81,7 @@ private:
 	
 
 	//std::vector<std::unique_ptr<Enemy>> enemies;
-	std::unique_ptr<Boss> boss;
+	
 	int enemy_num = 0;
 
 	bool Boss_Dead = false;

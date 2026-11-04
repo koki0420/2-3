@@ -40,6 +40,7 @@ public:
 		}
 	}
 
+	
 private:
 	std::vector<std::unique_ptr<Enemy>> enemies;
 	int enemy_respawn_w = 0;
