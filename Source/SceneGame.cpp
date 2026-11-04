@@ -136,7 +136,11 @@ void SceneGame::Update(float elapsedTime)
 			enemyHitRadius))
 		{
 			target.hp -= player.GetPAtkDmg();
-			if (target.hp <= 0.0f)DefeatEnemy(i);
+			if (target.hp <= 0.0f)
+			{
+				DefeatEnemy(i);
+				player.AddBlood(10.0f);
+			}
 		}
 	}
 

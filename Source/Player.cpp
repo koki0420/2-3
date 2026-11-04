@@ -209,9 +209,20 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
 	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
 
+	const bool isMoving = axisX != 0.0f||axisY != 0.0f;
+
+	//’â~‚©‚çˆÚ“®‚ğn‚ß‚½uŠÔ‚¾‚¯AŠî€•ûŒü‚ğ•Û‘¶‚·‚é
+	if (isMoving && !wasMoving)
+	{
+		moveFront = camera.GetFront();
+		moveRight = camera.GetRight();
+	}
+
+	wasMoving = isMoving;
+
 	// ã‚«ãƒ¡ãƒ©ã®æ–¹å?
-	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
-	const DirectX::XMFLOAT3& camemraRight = camera.GetRight();
+	const DirectX::XMFLOAT3& cameraFront = moveFront;
+	const DirectX::XMFLOAT3& camemraRight = moveRight;
 	float cameraFrontLengthXZ = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
 	float cameraRightLengthXZ = sqrtf(camemraRight.x * camemraRight.x + camemraRight.z * camemraRight.z);
 	float cameraFrontX = cameraFront.x / cameraFrontLengthXZ;
