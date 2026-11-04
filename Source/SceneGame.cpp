@@ -73,6 +73,7 @@ void SceneGame::Initialize()
 	
 	player.Initialize();
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
+	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
 	EnemyManager::Instance().Target(player.GetPosition());
 }	
 
@@ -85,6 +86,11 @@ void SceneGame::Finalize()
 void SceneGame::Update(float elapsedTime)
 {
 	EnemyManager::Instance().Target(player.GetPosition());
+	EnemyManager::Instance().Update(elapsedTime);
+	stage.UpdateTransform();
+	player.Update(elapsedTime, stage, camera);
+
+
 	DirectX::XMFLOAT3 focus = player.GetPosition();
 	focus.y += 10.0f;
 	cameraController.SetFocus(focus);
@@ -109,7 +115,7 @@ void SceneGame::Update(float elapsedTime)
 		{
 			boss->Boss_Set(false);
 		}
-		else
+		else 
 		{
 			boss->Boss_Set(true);
 			boss->Update(elapsedTime);
@@ -117,13 +123,6 @@ void SceneGame::Update(float elapsedTime)
 	}
 
 	
-	stage.UpdateTransform();
-	
-
-	EnemyManager::Instance().Update(elapsedTime);
-
-	player.Update(elapsedTime,stage,camera);
-
 	//ìGÇ÷ÇÃÉ_ÉÅÅ[ÉW
 	for (size_t i = 0;i < enemies.size();++i)
 	{
@@ -141,7 +140,7 @@ void SceneGame::Update(float elapsedTime)
 
 	if (boss->Clear())
 	{
-		if(clearTimer>7)
+		if(clearTimer>4)
 		{
 			SceneManager::Instance().ChangeScene(new SceneResult);
 		}
@@ -206,9 +205,13 @@ void SceneGame::Render(float elapsedTime)
 
 	{
 		player.UIRender(elapsedTime, dc);
+		if (boss->Clear())
+		{
+			SpriteCLEAR->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+		}
 		if (player.GetPlayerHP() <= 0)
 		{
-			SpriteOVER->Render(dc, 300, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+			SpriteOVER->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
 	}
 
@@ -324,13 +327,19 @@ void SceneGame::DefeatEnemy(size_t index)
 
 void SceneGame::Respawn()
 {
-	enemy_num = 0;
-	for (size_t i = 0; i < enemies.size(); i++)
+	if (!(boss->Clear()))
 	{
-		enemies[i].hp = enemyMaxHP;
-		EnemyManager::Instance().Enemy_Set(static_cast<int>(i), true);
+		enemy_num = 0;
+		for (size_t i = 0; i < enemies.size(); i++)
+		{
+			enemies[i].hp = enemyMaxHP;
+			EnemyManager::Instance().Enemy_Set(static_cast<int>(i), true);
+			enemy_num += 1;
+		}
+	}
+	else
+	{
 		enemy_num += 1;
 	}
-
 }
 

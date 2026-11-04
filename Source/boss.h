@@ -36,6 +36,7 @@ public:
 	void Boss_Chage() 
 	{
 		boss_count+=1;
+		if (boss_count > 2)clear = true;
 		this->dead = false;
 	}
 

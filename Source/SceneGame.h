@@ -16,7 +16,7 @@
 #include "boss.h"
 
 #include "Player.h"
-#include "CameraMove_test.h"
+#include "CameraController.h"
 
 // XAUDIO2
 //#include "audio.h"
@@ -53,7 +53,7 @@ public:
 private:
 	
 	Camera								camera;
-	TestCameraController				cameraController;
+	CameraController				cameraController;
 	Object								stage;
 	Player								player;
 
@@ -149,6 +149,7 @@ private:
 	bool goalReached = false;
 	float clearTimer = 0.0f;
 	std::unique_ptr<Sprite> SpriteOVER;
+	std::unique_ptr<Sprite> SpriteCLEAR;
 	
 
 	

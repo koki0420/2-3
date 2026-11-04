@@ -7,7 +7,7 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	arrive_position = { 0,-15,0 };
 
 	boss.position = pos;
-	boss.position.y = -15;
+	boss.position.y = -30;
     boss.scale = { 0.4f,0.4f,0.4f };
     boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_boss.mdl");
 
@@ -175,7 +175,7 @@ void Boss::Update(float elapsedTime)
 	
 
 	
-	if (boss_count >= 2)clear=true;
+	if (boss_count >= 2&& dead)clear=true;
 	if (alive)
 	{
 		

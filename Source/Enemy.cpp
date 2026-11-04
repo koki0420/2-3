@@ -140,9 +140,8 @@ void Enemy::Update(float elapsedTime)
 		}
 		// YŽ²‰ñ“]iYawj
 		enemy.angle.y = atan2f(dx, dz);
-	}
-	if (alive)
-	{
+	
+	
 		enemy.UpdateTransform();
 		enemy_anime->Update(elapsedTime);
 	}
@@ -151,13 +150,17 @@ void Enemy::Update(float elapsedTime)
 		alive = false;
 		death_anime = true;
 	}
-
+	if (enemy_anime->IsPlaying("Death"))
+	{
+		enemy.position.y -= 0.1f;
+	}
 
 }
 
 void Enemy::Render(const RenderContext& immediate_context, ModelRenderer* renderer)
 {
-	if(alive)renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
+	if (alive)renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
+	//renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
 }
 
 void Enemy::enemy_set(bool alive) 

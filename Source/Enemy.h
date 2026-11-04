@@ -32,7 +32,6 @@ public:
 		Target = pos;
 	}
 
-	bool Dead();
 
 private:
 	Object enemy;
