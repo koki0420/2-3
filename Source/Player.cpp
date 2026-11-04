@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "ShapeRenderer.h"
-#define PLAYERHPMAX 10000
+#define PLAYERHPMAX 300
 Player::Player()
 {
 
