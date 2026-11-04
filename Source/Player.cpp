@@ -118,7 +118,7 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, S * R * T);
 
 
-	swordLine.Update(Weapon[weapon_num].transform);
+	
 
 
 	for (const Model::Node& node : player.model->GetNodes())
@@ -133,6 +133,9 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 			break;
 		}
 	}
+
+	//エフェクト用
+	sword_Line.Update(Weapon[weapon_num].transform);
 }
 
 void Player::Render(float elapsedTime, RenderContext rc)
@@ -158,7 +161,22 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		{ 1, 1, 0, 1 });
 
 	Graphics::Instance().GetModelRenderer()->Render(rc, Weapon[weapon_num].transform, Weapon[weapon_num].model.get(), ShaderId::Lambert);
+
+
+
+
+
+	DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&rc.camera->GetView());
+	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&rc.camera->GetProjection());
+	DirectX::XMFLOAT4X4 VP;
+	DirectX::XMStoreFloat4x4(&VP, V * P);
+	if (isAttacking)
+	{
+		sword_Line.Render(Graphics::Instance().GetDeviceContext(), VP);
+
+	}
 }
+	
 
 void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 {

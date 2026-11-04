@@ -10,4 +10,6 @@ struct RenderContext
 	const RenderState*		renderState;
 	const Camera*			camera;
 	const LightManager*		lightManager = nullptr;
+
+	DirectX::XMFLOAT4X4 viewProjection;
 };
