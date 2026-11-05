@@ -92,7 +92,7 @@ void SceneCameraTest::Update(float elapsedTime)
     for (size_t i = 0; i < enemyList.size(); i++)
     {
         // 倒れている敵は調べない
-        if (!enemyList[i]->Alive())
+        if (!enemyList[i]->Alive()) 
         {
             continue;
         }
