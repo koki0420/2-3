@@ -10,18 +10,26 @@ void EnemyManager::Update(float elapsedTime)
 
 	for (int i = 0;i < enemies.size();i += 1)
 	{
+		if (!(enemies[i]->Alive()))continue;
 		for (int j = i + 1 ; j < enemies.size(); j += 1)
 		{
+			if (!(enemies[j]->Alive()))continue;
+
 			XMVECTOR e_pos1 = DirectX::XMLoadFloat3(&enemies[i]->GetPos());
 			XMVECTOR e_pos2 = DirectX::XMLoadFloat3(&enemies[j]->GetPos());
 
-			float direction =
-				XMVectorGetX(XMVector3Length
-				(XMVectorSubtract(e_pos2, e_pos1)));
 
-			float radius = 15;
-			if (direction <= radius)
+			XMVECTOR diff = XMVectorSubtract(e_pos2, e_pos1);
+
+			float distSq =
+				XMVectorGetX(XMVector3LengthSq(diff));
+
+			constexpr float radius = 10.0f;
+			constexpr float radiusSq = radius * radius;
+
+			if (distSq <= radiusSq)
 			{
+				float direction = sqrtf(distSq);
 				// 正規化（方向ベクトル）
 				DirectX::XMVECTOR dir = DirectX::XMVector3Normalize(XMVectorSubtract(e_pos2, e_pos1));
 

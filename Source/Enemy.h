@@ -50,6 +50,7 @@ private:
 
 	bool alive=true;
 	bool arrive = true;
+	bool renderer=true;
 
 	float timer = 0;
 	float nextTimer = 0;

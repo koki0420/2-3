@@ -47,16 +47,16 @@ void SceneGame::Initialize()
 	stage.position.y = -20;
 
 	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
-	boss.hp = 200.0f;
+	boss.hp = 1000.0f;
 
 	cameraController.SyncCameraToController(camera);
 
 	DirectX::XMFLOAT3 position;
-	for (int i = 0;i < 10;i += 1)
+	for (int i = 0;i < 16;i += 1)
 	{
-		for (int j = 0;j < 10;j += 1)
+		for (int j = 0;j < 16;j += 1)
 		{
-			 position = {-260.0f+(520.0f/9.0f)*i,-25,-260.0f+(520.0f/9.0f)*j};
+			 position = {-260.0f+(520.0f/15.0f)*i,-25,-260.0f+(520.0f/15.0f)*j};
 			 auto enemy = std::make_unique<Enemy>(position);
 
 			 enemies.push_back({ enemy.get(), enemyMaxHP });
@@ -123,15 +123,19 @@ void SceneGame::Update(float elapsedTime)
 		{
 			boss.BOSS->Boss_Set(true);
 			boss.BOSS->Update(elapsedTime);
+			boss.hp = 1000.0f;
 		}
 	}
 
-	
+	enemy_num = 0;
 	for (size_t i = 0;i < enemies.size();++i)
 	{
 		auto& target = enemies[i];
 		//敵へのダメージ
-		if (!target.enemy->Alive())continue;
+		if (!target.enemy->Alive())
+		{	
+			continue;
+		}
 		if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
 			enemyHitRadius))
 		{
@@ -140,8 +144,10 @@ void SceneGame::Update(float elapsedTime)
 			{
 				DefeatEnemy(i);
 				player.AddBlood(10.0f);
+				
 			}
 		}
+
 		//敵からの攻撃
 
 		if (target.enemy->GetEnemyAnimation()->IsPlaying("Punch")
@@ -150,9 +156,14 @@ void SceneGame::Update(float elapsedTime)
 		{
 			player.CheckTakeAttack(target.enemy->GetPos(), 20.0f);
 		}
+
+		if (EnemyManager::Instance().Enemy_Alive(i))
+		{
+			enemy_num += 1;
+		}
 	}
 
-	//敵へのダメージ
+	//ボスへのダメージ
 	if (boss.BOSS->Boss_Alive())
 	{
 		if (player.CheckAttackHit(0, boss.BOSS->GetPos(),
@@ -293,6 +304,7 @@ void SceneGame::DrawGUI()
 			for (size_t i = 0; i < enemies.size(); ++i) DefeatEnemy(i);
 		}
 		ImGui::Text("Enemies alive: %d", enemy_num);
+		
 		ImGui::Checkbox("Show enemy hitboxes", &showEnemyHitBoxes);
 		ImGui::SliderFloat("Enemy hit radius", &enemyHitRadius, 0.1f, 30.0f);
 		ImGui::SliderFloat("Enemy hit height", &enemyHitHeight, 0.0f, 30.0f);
@@ -366,13 +378,16 @@ DirectX::XMFLOAT3 SceneGame::GetEnemyHitCenter(const Enemy& enemy)const
 
 void SceneGame::DefeatEnemy(size_t index)
 {
+	
 	auto& target = enemies[index];
-	if (!target.enemy->Alive())return;
+	if (!(target.enemy->Alive()))
+	{
+		return;
+	}
 
+	
 	target.hp = 0.0f;
 	EnemyManager::Instance().Enemy_Set(static_cast<int>(index),false);
-	--enemy_num;
-
 }
 
 void SceneGame::Respawn()
@@ -384,7 +399,6 @@ void SceneGame::Respawn()
 		{
 			enemies[i].hp = enemyMaxHP;
 			EnemyManager::Instance().Enemy_Set(static_cast<int>(i), true);
-			enemy_num += 1;
 		}
 	}
 	else

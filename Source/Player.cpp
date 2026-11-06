@@ -234,10 +234,10 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	// ÂÖ•ÂäõÂ?Áê?
 	float axisX = 0.0f;
 	float axisY = 0.0f;
-	if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
+	if (GetAsyncKeyState('W') & 0x8000) axisY += 3.0f;
 	/*if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;*/
-	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
-	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
+	if (GetAsyncKeyState('D') & 0x8000) axisX += 3.0f;
+	if (GetAsyncKeyState('A') & 0x8000) axisX -= 3.0f;
 
 	//const bool isMoving = axisX != 0.0f||axisY != 0.0f;
 
