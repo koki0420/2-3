@@ -47,7 +47,7 @@ void SceneGame::Initialize()
 	stage.position.y = -20;
 
 	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
-	boss.hp = 1000.0f;
+	boss.hp = 100.0f;
 
 	cameraController.SyncCameraToController(camera);
 
@@ -114,6 +114,7 @@ void SceneGame::Update(float elapsedTime)
 			Boss_Dead = false;
 		}
 	}
+	else
 	{
 		if (enemy_num > 0)
 		{
@@ -123,7 +124,6 @@ void SceneGame::Update(float elapsedTime)
 		{
 			boss.BOSS->Boss_Set(true);
 			boss.BOSS->Update(elapsedTime);
-			boss.hp = 1000.0f;
 		}
 	}
 
@@ -170,7 +170,11 @@ void SceneGame::Update(float elapsedTime)
 			40.0f))
 		{
 			boss.hp -= player.GetPAtkDmg();
-			if (boss.hp <= 0.0f)Boss_Dead = true;
+			if (boss.hp <= 0.0f)
+			{
+				if (Boss_Dead = false)boss.hp = 1000.0f;
+				Boss_Dead = true;
+			}
 		}
 		//“G‚©‚ç‚ÌUŒ‚
 		if (boss.BOSS->GetMiddleAnimation()->IsPlaying("Jump")
@@ -315,6 +319,9 @@ void SceneGame::DrawGUI()
 				Boss_Dead = true;
 			}
 		}
+		ImGui::Separator();
+		ImGui::Text("Boss");
+		ImGui::Text("HP: %.0f", boss.hp);
 
 		ImGui::Separator();
 

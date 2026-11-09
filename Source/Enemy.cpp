@@ -154,8 +154,24 @@ void Enemy::Update(float elapsedTime)
 
 		}
 		// YŽ²‰ñ“]iYawj
-		enemy.angle.y = atan2f(dx, dz);
+		//enemy.angle.y = atan2f(dx, dz);
+		float targetAngle = atan2f(dx, dz);
 
+		float dif = targetAngle - enemy.angle.y;
+
+		while (dif > DirectX::XM_PI)  dif -= DirectX::XM_2PI;
+		while (dif < -DirectX::XM_PI) dif += DirectX::XM_2PI;
+
+		float turnSpeed = 3.0f * elapsedTime; // rad/s
+
+		if (fabsf(dif) < turnSpeed)
+		{
+			enemy.angle.y = targetAngle;
+		}
+		else
+		{
+			enemy.angle.y += (dif > 0.0f) ? turnSpeed : -turnSpeed;
+		}
 
 		enemy.UpdateTransform();
 		enemy_anime->Update(elapsedTime);
