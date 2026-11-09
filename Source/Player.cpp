@@ -190,7 +190,7 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 	if (animation->GetCurrentFrame() >= 15.0f && !IsSlash && Blad)
 	{
-		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 4.0f);
+		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 6.0f);
 		IsSlash = true;
 		Blad = false;
 	}

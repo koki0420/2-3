@@ -226,13 +226,21 @@ void SceneGame::Render(float elapsedTime)
 		DirectX::XMLoadFloat4x4(&camera.GetView()) *
 		DirectX::XMLoadFloat4x4(&camera.GetProjection()));
 
+	rc.high_light = true;
+
+	rc.highlightColor = { 0.1, 0.05f, 0.0, 1 };
 	modelRenderer->Render(rc, stage.transform, stage.model.get(), ShaderId::Lambert);
+
+	rc.highlightColor = { 0.1, 0.1, 0.2, 1 };
 	EnemyManager::Instance().Render(rc, modelRenderer);
 
 	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetProjection());
 
+
+	rc.highlightColor = { 0.2, 0.2, 0.2, 1 };
 	player.Render(elapsedTime, rc);
 
+	rc.highlightColor = { 0.5, 0.0, 0.5, 1 };
 	boss.BOSS->Render(rc, modelRenderer);
 
 

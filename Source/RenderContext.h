@@ -12,4 +12,7 @@ struct RenderContext
 	const LightManager*		lightManager = nullptr;
 
 	DirectX::XMFLOAT4X4 viewProjection;
+
+	bool high_light = false;
+	DirectX::XMFLOAT4 highlightColor =	{1,1,1,1};
 };

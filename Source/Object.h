@@ -16,6 +16,8 @@ struct Object
 	DirectX::XMFLOAT4X4		transform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 	std::unique_ptr<Model>	model;
 
+	
+
 	void UpdateTransform()
 	{
 		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(scale.x, scale.y, scale.z);

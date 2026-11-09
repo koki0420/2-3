@@ -120,6 +120,9 @@ void ModelRenderer::Render(const RenderContext& rc, const DirectX::XMFLOAT4X4& w
 		}
 		dc->UpdateSubresource(skeletonConstantBuffer.Get(), 0, 0, &cbSkeleton, 0, 0);
 
+		
+
+
 		// •`‰æ
 		for (const ModelResource::Subset& subset : mesh.subsets)
 		{
