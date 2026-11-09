@@ -68,18 +68,15 @@ void EnemyManager::Enemy_Set(int i, bool Alive)
 	enemies[i]->enemy_set(Alive);
 	if(Alive)
 	{
-		//25
-		enemy_respawn_w = i % 10;
-		//4
-		enemy_respawn_h = i / 10;
+		enemy_respawn_w = i % 16;
+		enemy_respawn_h = i / 16;
 	
 
 		enemies[i]->SetPos({
-			-260 + (520/9.0f) * enemy_respawn_w,
+			-260 + (520/15.0f) * enemy_respawn_w,
 			-25,
-			-260 + (520/9.0f) * enemy_respawn_h
+			-260 + (520/15.0f) * enemy_respawn_h
 			});
-
-		
 	}
+
 }

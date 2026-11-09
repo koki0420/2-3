@@ -56,8 +56,8 @@ void SceneGame::Initialize()
 	{
 		for (int j = 0;j < 16;j += 1)
 		{
-			 position = {-260.0f+(520.0f/15.0f)*i,-25,-260.0f+(520.0f/15.0f)*j};
-			 auto enemy = std::make_unique<Enemy>(position);
+			position = { -260.0f + (520.0f / 15.0f) * i,-25,-260.0f + (520.0f / 15.0f) * j };
+			auto enemy = std::make_unique<Enemy>(position);
 
 			 enemies.push_back({ enemy.get(), enemyMaxHP });
 			 EnemyManager::Instance().Register(std::move(enemy));
@@ -101,12 +101,15 @@ void SceneGame::Update(float elapsedTime)
 
 	cameraController.SyncControllerToCamera(camera);
 
+	boss.BOSS->Update(elapsedTime);
 
 	if (Boss_Dead)
 	{
 		boss.BOSS->Boss_Dead(Boss_Dead);
-	
-
+		if (boss.hp <= 0)
+		{
+			boss.hp = 100.0f;
+		}
 		if (!(boss.BOSS->Boss_Alive()))
 		{
 			Respawn();
@@ -122,8 +125,7 @@ void SceneGame::Update(float elapsedTime)
 		}
 		else 
 		{
-			boss.BOSS->Boss_Set(true);
-			boss.BOSS->Update(elapsedTime);
+			boss.BOSS->Boss_Set(true);	
 		}
 	}
 
@@ -175,6 +177,10 @@ void SceneGame::Update(float elapsedTime)
 				if (Boss_Dead = false)boss.hp = 1000.0f;
 				Boss_Dead = true;
 			}
+		}
+		if (boss.hp <= 0.0f)
+		{
+			Boss_Dead = true;
 		}
 		//“G‚©‚ç‚ÌUŒ‚
 		if (boss.BOSS->GetMiddleAnimation()->IsPlaying("Jump")
@@ -316,6 +322,7 @@ void SceneGame::DrawGUI()
 		{
 			if (boss.BOSS->Boss_Alive()&&enemy_num<=0)
 			{
+				boss.hp = 0.0f;
 				Boss_Dead = true;
 			}
 		}

@@ -43,7 +43,7 @@ void Enemy::Update(float elapsedTime)
 		(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&enemy.position))));
 		
 	
-		if(direction<=200)
+		if(direction<=600)
 		{
 			renderer = true;
 			if (direction <= 100)
