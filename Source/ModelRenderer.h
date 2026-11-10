@@ -25,6 +25,8 @@ public:
 	// ï`âÊé¿çs
 	void Render(const RenderContext& rc, const DirectX::XMFLOAT4X4& worldTransform, const Model* model, ShaderId shaderId);
 
+
+
 private:
 	struct CbScene
 	{
