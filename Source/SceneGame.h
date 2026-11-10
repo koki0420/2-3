@@ -158,7 +158,6 @@ private:
 	float clearTimer = 0.0f;
 	std::unique_ptr<Sprite> SpriteOVER;
 	std::unique_ptr<Sprite> SpriteCLEAR;
-	
-
+	std::unique_ptr<Sprite> spriteHP = nullptr;
 	
 };
