@@ -1,0 +1,3 @@
+C:\Users\2250298\Desktop\2年1回目制作\External\DirectXTex\Bin\Desktop_2022\x64\Debug\DirectXTex.lib
+C:\Users\2250298\Desktop\2年1回目制作 - コピー\External\DirectXTex\Bin\Desktop_2022\x64\Debug\DirectXTex.lib
+C:\Users\2250298\Desktop\2年1回目制作 - コピー - コピー\External\DirectXTex\Bin\Desktop_2022\x64\Debug\DirectXTex.lib

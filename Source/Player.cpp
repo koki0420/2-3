@@ -7,18 +7,9 @@
 #define PLAYERHPMAX 300
 Player::Player()
 {
-	
-
 	Initialize();
 
 	spriteHPGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
-
-	spriteHPGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
-
-
-	spriteHPGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_neon-green_01_ff4444_128.png");
-
-
 	spriteGauge = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar-square_black_01_ff4444_128.png");
 	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_44cc44_128.png");
 	spriteWP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar-square_blue-gold_01_ff4444_128.png");
@@ -27,8 +18,6 @@ Player::Player()
 	spriteW[1] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent.png");
 	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");
 
-
-
 	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
 	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
 	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
@@ -36,9 +25,6 @@ Player::Player()
 	IsSwrod = true;
 	IsFight = true;
 	IsSlash = true; 
-
-
-
 }
 Player::~Player() = default;
 
@@ -46,8 +32,6 @@ void Player::Initialize()
 {
 
 	animation.reset();
-    player.position = { 0, -15, 0 };
-
     player.position = { 0, -28, 0 };
 
     player.angle = { 0, 0, 0 };
@@ -57,14 +41,12 @@ void Player::Initialize()
 
 	animation = std::make_unique<Animation>(*player.model);
 
-
 	Weapon[0].model = std::make_unique<Model>("Data/Model/Weapon/Sword.mdl");
 	Weapon[0].scale = { 0.5f,0.5f,0.5f };
 	Weapon[1].model = std::make_unique<Model>("Data/Model/Weapon/Scythe.mdl");
 	Weapon[1].scale = { 0.25f,0.25f,0.25f };
 
 	weapon_num = 0;
-
 
 	state = State::Idle;
 	animation->PlayAnimation("Idle", true);
@@ -74,18 +56,10 @@ void Player::Initialize()
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 {
 	//éÄÇÒÇ≈Ç¢ÇΩÇÁé¿çsÇµÇ»Ç¢
-	if (IsDead)
-	{
-		animation->Update(elapsedTime);
-		return;
-	}
+	if (IsDead){animation->Update(elapsedTime);return;}
 
-	// debug
-	if (previewState)
-	{
-		animation->Update(elapsedTime);
-		return;
-	}
+	// debug debugíÜÇÕÇŸÇ©ÇÃìÆÇ´Ç™Ç≈Ç´Ç»Ç¢ÇÊÇ§Ç…return
+	if (previewState){animation->Update(elapsedTime);return;}
 
 	//ñ≥ìGéûä‘
 	if (invincibleTime > 0.0f)
@@ -99,20 +73,17 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 
 	bool isMoving = false;
 	
-	if (!isAttacking)
-	{
-		isMoving = InputMove(elapsedTime, camera);
-	}
+	if (!isAttacking){isMoving = InputMove(elapsedTime, camera);}
 
+	//ïêäÌêÿÇËë÷Ç¶
 	WeaponChange();
 
+	//Update
 	UpdateMusouMode(elapsedTime);
-
 	UpdateAttack(elapsedTime);
 	pAnimation(elapsedTime, isMoving);
 
 	const char* rightHandName = "mixamorig:RightHand";
-	
 
 	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(Weapon[weapon_num].scale.x, Weapon[weapon_num].scale.y, Weapon[weapon_num].scale.z);
 	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(Weapon[weapon_num].angle.x, Weapon[weapon_num].angle.y, Weapon[weapon_num].angle.z);
@@ -141,6 +112,9 @@ void Player::Render(float elapsedTime, RenderContext rc)
 	if (player.model) Graphics::Instance().GetModelRenderer()->Render(
 		rc, player.transform, player.model.get(), ShaderId::Lambert);
 
+
+	//playerÇÃìñÇΩÇËîªíËÅAçUåÇîÕàÕï`âÊ
+#ifndef DEBUG
 	if (showAttackCollision && IsAttackActive())
 	{
 		Graphics::Instance().GetShapeRenderer()->DrawSphere(
@@ -157,12 +131,9 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		pPos,
 		playerRadius,
 		{ 1, 1, 0, 1 });
+#endif
 
 	Graphics::Instance().GetModelRenderer()->Render(rc, Weapon[weapon_num].transform, Weapon[weapon_num].model.get(), ShaderId::Lambert);
-
-
-
-
 
 	DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&rc.camera->GetView());
 	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&rc.camera->GetProjection());
@@ -231,7 +202,6 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 
 bool Player::InputMove(float elapsedTime, Camera camera)
 {
-	// ÂÖ•ÂäõÂ?Áê?
 	float axisX = 0.0f;
 	float axisY = 0.0f;
 	if (GetAsyncKeyState('W') & 0x8000) axisY += 3.0f;
@@ -239,23 +209,9 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	if (GetAsyncKeyState('D') & 0x8000) axisX += 3.0f;
 	if (GetAsyncKeyState('A') & 0x8000) axisX -= 3.0f;
 
-	//const bool isMoving = axisX != 0.0f||axisY != 0.0f;
-
-	////í‚é~Ç©ÇÁà⁄ìÆÇénÇﬂÇΩèuä‘ÇæÇØÅAäÓèÄï˚å¸Çï€ë∂Ç∑ÇÈ
-	//if (isMoving && !wasMoving)
-	//{
-	//	moveFront = camera.GetFront();
-	//	moveRight = camera.GetRight();
-	//}
-
-	//wasMoving = isMoving;
-
-	// „Ç´„É°„É©„ÅÆÊñπÂê?
 	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
 	const DirectX::XMFLOAT3& camemraRight = camera.GetRight();
 
-	/*const DirectX::XMFLOAT3& cameraFront = moveFront;
-	const DirectX::XMFLOAT3& camemraRight = moveRight;*/
 	float cameraFrontLengthXZ = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
 	float cameraRightLengthXZ = sqrtf(camemraRight.x * camemraRight.x + camemraRight.z * camemraRight.z);
 	float cameraFrontX = cameraFront.x / cameraFrontLengthXZ;
@@ -263,8 +219,9 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 	float cameraRightX = camemraRight.x / cameraRightLengthXZ;
 	float cameraRightZ = camemraRight.z / cameraRightLengthXZ;
 
-	// ÁßªÂãï„?„ÇØ„Éà„É´
+	//ñ≥ëoÉÇÅ[ÉhÇ»ÇÁà⁄ìÆë¨ìxÇëÅÇ≠Ç∑ÇÈ
 	const float moveMultiplier = IsMusou ? 2.0f : 1.0f;
+
 	const float speed = playerMoveSpeed * moveMultiplier * elapsedTime;
 	float vecX = cameraFrontX * axisY + cameraRightX * axisX;
 	float vecZ = cameraFrontZ * axisY + cameraRightZ * axisX;
@@ -309,32 +266,6 @@ void Player::setState(State next, bool loop)
 
 void Player::pAnimation(float elapsedTime,bool isMoving)
 {
-	/*switch (state)
-	{
-	case State::Idle:
-	{
-		if (isMoving)
-		{
-			state = State::Sword_Walk;
-			animation->PlayAnimation("Sword_Walk", true);
-		}
-		break;
-	}
-	case State::Sword_Walk:
-		if (!isMoving)
-		{
-			state = State::Idle;
-			animation->PlayAnimation("Idle", true);
-		}
-		break;
-	}*/
-	
-	/*if (!isMoving)
-	{
-		state = State::Idle;
-		animation->PlayAnimation("Idle", true);
-	}*/
-
 	if (!isAttacking)
 	{
 		setState(isMoving ? State::Sword_Walk : State::Idle, true);
@@ -342,7 +273,6 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 
 	const float animationSpeed = isAttacking ? attackSpeedMultiplier : 1.0f;
 	animation->Update(elapsedTime * animationSpeed);
-
 }
 
 //çUåÇäJénèàóù
@@ -355,35 +285,31 @@ void Player::StartAttack()
 
 	if (!normalPressed && !bloodPressed)return;
 
-
-
+	//É_ÉÅÅ[ÉWÅAî{ó¶ÅAçUåÇîÕàÕèâä˙âª
 	pAtkDmg = PAD;
 	bloodAttackMultiplier = 1.0f;
 	float AttackRadius = atkR;
+	float AttackDistance = atkD;
 
 	if (bloodPressed && !BloodAttack())return;
 	
 	State next;
-	float duration;
+	float duration;//éûä‘
+	const int index = GetBloodGaugeIndex();
 
 	switch (weapon)
 	{
 	case WEAPON::Sword:
 		next = State::Sword_Attack1;
-		duration = 2.4f;
 
 		IsSwrod = false;
 
 		break;
 	case WEAPON::Scythe:
 		next = State::Scythe_Attack;
-		duration = 1.1f;
-
 
 		IsSlash = false;
 
-
-		if (bloodPressed)AttackRadius = 50.0f;
 		break;
 	case WEAPON::Fist:
 		next = State::Fight_Punch1;
@@ -396,11 +322,22 @@ void Player::StartAttack()
 		return;
 	}
 
-	attackRadius = AttackRadius;
+	if (bloodPressed) 
+	{
+		AttackRadius = WeaponAtkRadius[index];
+		AttackDistance = bloodAtkDistance[index];
+	}
+	duration = WeaponDuration[index];
+
+	//ååâtçUåÇî{ó¶ÇÇ©ÇØÇÈ(ååâtçUåÇÇ≈Ç»ÇØÇÍÇŒìôî{
 	pAtkDmg *= bloodAttackMultiplier;
+	//ñ≥ëoÉÇÅ[ÉhÇ»ÇÁÇ≥ÇÁÇ…çUåÇî{ó¶ÇÇ©ÇØÇƒçUåÇë¨ìxÇè„Ç∞ÇÈ
 	if (IsMusou)pAtkDmg *= 1.5;
 	attackSpeedMultiplier = IsMusou ? 1.3f : 1.0f;
+
+	attackRadius = AttackRadius;
 	attackDuration = duration;
+	attackDistance = AttackDistance;
 	isAttacking = true;
 	attackTime = 0.0f;
 	hitEnemies.clear();
@@ -437,7 +374,6 @@ bool Player::CheckAttackHit(
 
 	//Ç∑Ç≈Ç…ìñÇΩÇ¡ÇΩÇ»ÇÁîªíËÇµÇ»Ç¢
 	if (hitEnemies.count(enemyIndex) > 0)return false;
-
 	
 	float dx = attackPosition.x - enemyPosition.x;
 	float dy = attackPosition.y - enemyPosition.y;
@@ -551,16 +487,16 @@ void Player::AddBlood(float amount)
 
 bool Player::BloodAttack()
 {
+	//åªç›âΩÇÃïêäÌÇégÇ¡ÇƒÇ¢ÇÈÇ©ÇéÊìæ
 	const int index = GetBloodGaugeIndex();
-	const float costs[] = { 5.0f,10.0f,2.5f };
-	const float multipliers[] = { 1.3f,1.5f,1.1f };
-
 	float& gauge = bloodGauge[index];
 
-	if (gauge < costs[index])return false;
+	//ÉRÉXÉgÇ™ë´ÇËÇ»ÇØÇÍÇŒï‘Ç∑
+	if (gauge < BloodCosts[index])return false;
 
-	gauge -= costs[index];
-	bloodAttackMultiplier = multipliers[index];
+	//ÉQÅ[ÉWÇ©ÇÁÉRÉXÉgÇà¯Ç´ÅAí èÌçUåÇÇ…ïêäÌÇ≤Ç∆ÇÃî{ó¶ÇÇ©ÇØÇÈ
+	gauge -= BloodCosts[index];
+	bloodAttackMultiplier = BloodMultipliers[index];
 
 	Blad = true;
 
@@ -581,9 +517,11 @@ int Player::GetBloodGaugeIndex()const
 
 void Player::ChangeMusouMode()
 {
-	if (IsMusou || isAttacking)return;
-	if (!(GetAsyncKeyState('R') & 0x8000))return;
 
+	if (IsMusou || isAttacking)return;
+
+	//RÉLÅ[ÇâüÇµÇƒååâtó Ç™è\ï™Ç»ÇÁñ≥ëoÉÇÅ[ÉhÇ÷
+	if (!(GetAsyncKeyState('R') & 0x8000))return;
 	if (bloodGauge[GetBloodGaugeIndex()] >= 90.0f)
 	{
 		IsMusou = true;
@@ -598,8 +536,10 @@ void Player::UpdateMusouMode(float elapsedTime)
 
 	if (!IsMusou) return;
 
+	const int index = GetBloodGaugeIndex();
 	float& gauge = bloodGauge[GetBloodGaugeIndex()];
-	gauge -= 10.0f * elapsedTime;
+
+	gauge -= BloodGaugeConsumption[index] * elapsedTime;
 
 	if (gauge <= 0.0f)
 	{

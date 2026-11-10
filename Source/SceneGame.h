@@ -160,4 +160,6 @@ private:
 	std::unique_ptr<Sprite> SpriteCLEAR;
 	std::unique_ptr<Sprite> spriteHP = nullptr;
 	
+	Effect* HitEffect = nullptr;
+	
 };
