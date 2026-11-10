@@ -141,6 +141,7 @@ void SceneGame::Update(float elapsedTime)
 		if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
 			enemyHitRadius))
 		{
+			target.enemy->SetKnockBack(true);
 			target.hp -= player.GetPAtkDmg();
 			if (target.hp <= 0.0f)
 			{
@@ -394,6 +395,7 @@ void SceneGame::DefeatEnemy(size_t index)
 {
 	
 	auto& target = enemies[index];
+	
 	if (!(target.enemy->Alive()))
 	{
 		return;

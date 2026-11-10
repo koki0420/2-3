@@ -34,6 +34,9 @@ public:
 
 	Animation* GetEnemyAnimation() { return enemy_anime.get(); }
 
+	void SetKnockBack(bool knock) { knockback = knock; }
+
+	bool GetKnockBack() { return knockback; }
 
 private:
 	Object enemy;
@@ -54,5 +57,10 @@ private:
 
 	float timer = 0;
 	float nextTimer = 0;
+
+
+	bool knockback = false;
+	float knockback_length = 2.0f;
+
 
 };
