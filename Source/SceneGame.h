@@ -159,6 +159,6 @@ private:
 	std::unique_ptr<Sprite> SpriteOVER;
 	std::unique_ptr<Sprite> SpriteCLEAR;
 	
-
+	Effect* HitEffect = nullptr;
 	
 };

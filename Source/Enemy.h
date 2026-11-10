@@ -60,13 +60,10 @@ private:
 
 	float timer = 0;
 	float nextTimer = 0;
-<<<<<<< HEAD
-=======
+
 
 
 	bool knockback = false;
 	float knockback_length = 2.0f;
 
-
->>>>>>> a5c655161da7dd8ee03a2b31e37d73e7075ba71c
 };

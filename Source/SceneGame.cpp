@@ -79,6 +79,8 @@ void SceneGame::Initialize()
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
 	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
 	EnemyManager::Instance().Target(player.GetPosition());
+
+	HitEffect = EffectManager::Instance().CreateEffect("Data/Effect/Hit.efkefc");
 }	
 
 void SceneGame::Finalize()
@@ -143,6 +145,8 @@ void SceneGame::Update(float elapsedTime)
 		{
 			target.enemy->SetKnockBack(true);
 			target.hp -= player.GetPAtkDmg();
+			DirectX::XMFLOAT3 epos = target.enemy->GetPos();
+			HitEffect->Play({epos.x,epos.y+10.0f,epos.z}, 5.0f);
 			if (target.hp <= 0.0f)
 			{
 				DefeatEnemy(i);
@@ -173,6 +177,7 @@ void SceneGame::Update(float elapsedTime)
 			40.0f))
 		{
 			boss.hp -= player.GetPAtkDmg();
+			HitEffect->Play(boss.BOSS->GetPos(),1.0f);
 			if (boss.hp <= 0.0f)
 			{
 				if (Boss_Dead = false)boss.hp = 1000.0f;
