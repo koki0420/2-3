@@ -52,8 +52,24 @@ void LambertShader::Update(const RenderContext& rc, const ModelResource::Materia
 	// マテリアル用定数バッファ更新
 	CbMaterial cbMaterial{};
 	cbMaterial.materialColor = material.color;
+
+	cbMaterial.highlightColor = rc.highlightColor;
+	if (rc.high_light)
+	{
+		cbMaterial.highlight = 1.0f;
+	}
+	else
+	{
+		cbMaterial.highlight = 0.0f;
+	}
+
+
+
+	
 	dc->UpdateSubresource(constantBuffer.Get(), 0, 0, &cbMaterial, 0, 0);
 
+
+	
 	// シェーダーリソースビュー設定
 	ID3D11ShaderResourceView* srvs[] =
 	{

@@ -155,7 +155,7 @@ void Boss::Update(float elapsedTime)
 		if (boss_count >= 2)
 		{
 		
-			if (!dyingStarted)
+			if (!(dyingStarted))
 			{
 				boss_anime->PlayAnimation("Death", false);
 				dyingStarted = true;
@@ -163,7 +163,7 @@ void Boss::Update(float elapsedTime)
 		}
 		else
 		{
-			if (!dyingStarted)
+			if (!(dyingStarted))
 			{
 				middle_boss_anime->PlayAnimation("Death", false);
 				dyingStarted = true;

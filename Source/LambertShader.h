@@ -17,10 +17,13 @@ public:
 	// èIóπèàóù
 	void End(const RenderContext& rc) override;
 
+
+
 private:
 	struct CbMaterial
 	{
 		DirectX::XMFLOAT4		materialColor;
+		DirectX::XMFLOAT4       highlightColor;
 
 		float highlight;
 		float padding[3];
@@ -30,4 +33,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>		pixelShader;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>		inputLayout;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>			constantBuffer;
+
+	
 };
