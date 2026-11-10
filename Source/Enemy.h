@@ -4,6 +4,9 @@
 #include"Object.h"
 #include"Animation.h"
 
+#include "Effect.h"
+#include "EffectManager.h"
+
 //エネミー
 class Enemy
 {
@@ -54,5 +57,4 @@ private:
 
 	float timer = 0;
 	float nextTimer = 0;
-
 };
