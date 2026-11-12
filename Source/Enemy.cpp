@@ -44,7 +44,7 @@ void Enemy::Update(float elapsedTime)
 
 		float dx = arrive_position.x - enemy.position.x;   // 0 - pos.x
 		float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
-		if(direction<=600)
+		if(direction<=200)
 		{
 			renderer = true;
 			if (direction <= 100)

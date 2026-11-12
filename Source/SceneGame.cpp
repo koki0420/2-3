@@ -133,93 +133,99 @@ void SceneGame::Update(float elapsedTime)
 		}
 	}
 
-	enemy_num = 0;
-	for (size_t i = 0;i < enemies.size();++i)
+	//“G‚Ìˆ—
 	{
-		auto& target = enemies[i];
-		//“G‚Ö‚Ìƒ_ƒ[ƒW
-		if (!target.enemy->Alive())
-		{	
-			continue;
-		}
-		if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
-			enemyHitRadius))
+		enemy_num = 0;
+		for (size_t i = 0;i < enemies.size();++i)
 		{
-			target.enemy->SetKnockBack(true);
-			target.hp -= player.GetPAtkDmg();
-			DirectX::XMFLOAT3 epos = target.enemy->GetPos();
-			HitEffect->Play({epos.x,epos.y+10.0f,epos.z}, 5.0f);
-			if (target.hp <= 0.0f)
+			auto& target = enemies[i];
+			//“G‚Ö‚Ìƒ_ƒ[ƒW
+			if (!target.enemy->Alive())
 			{
-				DefeatEnemy(i);
-				player.AddBlood(10.0f);
-				
+				continue;
 			}
-		}
+			if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
+				enemyHitRadius))
+			{
+				target.enemy->SetKnockBack(true);
+				target.hp -= player.GetPAtkDmg();
+				DirectX::XMFLOAT3 epos = target.enemy->GetPos();
+				HitEffect->Play({ epos.x,epos.y + 10.0f,epos.z }, 5.0f);
+				if (target.hp <= 0.0f)
+				{
+					DefeatEnemy(i);
+					player.AddBlood(10.0f);
 
-		//“G‚©‚ç‚ÌUŒ‚
+				}
+			}
 
-		if (target.enemy->GetEnemyAnimation()->IsPlaying("Punch")
-			&&target.enemy->GetEnemyAnimation()->GetCurrentFrame() >= 24&&
-			target.enemy->GetEnemyAnimation()->GetCurrentFrame() <=48)
-		{
-			player.CheckTakeAttack(target.enemy->GetPos(), 20.0f);
-		}
+			//“G‚©‚ç‚ÌUŒ‚
 
-		if (EnemyManager::Instance().Enemy_Alive(i))
-		{
-			enemy_num += 1;
+			if (target.enemy->GetEnemyAnimation()->IsPlaying("Punch")
+				&& target.enemy->GetEnemyAnimation()->GetCurrentFrame() >= 24 &&
+				target.enemy->GetEnemyAnimation()->GetCurrentFrame() <= 48)
+			{
+				player.CheckTakeAttack(target.enemy->GetPos(), 20.0f);
+			}
+
+			if (EnemyManager::Instance().Enemy_Alive(i))
+			{
+				enemy_num += 1;
+			}
 		}
 	}
 
-	//ƒ{ƒX‚Ö‚Ìƒ_ƒ[ƒW
-	if (boss.BOSS->Boss_Alive())
+	//ƒ{ƒX‚Ìˆ—
 	{
-		if (player.CheckAttackHit(0, boss.BOSS->GetPos(),
-			40.0f))
+		//ƒ{ƒX‚Ö‚Ìƒ_ƒ[ƒW
+		if (boss.BOSS->Boss_Alive())
 		{
-			boss.hp -= player.GetPAtkDmg();
-			HitEffect->Play(boss.BOSS->GetPos(),1.0f);
+			if (player.CheckAttackHit(0, boss.BOSS->GetPos(),
+				40.0f))
+			{
+				boss.hp -= player.GetPAtkDmg();
+				HitEffect->Play(boss.BOSS->GetPos(), 1.0f);
+				if (boss.hp <= 0.0f)
+				{
+					if (Boss_Dead = false)boss.hp = 1000.0f;
+					Boss_Dead = true;
+				}
+			}
 			if (boss.hp <= 0.0f)
 			{
-				if (Boss_Dead = false)boss.hp = 1000.0f;
 				Boss_Dead = true;
 			}
-		}
-		if (boss.hp <= 0.0f)
-		{
-			Boss_Dead = true;
-		}
-		//“G‚©‚ç‚ÌUŒ‚
-		if (boss.BOSS->GetMiddleAnimation()->IsPlaying("Jump")
-			&& boss.BOSS->GetMiddleAnimation()->GetCurrentFrame() >= 70 &&
-			boss.BOSS->GetMiddleAnimation()->GetCurrentFrame() <= 90)
-		{
-			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
-		}
+			//“G‚©‚ç‚ÌUŒ‚
+			if (boss.BOSS->GetMiddleAnimation()->IsPlaying("Jump")
+				&& boss.BOSS->GetMiddleAnimation()->GetCurrentFrame() >= 70 &&
+				boss.BOSS->GetMiddleAnimation()->GetCurrentFrame() <= 90)
+			{
+				player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+			}
 
-		//“G‚©‚ç‚ÌUŒ‚
-		if (boss.BOSS->GetBossAnimation()->IsPlaying("Attack")
-			&& boss.BOSS->GetBossAnimation()->GetCurrentFrame() >= 36 &&
-			boss.BOSS->GetBossAnimation()->GetCurrentFrame() <= 45)
-		{
-			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
-		}
+			//“G‚©‚ç‚ÌUŒ‚
+			if (boss.BOSS->GetBossAnimation()->IsPlaying("Attack")
+				&& boss.BOSS->GetBossAnimation()->GetCurrentFrame() >= 36 &&
+				boss.BOSS->GetBossAnimation()->GetCurrentFrame() <= 45)
+			{
+				player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+			}
 
-		//“G‚©‚ç‚ÌUŒ‚
-		if (boss.BOSS->GetBossAnimation()->IsPlaying("Jump_Attack")
-			&& boss.BOSS->GetBossAnimation()->GetCurrentFrame() >= 48 &&
-			boss.BOSS->GetBossAnimation()->GetCurrentFrame() <= 70)
-		{
-			player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
-		}
+			//“G‚©‚ç‚ÌUŒ‚
+			if (boss.BOSS->GetBossAnimation()->IsPlaying("Jump_Attack")
+				&& boss.BOSS->GetBossAnimation()->GetCurrentFrame() >= 48 &&
+				boss.BOSS->GetBossAnimation()->GetCurrentFrame() <= 70)
+			{
+				player.CheckTakeAttack(boss.BOSS->GetPos(), 50.0f);
+			}
 
+		}
 	}
 	EffectManager::Instance().Update(elapsedTime);
 
 	if (boss.BOSS->Clear())
 	{
-		if(clearTimer>4)
+		if(clearTimer>2)
 		{
 			SceneManager::Instance().ChangeScene(new SceneResult);
 		}
@@ -227,7 +233,7 @@ void SceneGame::Update(float elapsedTime)
 	}
 	if (player.GetPlayerHP()<=0)
 	{
-		if(clearTimer>7)
+		if(clearTimer>5)
 		{
 			SceneManager::Instance().ChangeScene(new SceneResult);
 		}
