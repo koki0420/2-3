@@ -2,6 +2,9 @@
 
 #include <imgui.h>
 #include "Camera.h"
+#include <Windows.h>
+#include <cmath>
+
 
 class CameraController
 {
@@ -51,54 +54,81 @@ public:
 	}
 
 	// 更新処理
-	void Update(float elapsedTime, float playerYaw)
+	void Update(float elapsedTime,HWND hwnd)
 	{
-		// デバッグウインドウ操作中は処理しない
-		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow))
+
+		//HWND hwnd
+		const bool gameActive = hwnd != nullptr && GetForegroundWindow() == hwnd;
+		const bool tabDown = (GetAsyncKeyState(VK_TAB) & 0x8000) != 0;
+
+		if (gameActive && tabDown && !previousTabDown) { showCursor = !showCursor; };
+
+		previousTabDown = tabDown;
+
+		if (gameActive && !showCursor)
 		{
-			return;
+			ImGui::SetMouseCursor(ImGuiMouseCursor_None);
+			SetCursor(nullptr);
+
+			RECT rect{};
+			if (GetClientRect(hwnd, &rect) && rect.right > 0 && rect.bottom > 0)
+			{
+				POINT center{ rect.right / 2,rect.bottom / 2 };
+				POINT cursor{};
+
+				//ウィンドウ内の中央座標を、画面全体の座標に変換する
+				if (ClientToScreen(hwnd, &center) && GetCursorPos(&cursor))
+				{
+					//非表示に切り替えた最初のフレームは中央に戻すだけ
+					if (mouseCentered)
+					{
+						followYaw += (cursor.x - center.x) * 0.003f;
+						mousePitch += (cursor.y - center.y) * 0.003f;
+					}
+					mouseCentered = SetCursorPos(center.x, center.y) != FALSE;
+				}
+				else
+				{
+					mouseCentered = false;
+				}
+			}
+			else
+			{
+				//tabで表示したときや、別ウィンドウへ移った時
+				mouseCentered = false;
+			}
 		}
-		if (elapsedTime <= 0.0f)return;
 
 		//ゆっくり追いかける
-		const float positionRate =
+		const float rate =
 			1.0f - std::exp(-followSpeed * elapsedTime);
 
-		focus.x += (targetFocus.x - focus.x) * positionRate;
-		focus.y += (targetFocus.y - focus.y) * positionRate;
-		focus.z += (targetFocus.z - focus.z) * positionRate;
-
-		//角度差を抑えて、近い方向へ回転
-		const float difference = playerYaw - followYaw;
-		const float angleDifference =
-			std::atan2(std::sin(difference), std::cos(difference));
-
-		const float rotationRate =
-			1.0f - std::exp(-turnSpeed * elapsedTime);
-
-		followYaw += angleDifference * rotationRate;
+		focus.x += (targetFocus.x - focus.x) * rate;
+		focus.y += (targetFocus.y - focus.y) * rate;
+		focus.z += (targetFocus.z - focus.z) * rate;
 
 		// IMGUIのマウス入力値を使ってカメラ操作する
 		const ImGuiIO io = ImGui::GetIO();
 
-		// マウス右ボタン押下中
-		if (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]))
+		// カメラの向きはマウスで決める
+		if (!io.WantCaptureMouse)
 		{
-			mouseYaw += io.MouseDelta.x * 0.003f;
+			followYaw += io.MouseDelta.x * 0.003f;
 			mousePitch += io.MouseDelta.y * 0.003f;
 		}
 
-		const float yawLimit = DirectX::XMConvertToRadians(25.0f);
-		const float pitchLimit = DirectX::XMConvertToRadians(10.0f);
+		//左右は360度回せる。角度の値だけを－πから－πに収める
+		followYaw = DirectX::XMScalarModAngle(followYaw);
+		const float yaw = followYaw;
+		float pitch = basePitch + mousePitch;
 
-		if (mouseYaw > yawLimit)mouseYaw = yawLimit;
-		if (mouseYaw < -yawLimit)mouseYaw = -yawLimit;
+		//真上や真下を向かないようにする
+		const float minPitch = DirectX::XMConvertToRadians(10.0f);
+		const float maxPitch = DirectX::XMConvertToRadians(70.0f);
 
-		if (mousePitch > pitchLimit)mousePitch = pitchLimit;
-		if (mousePitch < -pitchLimit)mousePitch = -pitchLimit;
-
-		const float yaw = followYaw + mouseYaw;
-		const float pitch = basePitch + mousePitch;
+		if (pitch < minPitch)pitch = minPitch;
+		if (pitch > maxPitch)pitch = maxPitch;
+		mousePitch = pitch - basePitch;
 
 		//注視点からプレイヤーの背後上方へ離す
 		const float horizontalDistance =
@@ -110,9 +140,7 @@ public:
 
 		up = { 0,1,0 };
 
-
 	}
-
 		//注視点をプレイヤーの位置に設定
 	void SetFocus(const DirectX::XMFLOAT3& position)
 	{
@@ -179,6 +207,11 @@ private:
 	float cameraDistance = 100.0f;//playerからの距離
 	float focusHeight = 30.0f;//見る位置の高さ
 	float basePitch = DirectX::XMConvertToRadians(25.0f);//見下ろす角度
+
+	//ka-soru
+	bool showCursor = false;
+	bool previousTabDown = false;
+	bool mouseCentered = false;
 
 };
 

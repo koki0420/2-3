@@ -81,7 +81,7 @@ protected:
     float atkR = 10.0f;//攻撃範囲初期化用 ImGuiで変更可能に
     float attackRadius = atkR;//球の半径
     //武器の血液攻撃範囲
-    float WeaponAtkRadius[3] = { 15.0f,25.0f,10.0f };
+    float WeaponAtkRadius[3] = { 15.0f,35.0f,10.0f };
 
     float atkD = 10.0f;
     float attackDistance = 10.0f;//プレイヤーから前方への距離

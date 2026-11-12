@@ -92,14 +92,14 @@ void SceneGame::Update(float elapsedTime)
 	EnemyManager::Instance().Target(player.GetPosition());
 	EnemyManager::Instance().Update(elapsedTime);
 	stage.UpdateTransform();
-	player.Update(elapsedTime, stage, camera);
-
 
 	cameraController.SetFocus(player.GetPosition());
 
-	cameraController.Update(elapsedTime, player.GetAngle().y);
+	cameraController.Update(elapsedTime,GetActiveWindow());
 
 	cameraController.SyncControllerToCamera(camera);
+
+	player.Update(elapsedTime, stage, camera);
 
 	boss.BOSS->Update(elapsedTime);
 
