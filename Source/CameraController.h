@@ -2,155 +2,33 @@
 
 #include <imgui.h>
 #include "Camera.h"
+#include <Windows.h>
+#include <cmath>
+
 
 class CameraController
 {
 public:
 	// カメラからコントローラーへパラメータを同期する
-	void SyncCameraToController(const Camera& camera)
-	{
-		eye = camera.GetEye();
-		focus = camera.GetFocus();
-		up = camera.GetUp();
-		right = camera.GetRight();
-
-		// 視点から注視点までの距離を算出
-		DirectX::XMVECTOR Eye = DirectX::XMLoadFloat3(&eye);
-		DirectX::XMVECTOR Focus = DirectX::XMLoadFloat3(&focus);
-		DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(Focus, Eye);
-		DirectX::XMVECTOR Distance = DirectX::XMVector3Length(Vec);
-		DirectX::XMStoreFloat(&distance, Distance);
-
-		// 回転角度を算出
-		const DirectX::XMFLOAT3& front = camera.GetFront();
-		angleX = ::asinf(-front.y);
-		if (up.y < 0)
-		{
-			if (front.y > 0)
-			{
-				angleX = -DirectX::XM_PI - angleX;
-			}
-			else
-			{
-				angleX = DirectX::XM_PI - angleX;
-			}
-			angleY = ::atan2f(front.x, front.z);
-		}
-		else
-		{
-			angleY = ::atan2f(-front.x, -front.z);
-		}
-
-	};
+	void SyncCameraToController(const Camera& camera);
+	
 
 
 	// コントローラーからカメラへパラメータを同期する
-	void SyncControllerToCamera(Camera& camera) 
-	{
-		camera.SetLookAt(eye, focus, up);
-	}
+	void SyncControllerToCamera(Camera& camera);
 
 	// 更新処理
-	void Update(float elapsedTime, float playerYaw)
-	{
-		// デバッグウインドウ操作中は処理しない
-		if (ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow))
-		{
-			return;
-		}
-		if (elapsedTime <= 0.0f)return;
-
-		//ゆっくり追いかける
-		const float positionRate =
-			1.0f - std::exp(-followSpeed * elapsedTime);
-
-		focus.x += (targetFocus.x - focus.x) * positionRate;
-		focus.y += (targetFocus.y - focus.y) * positionRate;
-		focus.z += (targetFocus.z - focus.z) * positionRate;
-
-		//角度差を抑えて、近い方向へ回転
-		const float difference = playerYaw - followYaw;
-		const float angleDifference =
-			std::atan2(std::sin(difference), std::cos(difference));
-
-		const float rotationRate =
-			1.0f - std::exp(-turnSpeed * elapsedTime);
-
-		followYaw += angleDifference * rotationRate;
-
-		// IMGUIのマウス入力値を使ってカメラ操作する
-		const ImGuiIO io = ImGui::GetIO();
-
-		// マウス右ボタン押下中
-		if (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]))
-		{
-			mouseYaw += io.MouseDelta.x * 0.003f;
-			mousePitch += io.MouseDelta.y * 0.003f;
-		}
-
-		const float yawLimit = DirectX::XMConvertToRadians(25.0f);
-		const float pitchLimit = DirectX::XMConvertToRadians(10.0f);
-
-		if (mouseYaw > yawLimit)mouseYaw = yawLimit;
-		if (mouseYaw < -yawLimit)mouseYaw = -yawLimit;
-
-		if (mousePitch > pitchLimit)mousePitch = pitchLimit;
-		if (mousePitch < -pitchLimit)mousePitch = -pitchLimit;
-
-		const float yaw = followYaw + mouseYaw;
-		const float pitch = basePitch + mousePitch;
-
-		//注視点からプレイヤーの背後上方へ離す
-		const float horizontalDistance =
-			cameraDistance * std::cos(pitch);
-
-		eye.x = focus.x - std::sin(yaw) * horizontalDistance;
-		eye.y = focus.y + std::sin(pitch) * cameraDistance;
-		eye.z = focus.z - std::cos(yaw) * horizontalDistance;
-
-		up = { 0,1,0 };
-
-
-	}
-
-		//注視点をプレイヤーの位置に設定
-	void SetFocus(const DirectX::XMFLOAT3& position)
-	{
-		targetFocus = position;
-		targetFocus.y += focusHeight;
-	}
-
-	void DrawGUI() {
+	void Update(float elapsedTime, HWND hwnd);
 	
-		if (ImGui::CollapsingHeader("camera", ImGuiTreeNodeFlags_DefaultOpen))
-		{
-			ImGui::DragFloat("cAngleX", &angleX, 0.1f);
-			ImGui::DragFloat("cAngleY", &angleY, 0.1f);
-		}
-	}
+		//注視点をプレイヤーの位置に設定
+	void SetFocus(const DirectX::XMFLOAT3& position);
+
+	void DrawGUI();
 
 	void Reset(const DirectX::XMFLOAT3& playerPosition,
-		float playerYaw)
-	{
-		SetFocus(playerPosition);
-		focus = targetFocus;
+		float playerYaw);
 
-		followYaw = playerYaw;
-		mouseYaw = 0.0f;
-		mousePitch = 0.0f;
-
-		const float horizontalDistance =
-			cameraDistance * std::cos(basePitch);
-
-		eye = {
-			focus.x - std::sin(followYaw) * horizontalDistance,
-			focus.y + std::sin(basePitch) * cameraDistance,
-			focus.z - std::cos(followYaw) * horizontalDistance
-		};
-
-		up = { 0,1,0 };
-
-	}
+	void SetBloodAttack(bool Blood) { this->Blood = Blood; }
 
 private:
 	DirectX::XMFLOAT3		eye;//視点
@@ -161,6 +39,9 @@ private:
 
 	float					angleX;
 	float					angleY;
+
+	bool Blood;
+	float Blood_time=10.0f;
 
 	float maxAngleX = DirectX::XMConvertToRadians(70.0f);
 	float minAngleX = DirectX::XMConvertToRadians(10.0f);
@@ -179,6 +60,11 @@ private:
 	float cameraDistance = 100.0f;//playerからの距離
 	float focusHeight = 30.0f;//見る位置の高さ
 	float basePitch = DirectX::XMConvertToRadians(25.0f);//見下ろす角度
+
+	//ka-soru
+	bool showCursor = false;
+	bool previousTabDown = false;
+	bool mouseCentered = false;
 
 };
 

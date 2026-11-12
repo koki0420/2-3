@@ -50,7 +50,7 @@ void Player::Initialize()
 
 	state = State::Idle;
 	animation->PlayAnimation("Idle", true);
-	playerHP = PLAYERHPMAX;
+	playerHP = PLAYER_HP_MAX;
 }
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
@@ -114,7 +114,7 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 
 	//playerの当たり判定、攻撃範囲描画
-#ifndef DEBUG
+#ifdef _DEBUG
 	if (showAttackCollision && IsAttackActive())
 	{
 		Graphics::Instance().GetShapeRenderer()->DrawSphere(
@@ -201,27 +201,36 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 {
 	float axisX = 0.0f;
 	float axisY = 0.0f;
-	if (GetAsyncKeyState('W') & 0x8000) axisY += 3.0f;
-	/*if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;*/
-	if (GetAsyncKeyState('D') & 0x8000) axisX += 3.0f;
-	if (GetAsyncKeyState('A') & 0x8000) axisX -= 3.0f;
+	if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
+	if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;
+	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
+	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
 
 	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
-	const DirectX::XMFLOAT3& camemraRight = camera.GetRight();
 
-	float cameraFrontLengthXZ = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
-	float cameraRightLengthXZ = sqrtf(camemraRight.x * camemraRight.x + camemraRight.z * camemraRight.z);
-	float cameraFrontX = cameraFront.x / cameraFrontLengthXZ;
-	float cameraFrontZ = cameraFront.z / cameraFrontLengthXZ;
-	float cameraRightX = camemraRight.x / cameraRightLengthXZ;
-	float cameraRightZ = camemraRight.z / cameraRightLengthXZ;
+	//カメラが見下ろしていても、プレイヤーは地面に沿って動く
+	const float frontLength = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
+	if (frontLength < 0.0001f)return false;
+
+	const float frontX = cameraFront.x / frontLength;
+	const float frontZ = cameraFront.z / frontLength;
+
+	//地面上の前方向から右方向を作る
+	const float rightX = frontZ;
+	const float rightZ = -frontX;
+
+	float vecX = frontX * axisY + rightX * axisX;
+	float vecZ = frontZ * axisY + rightZ * axisX;
+	
+	//斜め移動が早くならないようにする
+	const float length = sqrtf(vecX * vecX + vecZ * vecZ);
+	if (length > 1.0f) { vecX /= length;vecZ /= length; }
 
 	//無双モードなら移動速度を早くする
 	const float moveMultiplier = IsMusou ? 2.0f : 1.0f;
 
 	const float speed = playerMoveSpeed * moveMultiplier * elapsedTime;
-	float vecX = cameraFrontX * axisY + cameraRightX * axisX;
-	float vecZ = cameraFrontZ * axisY + cameraRightZ * axisX;
+
 	float moveX = vecX * speed;
 	float moveZ = vecZ * speed;
 	float moveLength = sqrtf(moveX * moveX + moveZ * moveZ);
@@ -248,7 +257,7 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 const char* const Player::animationNames[13] =
 {
 	"Idle","Death","Drunk_Idle","Drunk_Scythe","Drunk_Sword",
-	"Fight_Idle","Fight_Punch1","Fight_Punch2","Fight_Kick",
+	"Fight_Idle","Fight_Punch1","Fight_Punch2","Fight_kick",
 	"Scythe_Attack","Sword_Attack1","Sword_Attack2","Sword_Walk"
 };
 
@@ -263,7 +272,11 @@ void Player::setState(State next, bool loop)
 
 void Player::pAnimation(float elapsedTime,bool isMoving)
 {
-	if (!isAttacking)
+	if (!isAttacking && IsMusou) 
+	{
+		setState(isMoving ? State::Sword_Walk : State::Drunk_Idle, true);
+	}
+	else if (!isAttacking)
 	{
 		setState(isMoving ? State::Sword_Walk : State::Idle, true);
 	}
@@ -276,17 +289,20 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 void Player::StartAttack()
 {
 	if (isAttacking)return;
-	
-	const bool normalPressed = (GetAsyncKeyState('J') & 0x8000) != 0;
-	const bool bloodPressed = (GetAsyncKeyState('K') & 0x8000) != 0;
+
+	const ImGuiIO io = ImGui::GetIO();
+	const bool normalPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]));
+	const bool bloodPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Left]));
 
 	if (!normalPressed && !bloodPressed)return;
 
 	//ダメージ、倍率、攻撃範囲初期化
+
 	pAtkDmg = PAD;
+	//pAtkDmg = PLAYER_ATTACK_DAMAGE;
 	bloodAttackMultiplier = 1.0f;
-	float AttackRadius = atkR;
-	float AttackDistance = atkD;
+	float AttackRadius = PLAYER_ATTACK_RADIUS;
+	float AttackDistance = PLAYER_ATTACK_DISTANCE;
 
 	if (bloodPressed && !BloodAttack())return;
 	
@@ -417,6 +433,7 @@ void Player::takeDamage(float damage)
 		isAttacking = false;
 		hitEnemies.clear();
 		attackTime = 0.0f;
+		IsMusou = false;
 		return;
 	}
 	invincibleTime = 0.5f;
@@ -451,7 +468,7 @@ bool Player::CheckTakeAttack(
 
 void Player::WeaponChange()
 {
-	if (isAttacking)return;
+	if (isAttacking||IsMusou)return;
 
 	if (GetAsyncKeyState('1') & 0x8000)
 	{

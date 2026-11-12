@@ -203,6 +203,7 @@
     <ClCompile Include="Source\BasicShader.cpp" />
     <ClCompile Include="Source\boss.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\CameraController.cpp" />
     <ClCompile Include="Source\Collision.cpp" />
     <ClCompile Include="Source\Dialog.cpp" />
     <ClCompile Include="Source\Effect.cpp" />

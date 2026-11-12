@@ -13,6 +13,11 @@
 #include "Effect.h"
 #include "EffectManager.h"
 
+#define PLAYER_HP_MAX 10000//
+#define PLAYER_ATTACK_DAMAGE 34//初期値
+#define PLAYER_ATTACK_RADIUS 10//初期値
+#define PLAYER_ATTACK_DISTANCE 10//初期値
+
 class Player
 {
 public:
@@ -53,18 +58,21 @@ public:
     //血液獲得
     void AddBlood(float amount);
 
+    //血液攻撃
+    bool BloodAttack();
+
 protected:
     //プレイヤー
     Object player;
     Object Weapon[2];
 
-    float playerHP = 10000.0f;
-    float playerMoveSpeed = 20.0f;
+    float playerHP = PLAYER_HP_MAX;
+    float playerMoveSpeed = 40.0f;
     float playerRadius = 5.0f;
     float playerRadiusHeight = 15.0f;
 
-    float PAD = 34.0f;//攻撃力初期化用 ImGuiで変更可能に
-    float pAtkDmg = PAD;
+    float PAD = PLAYER_ATTACK_DAMAGE;
+    float pAtkDmg = PLAYER_ATTACK_DAMAGE;
     bool IsDead = false;
     float invincibleTime = 0.5f;
 
@@ -78,13 +86,11 @@ protected:
     float attackEndTime = 1.0f;
 
     DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//攻撃判定の中心
-    float atkR = 10.0f;//攻撃範囲初期化用 ImGuiで変更可能に
-    float attackRadius = atkR;//球の半径
+    float attackRadius = PLAYER_ATTACK_RADIUS;//球の半径
     //武器の血液攻撃範囲
-    float WeaponAtkRadius[3] = { 15.0f,25.0f,10.0f };
+    float WeaponAtkRadius[3] = { 15.0f,35.0f,10.0f };
 
-    float atkD = 10.0f;
-    float attackDistance = 10.0f;//プレイヤーから前方への距離
+    float attackDistance = PLAYER_ATTACK_DISTANCE;//プレイヤーから前方への距離
     //血液攻撃距離
     float bloodAtkDistance[3] = { 20.0f,0.0f,10.0f };
 
@@ -108,8 +114,7 @@ protected:
     
     void StartAttack();//攻撃開始処理
     void UpdateAttack(float elapsedTime);
-    //血液攻撃
-    bool BloodAttack();
+   
     //血ゲージの番号だけを求める関数
     int GetBloodGaugeIndex() const;
     //無双状態へ
@@ -136,7 +141,7 @@ private:
         Fight_Idle,
         Fight_Punch1,
         Fight_Punch2,
-        Fight_Kick,
+        Fight_kick,
         Scythe_Attack,
         Sword_Attack1,
         Sword_Attack2,
