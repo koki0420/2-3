@@ -198,4 +198,8 @@ private:
 
     bool Blad = false;
 
+    //
+    float niseHP = 10000.0f;
+    float nisehptime = 1.0f;
+
 };
