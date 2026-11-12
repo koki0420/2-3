@@ -78,7 +78,10 @@ void SceneGame::Initialize()
 
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
 	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
+	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_ff4444_128.png");//
 	EnemyManager::Instance().Target(player.GetPosition());
+
+	HitEffect = EffectManager::Instance().CreateEffect("Data/Effect/Hit.efkefc");
 }	
 
 void SceneGame::Finalize()
@@ -141,7 +144,10 @@ void SceneGame::Update(float elapsedTime)
 		if (player.CheckAttackHit(i, GetEnemyHitCenter(*target.enemy),
 			enemyHitRadius))
 		{
+			target.enemy->SetKnockBack(true);
 			target.hp -= player.GetPAtkDmg();
+			DirectX::XMFLOAT3 epos = target.enemy->GetPos();
+			HitEffect->Play({epos.x,epos.y+10.0f,epos.z}, 5.0f);
 			if (target.hp <= 0.0f)
 			{
 				DefeatEnemy(i);
@@ -172,6 +178,7 @@ void SceneGame::Update(float elapsedTime)
 			40.0f))
 		{
 			boss.hp -= player.GetPAtkDmg();
+			HitEffect->Play(boss.BOSS->GetPos(),1.0f);
 			if (boss.hp <= 0.0f)
 			{
 				if (Boss_Dead = false)boss.hp = 1000.0f;
@@ -283,6 +290,7 @@ void SceneGame::Render(float elapsedTime)
 	}
 
 	{
+		
 		player.UIRender(elapsedTime, dc);
 		if (boss.BOSS->Clear())
 		{
@@ -291,6 +299,10 @@ void SceneGame::Render(float elapsedTime)
 		if (player.GetPlayerHP() <= 0)
 		{
 			SpriteOVER->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+		}
+		if (boss.BOSS->Boss_Alive())
+		{
+			spriteHP->Render(dc, 360, 10, 0, 480 * (boss.hp/100), 16, 14, 48, 100 * (boss.hp / 100), 32, 0, 1, 1, 1, 1);
 		}
 	}
 
@@ -402,6 +414,7 @@ void SceneGame::DefeatEnemy(size_t index)
 {
 	
 	auto& target = enemies[index];
+	
 	if (!(target.enemy->Alive()))
 	{
 		return;

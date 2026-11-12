@@ -41,16 +41,19 @@ void Enemy::Update(float elapsedTime)
 		(DirectX::XMVector3Length
 		(DirectX::XMVectorSubtract
 		(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&enemy.position))));
-		
-	
+
+		float dx = arrive_position.x - enemy.position.x;   // 0 - pos.x
+		float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
 		if(direction<=600)
 		{
 			renderer = true;
 			if (direction <= 100)
 			{
+				dx = Target.x - enemy.position.x;   // 0 - pos.x
+				dz = Target.z - enemy.position.z;   // 0 - pos.z
 				if (direction <= 30)
 				{
-					arrive_position = enemy.position;
+					arrive_position = Target;
 					if (attack_anime)
 					{
 						enemy_anime->PlayAnimation("Punch", false);
@@ -128,51 +131,92 @@ void Enemy::Update(float elapsedTime)
 		if (arrive_position.z >= 250)arrive_position.z = 250;
 		if (arrive_position.z <= -250)arrive_position.z = -250;
 
+
 		//エネミーの行動
-		DirectX::XMVECTOR diff =
-			DirectX::XMVectorSubtract
-			(DirectX::XMLoadFloat3(&arrive_position), DirectX::XMLoadFloat3(&enemy.position));
-
-		diff = DirectX::XMVector3Normalize(diff);
-
-		DirectX::XMVECTOR new_pos = DirectX::XMVectorAdd
-		(DirectX::XMLoadFloat3(&enemy.position),
-			DirectX::XMVectorScale(diff, 0.1f));
-		DirectX::XMStoreFloat3(&enemy.position, new_pos);
-
-		float dx = arrive_position.x - enemy.position.x;   // 0 - pos.x
-		float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
-
-
-
-		if (arrive_position.x == enemy.position.x &&
-			arrive_position.z == enemy.position.z)
 		{
-			dx = Target.x - enemy.position.x;   // 0 - pos.x
-			dz = Target.z - enemy.position.z;   // 0 - pos.z
+			DirectX::XMVECTOR diff =
+				DirectX::XMVectorSubtract
+				(DirectX::XMLoadFloat3(&arrive_position), DirectX::XMLoadFloat3(&enemy.position));
 
+			diff = DirectX::XMVector3Normalize(diff);
+
+
+			DirectX::XMVECTOR new_pos = DirectX::XMVectorAdd
+			(DirectX::XMLoadFloat3(&enemy.position),
+				DirectX::XMVectorScale(diff, 0.1f));
+			DirectX::XMStoreFloat3(&enemy.position, new_pos);
+			if (knockback)
+			{
+				DirectX::XMVECTOR new_pos = DirectX::XMVectorAdd
+				(DirectX::XMLoadFloat3(&enemy.position),
+					DirectX::XMVectorScale(diff, -knockback_length));
+				DirectX::XMStoreFloat3(&enemy.position, new_pos);
+				knockback_length -= 0.1f;
+				if (knockback_length <= 0)knockback = false;
+			}
+			else
+			{
+				knockback_length = 2.0f;
+			}
+		}
+		
+
+		DirectX::XMVECTOR e_pos = DirectX::XMLoadFloat3(&enemy.position);
+		DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&Target);
+
+
+		DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(pos, e_pos);
+
+		float distSq =
+			DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(diff));
+
+		constexpr float radius = 15.0f;
+		constexpr float radiusSq = radius * radius;
+
+		if (distSq <= radiusSq)
+		{
+			float direction = sqrtf(distSq);
+			// 正規化（方向ベクトル）
+			DirectX::XMVECTOR dir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(pos, e_pos));
+
+			// めり込み量
+			float overlap = (radius - direction) * 0.5f;
+
+			// 押し返し
+			DirectX::XMVECTOR offset = DirectX::XMVectorScale(dir, overlap);
+
+			e_pos= DirectX::XMVectorSubtract(e_pos, offset);
+
+			// 書き戻し
+			DirectX::XMFLOAT3 newPos1;
+			DirectX::XMStoreFloat3(&newPos1, e_pos);
+	
+			enemy.position=newPos1;
 
 		}
+
+	
 		// Y軸回転（Yaw）
-		//enemy.angle.y = atan2f(dx, dz);
-		float targetAngle = atan2f(dx, dz);
-
-		float dif = targetAngle - enemy.angle.y;
-
-		while (dif > DirectX::XM_PI)  dif -= DirectX::XM_2PI;
-		while (dif < -DirectX::XM_PI) dif += DirectX::XM_2PI;
-
-		float turnSpeed = 3.0f * elapsedTime; // rad/s
-
-		if (fabsf(dif) < turnSpeed)
 		{
-			enemy.angle.y = targetAngle;
-		}
-		else
-		{
-			enemy.angle.y += (dif > 0.0f) ? turnSpeed : -turnSpeed;
-		}
+			//enemy.angle.y = atan2f(dx, dz);
+			float targetAngle = atan2f(dx, dz);
 
+			float dif = targetAngle - enemy.angle.y;
+
+			while (dif > DirectX::XM_PI)  dif -= DirectX::XM_2PI;
+			while (dif < -DirectX::XM_PI) dif += DirectX::XM_2PI;
+
+			float turnSpeed = 3.0f * elapsedTime; // rad/s
+
+			if (fabsf(dif) < turnSpeed)
+			{
+				enemy.angle.y = targetAngle;
+			}
+			else
+			{
+				enemy.angle.y += (dif > 0.0f) ? turnSpeed : -turnSpeed;
+			}
+		}
 		enemy.UpdateTransform();
 		enemy_anime->Update(elapsedTime);
 	}

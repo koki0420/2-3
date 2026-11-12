@@ -53,6 +53,7 @@ private:
 
 	//加算ブレンド用
 	Microsoft::WRL::ComPtr<ID3D11BlendState> additiveBlendState;
+	Microsoft::WRL::ComPtr<ID3D11BlendState> BlendState;
 
 	//テクスチャ用
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> LineTexture;
