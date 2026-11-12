@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "ShapeRenderer.h"
-#define PLAYERHPMAX 300
+#define PLAYERHPMAX 10000.0f
 Player::Player()
 {
 	Initialize();
@@ -70,7 +70,7 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 			invincibleTime = 0.0f;
 		}
 	}
-
+	nisehptime = max(nisehptime - elapsedTime, 0.0f);
 	bool isMoving = false;
 	
 	if (!isAttacking){isMoving = InputMove(elapsedTime, camera);}
@@ -170,32 +170,29 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 {
-	spriteHPGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteHP->Render(dc, 50, 50, 0, 480 * (playerHP / PLAYERHPMAX), 32, 0, 48, 128 * (playerHP / PLAYERHPMAX), 32, 0, 1, 1, 1, 1);
+	float hp = playerHP + ((niseHP - playerHP) * (nisehptime));
+	//
+	spriteHPGauge->Render(dc, 60, 50, 0, 480, 32, 8, 48, 112, 32, 0, 1, 1, 1, 1);
+	spriteHP->Render(dc, 60, 50, 0, 480 * (hp / PLAYERHPMAX), 32, 8, 48, 112 * (hp / PLAYERHPMAX), 32, 0, 1, 1, 1, 1);
 	spriteW[GetBloodGaugeIndex()]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	spriteGauge->Render(dc, 50, 82, 0, 280 , 28, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
 	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
 
-	switch (weapon_num)
-	{
+	
+	spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+	spriteWP->Render(dc, 80, 500, 0, 280 * (bloodGauge[0] / 100), 28, 0, 48, 128 * (bloodGauge[0] / 100), 32, 0, 1, 1, 1, 1);
+	spriteW[0]->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+	
 
-	case 0:
-		spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-		spriteWP->Render(dc, 80, 500, 0, 280 * (bloodGauge[0] / 100), 28, 0, 48, 128 * (bloodGauge[0] / 100), 32, 0, 1, 1, 1, 1);
-		spriteW[0]->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-		break;
-	case 1:
-
-		spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-		spriteWP->Render(dc, 80, 532, 0, 280 * (bloodGauge[1] / 100), 28, 0, 48, 128 * (bloodGauge[1] / 100), 32, 0, 1, 1, 1, 1);
-		spriteW[1]->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-		break;
-	case 2:
-		spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-		spriteWP->Render(dc, 80, 564, 0, 280 * (bloodGauge[2] / 100), 28, 0, 48, 128 * (bloodGauge[2] / 100), 32, 0, 1, 1, 1, 1);
-		spriteW[2]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-		break;
-	}
+	spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+	spriteWP->Render(dc, 80, 532, 0, 280 * (bloodGauge[1] / 100), 28, 0, 48, 128 * (bloodGauge[1] / 100), 32, 0, 1, 1, 1, 1);
+	spriteW[1]->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+	
+	spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+	spriteWP->Render(dc, 80, 564, 0, 280 * (bloodGauge[2] / 100), 28, 0, 48, 128 * (bloodGauge[2] / 100), 32, 0, 1, 1, 1, 1);
+	spriteW[2]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+		
+	
 }
 
 
@@ -404,8 +401,9 @@ bool Player::IsAttackActive()const
 void Player::takeDamage(float damage)
 {
 	if (IsDead || invincibleTime > 0.0f || damage <= 0.0f)return;
-
+	niseHP = playerHP;
 	playerHP -= damage;
+	nisehptime = 1.0f;
 
 	if (playerHP <= 0.0f)
 	{
