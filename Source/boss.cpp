@@ -2,12 +2,14 @@
 #include <ctime>
 #include <imgui.h>
 
+#define Y 25
+
 Boss::Boss(DirectX::XMFLOAT3 pos)
 {
 	arrive_position = { 0,-15,0 };
 
 	boss.position = pos;
-	boss.position.y = -30;
+	boss.position.y = -Y;
     boss.scale = { 0.4f,0.4f,0.4f };
     boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_boss.mdl");
 
@@ -36,7 +38,6 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	jump_effect_play = true;
 	boss_jump = true;
 	boss_slash = true;
-
 }
 
 Boss::~Boss()
@@ -47,92 +48,155 @@ Boss::~Boss()
 void Boss::Update(float elapsedTime)
 {
 	timer += elapsedTime;
-	
-	
-	
-	if(!(dead))
+
+	timer += elapsedTime;
+	float middle_boss_direction = DirectX::XMVectorGetX
+	(DirectX::XMVector3Length
+	(DirectX::XMVectorSubtract
+	(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&middle_boss.position))));
+
+	float boss_direction = DirectX::XMVectorGetX
+	(DirectX::XMVector3Length
+	(DirectX::XMVectorSubtract
+	(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&boss.position))));
+
+
 	{
-	
-		dyingStarted = false;
-		//中ボス
+		float dx = Target.x - middle_boss.position.x;   // 0 - pos.x
+		float dz = Target.z - middle_boss.position.z;
+
+
+		// Y軸回転（Yaw）
 		{
-			float direction = DirectX::XMVectorGetX
-			(DirectX::XMVector3Length
-			(DirectX::XMVectorSubtract
-			({ 0,0,-1 }, DirectX::XMLoadFloat3(&middle_boss.position))));
+			//enemy.angle.y = atan2f(dx, dz);
+			float targetAngle = atan2f(dx, dz);
 
+			float dif = targetAngle - middle_boss.angle.y;
 
-			float dx = arrive_position.x - middle_boss.position.x;   // 0 - pos.x
-			float dz = arrive_position.z - middle_boss.position.z;   // 0 - pos.z
+			while (dif > DirectX::XM_PI)  dif -= DirectX::XM_2PI;
+			while (dif < -DirectX::XM_PI) dif += DirectX::XM_2PI;
 
-			// Y軸回転（Yaw）
-			middle_boss.angle.y = atan2f(dx, dz);
+			float turnSpeed = 3.0f * elapsedTime; // rad/s
 
-			if (!(middle_boss_anime->IsPlaying()))
+			if (fabsf(dif) < turnSpeed)
 			{
-				int i = rand() % 2;
-				if (i == 0)middle_boss_anime->PlayAnimation("Roaring", false);
-				if (i == 1)
-				{
-					middle_boss_anime->PlayAnimation("Jump", false);
-					jump_effect_play = false;
-				}
-
-			}
-		}
-
-		//ボス
-		{
-			float direction = DirectX::XMVectorGetX
-			(DirectX::XMVector3Length
-			(DirectX::XMVectorSubtract
-			({ 0,0,-1 }, DirectX::XMLoadFloat3(&boss.position))));
-
-
-			float dx = arrive_position.x - boss.position.x;   // 0 - pos.x
-			float dz = arrive_position.z - boss.position.z;   // 0 - pos.z
-
-			// Y軸回転（Yaw）
-			boss.angle.y = atan2f(dx, dz);
-
-
-			if (attack_anime)
-			{
-				
-				int i = rand() % 2;
-				if (i == 0)
-				{
-					boss_anime->PlayAnimation("Attack", false);
-					boss_slash = false;
-				}
-
-
-				if (i == 1)
-				{
-					boss_anime->PlayAnimation("Jump_Attack", false);
-					boss_jump = false;
-				}
-
-				attack_anime = false;
+				middle_boss.angle.y = targetAngle;
 			}
 			else
 			{
-				if (idle_anime)
-				{
-					boss_anime->PlayAnimation("Idle", true);
-					idle_anime = false;
-				}
-
-				if ((int)timer % (5 * (rand() % 6 + 1)) == 0 && !(boss_anime->IsPlaying("Attack")) && !(boss_anime->IsPlaying("Jump_Attack")))
-				{
-					attack_anime = true;
-				}
-				if (!(boss_anime->IsPlaying()))idle_anime = true;
+				middle_boss.angle.y += (dif > 0.0f) ? turnSpeed : -turnSpeed;
 			}
+		}
+	}
 
+	{
+		float dx = Target.x - boss.position.x;   // 0 - pos.x
+		float dz = Target.z - boss.position.z;
+
+
+		// Y軸回転（Yaw）
+		{
+			//enemy.angle.y = atan2f(dx, dz);
+			float targetAngle = atan2f(dx, dz); 
+
+			float dif = targetAngle - boss.angle.y;
+
+			while (dif > DirectX::XM_PI)  dif -= DirectX::XM_2PI;
+			while (dif < -DirectX::XM_PI) dif += DirectX::XM_2PI;
+
+			float turnSpeed = 3.0f * elapsedTime; // rad/s
+
+			if (fabsf(dif) < turnSpeed)
+			{
+				boss.angle.y = targetAngle;
+			}
+			else
+			{
+				boss.angle.y += (dif > 0.0f) ? turnSpeed : -turnSpeed;
+			}
+		}
+	}
+
+	if(!(dead))
+	{
+		dyingStarted = false;
+		if (middle_boss_direction <= 100)
+		{
+			bool anime = true;
+			if (middle_boss_anime->IsPlaying("Jump"))anime = false;
+			if (anime)
+			{
+				//中ボス
+				middle_boss_anime->PlayAnimation("Jump", false);
+				jump_effect_play = false;
+			}
+		}
+		else
+		{
+			if (!(middle_boss_anime->IsPlaying()))
+			{
+				middle_boss_anime->PlayAnimation("Roaring", false);
+				attack_anime = true;
+				idle_anime = true;;
+			}
 		}
 
+		if (boss_direction<=100)
+		{//ボス
+			{
 
+				if (attack_anime)
+				{
+
+					int i = rand() % 2;
+					if (i == 0)
+					{
+						boss_anime->PlayAnimation("Attack", false);
+						boss_slash = false;
+					}
+
+
+					if (i == 1)
+					{
+						boss_anime->PlayAnimation("Jump_Attack", false);
+						boss_jump = false;
+					}
+
+					attack_anime = false;
+				}
+				else
+				{
+					if (idle_anime)
+					{
+						boss_anime->PlayAnimation("Idle", true);
+						idle_anime = false;
+					}
+
+					if ((int)timer % (5 * (rand() % 6 + 1)) == 0 && !(boss_anime->IsPlaying("Attack")) && !(boss_anime->IsPlaying("Jump_Attack")))
+					{
+						attack_anime = true;
+					}
+					if (!(boss_anime->IsPlaying()))idle_anime = true;
+				}
+
+			}
+		}
+		else 
+		{
+			if (walk_anime)
+			{
+				boss_anime->PlayAnimation("Walk", false);
+				walk_anime = false;
+			}
+			if (!(boss_anime->IsPlaying()))walk_anime = true;
+			if (boss_anime->IsPlaying("Walk"))
+			{
+				DirectX::XMVECTOR dis = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&boss.position)));
+				DirectX::XMVECTOR new_pos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&boss.position), DirectX::XMVectorScale(dis, 0.5f));
+				DirectX::XMStoreFloat3(&boss.position, new_pos);
+			}
+			
+		}
 	}
 	else
 	{
