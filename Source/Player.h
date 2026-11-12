@@ -201,15 +201,15 @@ private:
 
     bool Blad = false;
 
-<<<<<<< HEAD
+
     //Žc‘œ—p
     static constexpr int AFTER_IMAGE_COUNT = 8;
     DirectX::XMFLOAT4X4 playerHistory[AFTER_IMAGE_COUNT]{};
     int historyCount = 0;
-=======
+
     //
     float niseHP = 10000.0f;
     float nisehptime = 1.0f;
->>>>>>> d9e41b6a16d5adf163da7e125f64e8536527b350
+
 
 };

@@ -14,7 +14,6 @@
 #include"SceneManager.h"
 #include"SceneLoading.h"
 
-#include "SceneCameraTest.h"
 
 #include "shader.h"
 #include "texture.h"
@@ -905,8 +904,7 @@ void Framework::SceneSelectGUI()
 		ChangeSceneButtonGUI<SceneTitle>("タイトルへ");
 		ChangeSceneButtonGUI<SceneGame>("ゲームへ");
 		ChangeSceneButtonGUI<SceneResult>("リザルトへ");
-		ChangeSceneButtonGUI<SceneCameraTest>("カメラテストへ");
-
+	
 		//ChangeSceneButtonGUI<SceneAudioWASD>("音楽");
 		if (ImGui::Button("フルスクリーン"))
 		{

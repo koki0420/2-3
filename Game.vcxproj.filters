@@ -195,9 +195,6 @@
     <ClCompile Include="Source\Scene.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SceneCameraTest.cpp">
-      <Filter>CPP</Filter>
-    </ClCompile>
     <ClCompile Include="Source\SceneGame.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
@@ -238,6 +235,9 @@
       <Filter>システム</Filter>
     </ClCompile>
     <ClCompile Include="Source\Sword_Line.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CameraController.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
   </ItemGroup>
@@ -408,9 +408,6 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\SceneCameraTest.h">
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneGame.h">
