@@ -58,6 +58,9 @@ public:
     //血液獲得
     void AddBlood(float amount);
 
+    //血液攻撃
+    bool BloodAttack();
+
 protected:
     //プレイヤー
     Object player;
@@ -68,7 +71,7 @@ protected:
     float playerRadius = 5.0f;
     float playerRadiusHeight = 15.0f;
 
-    float PAD = PLAYER_ATTACK_DAMAGE;
+    float PAD = PLAYER_ATTACK_DAMAGE;//GUIで値を変更する用_DEBUG
     float pAtkDmg = PLAYER_ATTACK_DAMAGE;
     bool IsDead = false;
     float invincibleTime = 0.5f;
@@ -111,8 +114,7 @@ protected:
     
     void StartAttack();//攻撃開始処理
     void UpdateAttack(float elapsedTime);
-    //血液攻撃
-    bool BloodAttack();
+   
     //血ゲージの番号だけを求める関数
     int GetBloodGaugeIndex() const;
     //無双状態へ
@@ -144,7 +146,6 @@ private:
         Sword_Attack1,
         Sword_Attack2,
         Sword_Walk,
-
         
     };
     void setState(State next, bool loop);
@@ -197,9 +198,15 @@ private:
 
     bool Blad = false;
 
+<<<<<<< HEAD
     //残像用
     static constexpr int AFTER_IMAGE_COUNT = 8;
     DirectX::XMFLOAT4X4 playerHistory[AFTER_IMAGE_COUNT]{};
     int historyCount = 0;
+=======
+    //
+    float niseHP = 10000.0f;
+    float nisehptime = 1.0f;
+>>>>>>> d9e41b6a16d5adf163da7e125f64e8536527b350
 
 };
