@@ -51,6 +51,13 @@ void Player::Initialize()
 	state = State::Idle;
 	animation->PlayAnimation("Idle", true);
 	playerHP = PLAYER_HP_MAX;
+
+
+	//残像用
+	for (int i = 0; i < AFTER_IMAGE_COUNT; i++)
+	{
+		playerHistory[i] = player.transform;
+	}
 }
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
@@ -105,10 +112,55 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 
 	//エフェクト用
 	sword_Line.Update(Weapon[weapon_num].transform);
+
+	//残像用
+	if (isAttacking)
+	{
+		for (int i = AFTER_IMAGE_COUNT - 1; i > 0; --i)
+		{
+			playerHistory[i] =
+				playerHistory[i - 1];
+		}
+
+		playerHistory[0] =
+			player.transform;
+
+		historyCount++;
+
+		historyCount =
+			(std::min)(
+				historyCount,
+				AFTER_IMAGE_COUNT);
+	}
+	else
+	{
+		historyCount = 0;
+	}
 }
 
 void Player::Render(float elapsedTime, RenderContext rc)
 {
+	//残像描画
+	for (int i = historyCount - 1; i >= 0; --i)
+	{
+		rc.high_light = true;
+
+		float t = static_cast<float>(i) / static_cast<float>(AFTER_IMAGE_COUNT);
+
+		rc.highlightColor =
+		{
+			(1.0f - t) * 0.6f,
+			0.0f,0.0f,1.0f
+		};
+
+		Graphics::Instance().GetModelRenderer()->Render(
+			rc, playerHistory[i], player.model.get(), ShaderId::Lambert);
+	}
+
+
+
+
+
 	if (player.model) Graphics::Instance().GetModelRenderer()->Render(
 		rc, player.transform, player.model.get(), ShaderId::Lambert);
 

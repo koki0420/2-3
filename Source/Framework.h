@@ -74,6 +74,8 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11BlendState> blend_state;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> rasterizer_state;
 
+	
+
 	struct scene_constants
 	{
 		DirectX::XMFLOAT4X4 view_projection;

@@ -197,4 +197,9 @@ private:
 
     bool Blad = false;
 
+    //Žc‘œ—p
+    static constexpr int AFTER_IMAGE_COUNT = 8;
+    DirectX::XMFLOAT4X4 playerHistory[AFTER_IMAGE_COUNT]{};
+    int historyCount = 0;
+
 };
