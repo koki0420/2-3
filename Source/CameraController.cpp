@@ -134,17 +134,14 @@ void CameraController::Update(float elapsedTime, HWND hwnd)
 
 	if (Blood)
 	{
-		Blood_time -= elapsedTime * 20.0f;
+		Blood_time -= 1.0f*elapsedTime;
 
-		float shake = (Blood_time * 10.0f)*0.3f;
+		float shake = Blood_time * 0.5f;
 
-		eye.x += sinf(Blood_time * 30.0f) * shake;
-		eye.y += cosf(Blood_time * 25.0f) * shake;
-
-		if (Blood_time <= 0.0f)
-		{
-			Blood = false;
-		}
+		eye.x += cosf(Blood_time * 20.0f) * shake;
+		eye.y += sinf(Blood_time * 20.0f) * shake;
+		
+		
 	}
 
 }
