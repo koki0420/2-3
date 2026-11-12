@@ -149,6 +149,7 @@ void SceneGame::Update(float elapsedTime)
 			{
 				target.enemy->SetKnockBack(true);
 				target.hp -= player.GetPAtkDmg();
+				cameraController.SetBloodAttack(player.BloodAttack());
 				DirectX::XMFLOAT3 epos = target.enemy->GetPos();
 				HitEffect->Play({ epos.x,epos.y + 10.0f,epos.z }, 5.0f);
 				if (target.hp <= 0.0f)
@@ -187,7 +188,7 @@ void SceneGame::Update(float elapsedTime)
 				HitEffect->Play(boss.BOSS->GetPos(), 1.0f);
 				if (boss.hp <= 0.0f)
 				{
-					if (Boss_Dead = false)boss.hp = 1000.0f;
+					if (Boss_Dead == false)boss.hp = 1000.0f;
 					Boss_Dead = true;
 				}
 			}

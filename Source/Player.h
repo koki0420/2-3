@@ -58,6 +58,9 @@ public:
     //ŒŒ‰tŠl“¾
     void AddBlood(float amount);
 
+    //ŒŒ‰tUŒ‚
+    bool BloodAttack();
+
 protected:
     //ƒvƒŒƒCƒ„[
     Object player;
@@ -111,8 +114,7 @@ protected:
     
     void StartAttack();//UŒ‚ŠJnˆ—
     void UpdateAttack(float elapsedTime);
-    //ŒŒ‰tUŒ‚
-    bool BloodAttack();
+   
     //ŒŒƒQ[ƒW‚Ì”Ô†‚¾‚¯‚ğ‹‚ß‚éŠÖ”
     int GetBloodGaugeIndex() const;
     //–³‘oó‘Ô‚Ö

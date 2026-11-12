@@ -231,6 +231,9 @@
     <ClCompile Include="Source\Sword_Line.cpp">
       <Filter>CPP</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CameraController.cpp">
+      <Filter>CPP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Animation.h">
