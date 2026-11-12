@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "ShapeRenderer.h"
-#define PLAYERHPMAX 300
+
 Player::Player()
 {
 	Initialize();
@@ -50,7 +50,7 @@ void Player::Initialize()
 
 	state = State::Idle;
 	animation->PlayAnimation("Idle", true);
-	playerHP = PLAYERHPMAX;
+	playerHP = PLAYER_HP_MAX;
 }
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
@@ -114,7 +114,7 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 
 	//playerÇÃìñÇΩÇËîªíËÅAçUåÇîÕàÕï`âÊ
-#ifndef DEBUG
+#ifdef _DEBUG
 	if (showAttackCollision && IsAttackActive())
 	{
 		Graphics::Instance().GetShapeRenderer()->DrawSphere(
@@ -171,7 +171,7 @@ void Player::Render(float elapsedTime, RenderContext rc)
 void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 {
 	spriteHPGauge->Render(dc, 50, 50, 0, 480, 32, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteHP->Render(dc, 50, 50, 0, 480 * (playerHP / PLAYERHPMAX), 32, 0, 48, 128 * (playerHP / PLAYERHPMAX), 32, 0, 1, 1, 1, 1);
+	spriteHP->Render(dc, 50, 50, 0, 480 * (playerHP / PLAYER_HP_MAX), 32, 0, 48, 128 * (playerHP / PLAYER_HP_MAX), 32, 0, 1, 1, 1, 1);
 	spriteW[GetBloodGaugeIndex()]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	spriteGauge->Render(dc, 50, 82, 0, 280 , 28, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
 	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
@@ -260,7 +260,7 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 const char* const Player::animationNames[13] =
 {
 	"Idle","Death","Drunk_Idle","Drunk_Scythe","Drunk_Sword",
-	"Fight_Idle","Fight_Punch1","Fight_Punch2","Fight_Kick",
+	"Fight_Idle","Fight_Punch1","Fight_Punch2","Fight_kick",
 	"Scythe_Attack","Sword_Attack1","Sword_Attack2","Sword_Walk"
 };
 
@@ -275,7 +275,11 @@ void Player::setState(State next, bool loop)
 
 void Player::pAnimation(float elapsedTime,bool isMoving)
 {
-	if (!isAttacking)
+	if (!isAttacking && IsMusou) 
+	{
+		setState(isMoving ? State::Sword_Walk : State::Drunk_Idle, true);
+	}
+	else if (!isAttacking)
 	{
 		setState(isMoving ? State::Sword_Walk : State::Idle, true);
 	}
@@ -296,10 +300,12 @@ void Player::StartAttack()
 	if (!normalPressed && !bloodPressed)return;
 
 	//É_ÉÅÅ[ÉWÅAî{ó¶ÅAçUåÇîÕàÕèâä˙âª
+
 	pAtkDmg = PAD;
+	//pAtkDmg = PLAYER_ATTACK_DAMAGE;
 	bloodAttackMultiplier = 1.0f;
-	float AttackRadius = atkR;
-	float AttackDistance = atkD;
+	float AttackRadius = PLAYER_ATTACK_RADIUS;
+	float AttackDistance = PLAYER_ATTACK_DISTANCE;
 
 	if (bloodPressed && !BloodAttack())return;
 	
@@ -429,6 +435,7 @@ void Player::takeDamage(float damage)
 		isAttacking = false;
 		hitEnemies.clear();
 		attackTime = 0.0f;
+		IsMusou = false;
 		return;
 	}
 	invincibleTime = 0.5f;
@@ -463,7 +470,7 @@ bool Player::CheckTakeAttack(
 
 void Player::WeaponChange()
 {
-	if (isAttacking)return;
+	if (isAttacking||IsMusou)return;
 
 	if (GetAsyncKeyState('1') & 0x8000)
 	{
