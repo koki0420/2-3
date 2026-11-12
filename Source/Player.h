@@ -58,8 +58,7 @@ public:
     //ŒŒ‰tŠl“¾
     void AddBlood(float amount);
 
-    //ŒŒ‰tUŒ‚
-    bool BloodAttack();
+    bool GetBlood() { return Blood_Attack; }
 
 protected:
     //ƒvƒŒƒCƒ„[
@@ -111,6 +110,9 @@ protected:
 
     //“G
     std::unordered_set<size_t> hitEnemies;
+
+    //ŒŒ‰tUŒ‚
+    bool BloodAttack();
     
     void StartAttack();//UŒ‚ŠJnˆ—
     void UpdateAttack(float elapsedTime);
@@ -170,6 +172,7 @@ private:
     float attackSpeedMultiplier = 1.0f;
     //duration
     float WeaponDuration[3] = { 2.4f,1.1f,0.87f };
+    bool Blood_Attack = false;
 
     //UI
     std::unique_ptr<Sprite> spriteGauge = nullptr;

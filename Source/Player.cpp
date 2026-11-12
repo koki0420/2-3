@@ -509,14 +509,18 @@ bool Player::BloodAttack()
 	float& gauge = bloodGauge[index];
 
 	//コストが足りなければ返す
-	if (gauge < BloodCosts[index])return false;
+	if (gauge < BloodCosts[index])
+	{
+		Blood_Attack = false;
+		return false;
+	}
 
 	//ゲージからコストを引き、通常攻撃に武器ごとの倍率をかける
 	gauge -= BloodCosts[index];
 	bloodAttackMultiplier = BloodMultipliers[index];
 
 	Blad = true;
-
+	Blood_Attack = true;
 	return true;
 
 }

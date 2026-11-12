@@ -149,7 +149,7 @@ void SceneGame::Update(float elapsedTime)
 			{
 				target.enemy->SetKnockBack(true);
 				target.hp -= player.GetPAtkDmg();
-				cameraController.SetBloodAttack(player.BloodAttack());
+				cameraController.SetBloodAttack(player.GetBlood());
 				DirectX::XMFLOAT3 epos = target.enemy->GetPos();
 				HitEffect->Play({ epos.x,epos.y + 10.0f,epos.z }, 5.0f);
 				if (target.hp <= 0.0f)
