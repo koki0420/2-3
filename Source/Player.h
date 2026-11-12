@@ -68,7 +68,7 @@ protected:
     float playerRadius = 5.0f;
     float playerRadiusHeight = 15.0f;
 
-    float PAD = PLAYER_ATTACK_DAMAGE;
+    float PAD = PLAYER_ATTACK_DAMAGE;//GUIÇ≈ílÇïœçXÇ∑ÇÈóp_DEBUG
     float pAtkDmg = PLAYER_ATTACK_DAMAGE;
     bool IsDead = false;
     float invincibleTime = 0.5f;
@@ -144,7 +144,6 @@ private:
         Sword_Attack1,
         Sword_Attack2,
         Sword_Walk,
-
         
     };
     void setState(State next, bool loop);
