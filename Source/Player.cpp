@@ -204,27 +204,36 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 {
 	float axisX = 0.0f;
 	float axisY = 0.0f;
-	if (GetAsyncKeyState('W') & 0x8000) axisY += 3.0f;
-	/*if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;*/
-	if (GetAsyncKeyState('D') & 0x8000) axisX += 3.0f;
-	if (GetAsyncKeyState('A') & 0x8000) axisX -= 3.0f;
+	if (GetAsyncKeyState('W') & 0x8000) axisY += 1.0f;
+	if (GetAsyncKeyState('S') & 0x8000) axisY -= 1.0f;
+	if (GetAsyncKeyState('D') & 0x8000) axisX += 1.0f;
+	if (GetAsyncKeyState('A') & 0x8000) axisX -= 1.0f;
 
 	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
-	const DirectX::XMFLOAT3& camemraRight = camera.GetRight();
 
-	float cameraFrontLengthXZ = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
-	float cameraRightLengthXZ = sqrtf(camemraRight.x * camemraRight.x + camemraRight.z * camemraRight.z);
-	float cameraFrontX = cameraFront.x / cameraFrontLengthXZ;
-	float cameraFrontZ = cameraFront.z / cameraFrontLengthXZ;
-	float cameraRightX = camemraRight.x / cameraRightLengthXZ;
-	float cameraRightZ = camemraRight.z / cameraRightLengthXZ;
+	//カメラが見下ろしていても、プレイヤーは地面に沿って動く
+	const float frontLength = sqrtf(cameraFront.x * cameraFront.x + cameraFront.z * cameraFront.z);
+	if (frontLength < 0.0001f)return false;
+
+	const float frontX = cameraFront.x / frontLength;
+	const float frontZ = cameraFront.z / frontLength;
+
+	//地面上の前方向から右方向を作る
+	const float rightX = frontZ;
+	const float rightZ = -frontX;
+
+	float vecX = frontX * axisY + rightX * axisX;
+	float vecZ = frontZ * axisY + rightZ * axisX;
+	
+	//斜め移動が早くならないようにする
+	const float length = sqrtf(vecX * vecX + vecZ * vecZ);
+	if (length > 1.0f) { vecX /= length;vecZ /= length; }
 
 	//無双モードなら移動速度を早くする
 	const float moveMultiplier = IsMusou ? 2.0f : 1.0f;
 
 	const float speed = playerMoveSpeed * moveMultiplier * elapsedTime;
-	float vecX = cameraFrontX * axisY + cameraRightX * axisX;
-	float vecZ = cameraFrontZ * axisY + cameraRightZ * axisX;
+
 	float moveX = vecX * speed;
 	float moveZ = vecZ * speed;
 	float moveLength = sqrtf(moveX * moveX + moveZ * moveZ);
@@ -279,9 +288,10 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 void Player::StartAttack()
 {
 	if (isAttacking)return;
-	
-	const bool normalPressed = (GetAsyncKeyState('J') & 0x8000) != 0;
-	const bool bloodPressed = (GetAsyncKeyState('K') & 0x8000) != 0;
+
+	const ImGuiIO io = ImGui::GetIO();
+	const bool normalPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]));
+	const bool bloodPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Left]));
 
 	if (!normalPressed && !bloodPressed)return;
 
