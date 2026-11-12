@@ -42,6 +42,19 @@ Sword_Line::Sword_Line()
 
 	device->CreateBlendState(&blendDesc,additiveBlendState.GetAddressOf());
 
+	blendDesc.AlphaToCoverageEnable = FALSE;
+	blendDesc.IndependentBlendEnable = FALSE;
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	device->CreateBlendState(&blendDesc, BlendState.GetAddressOf());
+	
 
 	D3D11_INPUT_ELEMENT_DESC desc[]
 	{
@@ -265,6 +278,6 @@ void Sword_Line::Render(ID3D11DeviceContext* dc,const DirectX::XMFLOAT4X4& viewP
 
 	dc->Draw(static_cast<UINT>(vertices.size()),0);
 
-	dc->OMSetBlendState(nullptr,blendFactor,0xFFFFFFFF);
+	dc->OMSetBlendState(BlendState.Get(), blendFactor, 0xFFFFFFFF);
 }
 
