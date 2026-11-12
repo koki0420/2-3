@@ -44,6 +44,10 @@ public:
 
 	DirectX::XMFLOAT3 GetPos() { return boss.position; }
 
+	void TargetPos(DirectX::XMFLOAT3 pos)
+	{
+		Target = pos;
+	}
 
 	Animation* GetMiddleAnimation() { return middle_boss_anime.get(); }
 
@@ -101,5 +105,8 @@ private:
 	bool boss_jump;
 	bool boss_slash;
 
+
 	Effekseer::Handle Effect_handle = -1;
+
+	DirectX::XMFLOAT3 Target;
 };

@@ -96,11 +96,10 @@ void SceneGame::Update(float elapsedTime)
 
 
 	cameraController.SetFocus(player.GetPosition());
-
 	cameraController.Update(elapsedTime, player.GetAngle().y);
-
 	cameraController.SyncControllerToCamera(camera);
 
+	boss.BOSS->TargetPos(player.GetPosition());
 	boss.BOSS->Update(elapsedTime);
 
 	if (Boss_Dead)
