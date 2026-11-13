@@ -132,21 +132,27 @@ void CameraController::Update(float elapsedTime, HWND hwnd)
 
 	up = { 0,1,0 };
 
-	if (Blood)
+	base_eye = eye;
+
+	if (Blood_time > 0.0f)
 	{
-		Blood_time = 10.0f;
+		Blood_time -= 1*elapsedTime;
+
+		if (Blood_time < 0.0f)
+		{
+			Blood_time = 0.0f;
+		}
+
+		float shake = Blood_time * 2.5f;
+
+		eye.x = base_eye.x + sinf(Blood_time * 40.0f) * shake;
+		eye.y = base_eye.y + sinf(Blood_time * 40.0f) * shake;
+		eye.z = base_eye.z + sinf(Blood_time * 40.0f) * shake;
 	}
-	Blood_time -= 1.0f;
-
-	float shake = Blood_time * 0.6f;
-
-	eye.x += sinf(Blood_time * 20.0f) * shake;
-	eye.y += sinf(Blood_time * 20.0f) * shake;
-	if (Blood_time <= 0.0f)
+	else
 	{
-		Blood_time = 0.0f;
+		eye = base_eye;
 	}
-
 }
 //注視点をプレイヤーの位置に設定
 void CameraController::SetFocus(const DirectX::XMFLOAT3& position)

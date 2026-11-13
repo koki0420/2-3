@@ -28,9 +28,15 @@ public:
 	void Reset(const DirectX::XMFLOAT3& playerPosition,
 		float playerYaw);
 
-	void SetBloodAttack(bool Blood) { this->Blood = Blood; }
-
+	void SetBloodAttack(bool Blood)
+	{
+		if (Blood&&Blood_time<=0.5f)
+		{
+			Blood_time = 1.0f;
+		}
+	}
 private:
+	DirectX::XMFLOAT3 base_eye;//基本の視点
 	DirectX::XMFLOAT3		eye;//視点
 	DirectX::XMFLOAT3		focus;//注視点
 	DirectX::XMFLOAT3		up;//上方向
@@ -40,8 +46,7 @@ private:
 	float					angleX;
 	float					angleY;
 
-	bool Blood;
-	float Blood_time=10.0f;
+	float Blood_time=0.0f;
 
 	float maxAngleX = DirectX::XMConvertToRadians(70.0f);
 	float minAngleX = DirectX::XMConvertToRadians(10.0f);

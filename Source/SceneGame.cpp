@@ -98,6 +98,8 @@ void SceneGame::Update(float elapsedTime)
 
 	cameraController.SetFocus(player.GetPosition());
 
+	cameraController.SetBloodAttack(false);
+
 	cameraController.Update(elapsedTime,GetActiveWindow());
 
 	cameraController.SyncControllerToCamera(camera);
@@ -186,6 +188,8 @@ void SceneGame::Update(float elapsedTime)
 			{
 				boss.hp -= player.GetPAtkDmg();
 				HitEffect->Play(boss.BOSS->GetPos(), 1.0f);
+				cameraController.SetBloodAttack(player.GetBlood());
+
 				if (boss.hp <= 0.0f)
 				{
 					if (Boss_Dead == false)boss.hp = 1000.0f;

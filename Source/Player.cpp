@@ -356,7 +356,11 @@ void Player::StartAttack()
 	float AttackRadius = PLAYER_ATTACK_RADIUS;
 	float AttackDistance = PLAYER_ATTACK_DISTANCE;
 
-	if (bloodPressed && !BloodAttack())return;
+	if (bloodPressed && !BloodAttack())
+	{
+		Blood_Attack = false;
+		return;
+	}
 	
 	State next;
 	float duration;//ŽžŠÔ
@@ -561,7 +565,6 @@ bool Player::BloodAttack()
 	//ƒRƒXƒg‚ª‘«‚è‚È‚¯‚ê‚Î•Ô‚·
 	if (gauge < BloodCosts[index])
 	{
-		Blood_Attack = false;
 		return false;
 	}
 
