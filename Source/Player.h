@@ -60,6 +60,8 @@ public:
 
     bool GetBlood() { return Blood_Attack; }
 
+    float GetBloddCosts(int weapon) { return bloodCosts[weapon]; }
+
 protected:
     //ƒvƒŒƒCƒ„[
     Object player;
@@ -86,24 +88,12 @@ protected:
 
     DirectX::XMFLOAT3 attackPosition = { 0,0,0 };//UŒ‚”»’è‚Ì’†S
     float attackRadius = PLAYER_ATTACK_RADIUS;//‹…‚Ì”¼Œa
-    //•Ší‚ÌŒŒ‰tUŒ‚”ÍˆÍ
-    float WeaponAtkRadius[3] = { 15.0f,35.0f,10.0f };
-
     float attackDistance = PLAYER_ATTACK_DISTANCE;//ƒvƒŒƒCƒ„[‚©‚ç‘O•û‚Ö‚Ì‹——£
-    //ŒŒ‰tUŒ‚‹——£
-    float bloodAtkDistance[3] = { 20.0f,0.0f,10.0f };
-
     float attackHeight = 15.0f;//’n–Ê‚©‚ç‚Ì‚‚³
     float attackTime = 0;//UŒ‚‚ğn‚ß‚Ä‚©‚ç‚ÌŒo‰ßŠÔ
     float attackDuration = 2.4f;//UŒ‚‚ªI‚í‚é‚Ü‚Å‚ÌŠÔ
     bool isAttacking = false;
 
-    //ŒŒ‰tUŒ‚ƒRƒXƒg
-    float BloodCosts[3] = { 5.0f,10.0f,2.5f};
-    //ŒŒ‰tUŒ‚”{—¦
-    float BloodMultipliers[3] = { 1.8f,2.0f,5.0f };
-    //–³‘oƒ‚[ƒh‚Å‚ÌŒŒ‰tÁ”ï—Ê
-    float BloodGaugeConsumption[3] = { 10.0f,12.0f,2.5f };
 
     //UŒ‚‚µ‚Ä‚¢‚é‚©
     bool IsAttackActive()const;
@@ -162,15 +152,73 @@ private:
     };
     WEAPON weapon = WEAPON::Sword;//Å‰‚ÍŒ•
     int weapon_num = 0;
+    //ŒŒ‰tƒQ[ƒW
     float bloodGauge[3] = {};//0:Sword,1:Scythe,2:Fist
+    //ŒŒ‰tUŒ‚ƒRƒXƒg
+    float bloodCosts[3] = { 5.0f,10.0f,2.5f };
+    //–³‘oƒ‚[ƒh‚Å‚ÌŒŒ‰tÁ”ï—Ê
+    float bloodGaugeConsumption[3] = { 10.0f,12.0f,2.5f };
+
+    struct HitTiming//UŒ‚”»’è‚ğo‚·ƒ^ƒCƒ~ƒ“ƒO
+    {
+        float start;
+        float end;
+    };
+
+    struct AttackSetting
+    {
+        int hitCount;//UŒ‚”»’è‚ğo‚·‰ñ”
+        HitTiming timing[5];
+
+        float radius;//”»’è‹…‚Ì”¼Œa
+        float distance;//‘O•û‚Ö‚Ì‹——£
+        float animationSpeed;//1.0‚ª’Êí‚ÌÄ¶‘¬“x
+    };
+
+    //[•Ší][í—Ş]
+    //•Ší:0=Œ•A1=Š™A2=Œ
+    //UŒ‚í—Ş:0=’ÊíA1=ŒŒUŒ‚
+    AttackSetting attackSetting[3][2] =
+    {
+        //Œ•
+        {
+            {3,{{0.3f,0.6f},{0.9f,1.2f}, {1.5f,1.9f}},
+                10.0f,10.0f,1.0f},
+            //3‰ñUŒ‚A0.3f–ˆ‚É10.0f‚ÌUŒ‚”»’è‹…‚ğ‘O•û10.0f‚Öo‚·
+            {3,{{0.3f,0.6f},{0.9f,1.2f}, {1.5f,1.9f}},
+                15.0f,20.0f,1.3f}
+        },
+
+        //Š™
+        {
+            {1,{{0.3f,0.7f}},
+                10.0f,10.0f,1.0f},
+            {1,{{0.3f,0.7f}},
+                35.0f,0.0f,1.2f}
+        },
+
+        //Œ
+        {
+            {1,{{0.15f,0.3f}},
+                10.0f,10.0f,1.0f},
+            {2,{{0.15f,0.3f},{0.5f,0.7f}},
+                10.0f,10.0f,1.5f}
+        }
+    };
+    //¡‰ñ‚ÌˆêŒ‚‚Ég‚¤İ’è
+    AttackSetting currentAttackSetting{};
+    int currentHitIndex = -1;
+    //ŒŒ‰tUŒ‚”{—¦
+    float bloodMultipliers[3] = { 1.8f,2.0f,5.0f };
+    //duration
+    float weaponDuration[3] = { 2.4f,1.1f,0.87f };
     //–³‘oƒ‚[ƒh
     bool IsMusou = false;
     //UŒ‚”{—¦
     float bloodAttackMultiplier = 1.0f;
     //UŒ‚‚ÌÄ¶”{—¦
     float attackSpeedMultiplier = 1.0f;
-    //duration
-    float WeaponDuration[3] = { 2.4f,1.1f,0.87f };
+    
     bool Blood_Attack = false;
 
     //UI

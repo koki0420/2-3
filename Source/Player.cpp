@@ -320,10 +320,15 @@ void Player::StartAttack()
 		Blood_Attack = false;
 		return;
 	}
+	Blood_Attack = bloodPressed;
 	
 	State next;
 	float duration;//ŠÔ
 	const int index = GetBloodGaugeIndex();
+	const int attackType = bloodPressed ? 1 : 0;
+
+	//ƒRƒs[‚µ‚ÄA‚»‚ÌˆêŒ‚‚Ìİ’è‚ğŠm’è‚·‚é
+	currentAttackSetting = attackSetting[index][attackType];
 
 	switch (weapon)
 	{
@@ -350,18 +355,22 @@ void Player::StartAttack()
 		return;
 	}
 
-	if (bloodPressed) 
-	{
-		AttackRadius = WeaponAtkRadius[index];
-		AttackDistance = bloodAtkDistance[index];
-	}
-	duration = WeaponDuration[index];
+	
+	AttackRadius = currentAttackSetting.radius;
+	AttackDistance = currentAttackSetting.distance;
+	
+	duration = weaponDuration[index];
 
 	//ŒŒ‰tUŒ‚”{—¦‚ğ‚©‚¯‚é(ŒŒ‰tUŒ‚‚Å‚È‚¯‚ê‚Î“™”{
 	pAtkDmg *= bloodAttackMultiplier;
+	
+	attackSpeedMultiplier = currentAttackSetting.animationSpeed;
 	//–³‘oƒ‚[ƒh‚È‚ç‚³‚ç‚ÉUŒ‚”{—¦‚ğ‚©‚¯‚ÄUŒ‚‘¬“x‚ğã‚°‚é
-	if (IsMusou)pAtkDmg *= 1.5;
-	attackSpeedMultiplier = IsMusou ? 1.3f : 1.0f;
+	if (IsMusou)
+	{
+		pAtkDmg *= 1.5;
+		attackSpeedMultiplier *= 1.3f;
+	}
 
 	attackRadius = AttackRadius;
 	attackDuration = duration;
@@ -369,6 +378,7 @@ void Player::StartAttack()
 	isAttacking = true;
 	attackTime = 0.0f;
 	hitEnemies.clear();
+	currentHitIndex = -1;
 	setState(next, false);
 
 }
@@ -385,11 +395,38 @@ void Player::UpdateAttack(float elapsedTime)
 		attackPosition.z = player.position.z + cosf(player.angle.y) * attackDistance;
 
 		attackTime += elapsedTime * attackSpeedMultiplier;
+
+		//‘•”õ’†‚Ì•Ší‚Ìİ’è‚ğæ“¾
+		const AttackSetting& setting = currentAttackSetting;
+
+		int nextHitIndex = -1;
+		for (int i = 0;i < setting.hitCount;++i)
+		{
+			if (attackTime >= setting.timing[i].start&&
+				attackTime<setting.timing[i].end)
+			{
+				nextHitIndex = i;
+				break;
+			}
+		}
+
+		//V‚µ‚¢U‚è‚É“ü‚Á‚½‚Æ‚«A–½’†‹L˜^‚ğÁ‚·
+		if (nextHitIndex >= 0 && nextHitIndex != currentHitIndex)
+		{
+			hitEnemies.clear();
+		}
+
+		currentHitIndex = nextHitIndex;
+
+		//‚±‚Ì‰º‚ÉAŠù‘¶‚ÌUŒ‚I—¹ˆ—‚ğc‚·
 		if (attackTime >= attackDuration)
 		{
 			isAttacking = false;
+			Blood_Attack = false;
+			currentHitIndex = -1;
 			setState(State::Idle, true);
 		}
+
 	}
 
 }
@@ -425,8 +462,7 @@ bool Player::IsAttackActive()const
 	return !IsDead
 		&& !previewState
 		&& isAttacking
-		&& attackTime >= attackStartTime
-		&& attackTime < attackEndTime;
+		&& currentHitIndex >= 0;
 }
 
 void Player::takeDamage(float damage)
@@ -522,14 +558,14 @@ bool Player::BloodAttack()
 	float& gauge = bloodGauge[index];
 
 	//ƒRƒXƒg‚ª‘«‚è‚È‚¯‚ê‚Î•Ô‚·
-	if (gauge < BloodCosts[index])
+	if (gauge < bloodCosts[index])
 	{
 		return false;
 	}
 
 	//ƒQ[ƒW‚©‚çƒRƒXƒg‚ğˆø‚«A’ÊíUŒ‚‚É•Ší‚²‚Æ‚Ì”{—¦‚ğ‚©‚¯‚é
-	gauge -= BloodCosts[index];
-	bloodAttackMultiplier = BloodMultipliers[index];
+	gauge -= bloodCosts[index];
+	bloodAttackMultiplier = bloodMultipliers[index];
 
 	Blad = true;
 	Blood_Attack = true;
@@ -572,7 +608,7 @@ void Player::UpdateMusouMode(float elapsedTime)
 	const int index = GetBloodGaugeIndex();
 	float& gauge = bloodGauge[GetBloodGaugeIndex()];
 
-	gauge -= BloodGaugeConsumption[index] * elapsedTime;
+	gauge -= bloodGaugeConsumption[index] * elapsedTime;
 
 	if (gauge <= 0.0f)
 	{
