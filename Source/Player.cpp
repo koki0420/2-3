@@ -54,12 +54,7 @@ void Player::Initialize()
 
 
 	//Žc‘œ—p
-	for (int i = 0; i < AFTER_IMAGE_COUNT; i++)
-	{
-		playerHistory[i] = player.transform;
-	}
-	historyCount = 0;
-	afterImageTimer = 0.0f;
+
 }
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
