@@ -58,6 +58,8 @@ void Player::Initialize()
 	{
 		playerHistory[i] = player.transform;
 	}
+	historyCount = 0;
+	afterImageTimer = 0.0f;
 }
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
@@ -113,49 +115,11 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	//エフェクト用
 	sword_Line.Update(Weapon[weapon_num].transform);
 
-	//残像用
-	if (isAttacking)
-	{
-		for (int i = AFTER_IMAGE_COUNT - 1; i > 0; --i)
-		{
-			playerHistory[i] =
-				playerHistory[i - 1];
-		}
 
-		playerHistory[0] =
-			player.transform;
-
-		historyCount++;
-
-		historyCount =
-			(std::min)(
-				historyCount,
-				AFTER_IMAGE_COUNT);
-	}
-	else
-	{
-		historyCount = 0;
-	}
 }
 
 void Player::Render(float elapsedTime, RenderContext rc)
 {
-	//残像描画
-	for (int i = historyCount - 1; i >= 0; --i)
-	{
-		rc.high_light = true;
-
-		float t = static_cast<float>(i) / static_cast<float>(AFTER_IMAGE_COUNT);
-
-		rc.highlightColor =
-		{
-			(1.0f - t) * 0.6f,
-			0.0f,0.0f,1.0f
-		};
-
-		Graphics::Instance().GetModelRenderer()->Render(
-			rc, playerHistory[i], player.model.get(), ShaderId::Lambert);
-	}
 
 
 
@@ -199,14 +163,14 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad)
 	{
-		Sword_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 7.0f);
+		EffectManager::Instance().PlayEffect(Sword_Effect, { player.position.x,player.position.y + 5.0f,player.position.z }, player.angle, 7.0f);
 		IsSwrod = true;
 		Blad = false;
 	}
 
 	if (animation->GetCurrentFrame() >= 20.0f && !IsFight && Blad)
 	{
-		Fight_Effect->Play({ attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, 7.0f);
+		EffectManager::Instance().PlayEffect(Fight_Effect, { attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, player.angle, 7.0f);
 		IsFight = true;
 		Blad = false;
 	}
