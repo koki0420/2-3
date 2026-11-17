@@ -87,29 +87,31 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	UpdateAttack(elapsedTime);
 	pAnimation(elapsedTime, isMoving);
 
-	const char* rightHandName = "mixamorig:RightHand";
-
-	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(Weapon[weapon_num].scale.x, Weapon[weapon_num].scale.y, Weapon[weapon_num].scale.z);
-	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(Weapon[weapon_num].angle.x, Weapon[weapon_num].angle.y, Weapon[weapon_num].angle.z);
-	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(Weapon[weapon_num].position.x, Weapon[weapon_num].position.y, Weapon[weapon_num].position.z);
-	DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, S * R * T);
-
-	for (const Model::Node& node : player.model->GetNodes())
+	if (weapon_num < 2)
 	{
-		if (strcmp(node.name, rightHandName) == 0)
+		const char* rightHandName = "mixamorig:RightHand";
+
+		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(Weapon[weapon_num].scale.x, Weapon[weapon_num].scale.y, Weapon[weapon_num].scale.z);
+		DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(Weapon[weapon_num].angle.x, Weapon[weapon_num].angle.y, Weapon[weapon_num].angle.z);
+		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(Weapon[weapon_num].position.x, Weapon[weapon_num].position.y, Weapon[weapon_num].position.z);
+		DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, S * R * T);
+
+		for (const Model::Node& node : player.model->GetNodes())
 		{
-			DirectX::XMMATRIX w_trans = DirectX::XMLoadFloat4x4(&Weapon[weapon_num].transform);
-			DirectX::XMMATRIX g_trans = DirectX::XMLoadFloat4x4(&node.globalTransform);
-			DirectX::XMMATRIX p_trans = DirectX::XMLoadFloat4x4(&player.transform);
-			w_trans = (w_trans * g_trans) * p_trans;
-			DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, w_trans);
-			break;
+			if (strcmp(node.name, rightHandName) == 0)
+			{
+				DirectX::XMMATRIX w_trans = DirectX::XMLoadFloat4x4(&Weapon[weapon_num].transform);
+				DirectX::XMMATRIX g_trans = DirectX::XMLoadFloat4x4(&node.globalTransform);
+				DirectX::XMMATRIX p_trans = DirectX::XMLoadFloat4x4(&player.transform);
+				w_trans = (w_trans * g_trans) * p_trans;
+				DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, w_trans);
+				break;
+			}
 		}
+
+		//エフェクト用
+		sword_Line.Update(Weapon[weapon_num].transform);
 	}
-
-	//エフェクト用
-	sword_Line.Update(Weapon[weapon_num].transform);
-
 
 }
 
@@ -144,8 +146,10 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		{ 1, 1, 0, 1 });
 #endif
 
-	Graphics::Instance().GetModelRenderer()->Render(rc, Weapon[weapon_num].transform, Weapon[weapon_num].model.get(), ShaderId::Lambert);
-
+	if (weapon_num < 2)
+	{
+		Graphics::Instance().GetModelRenderer()->Render(rc, Weapon[weapon_num].transform, Weapon[weapon_num].model.get(), ShaderId::Lambert);
+	}
 	DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&rc.camera->GetView());
 	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&rc.camera->GetProjection());
 	DirectX::XMFLOAT4X4 VP;
@@ -498,7 +502,7 @@ void Player::WeaponChange()
 	else if (GetAsyncKeyState('3') & 0x8000)
 	{
 		weapon = WEAPON::Fist;
-		//weapon_num = 2;
+		weapon_num = 2;
 	}
 
 }
