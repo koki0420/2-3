@@ -179,7 +179,8 @@ private:
     std::unique_ptr<Sprite> spriteHP = nullptr;
     std::unique_ptr<Sprite> spriteWP = nullptr;
     std::unique_ptr<Sprite> spriteW[3];
-
+    std::unique_ptr<Sprite> spriteHITCOUNT = nullptr;
+	
 	
 
     //debug
@@ -208,8 +209,9 @@ private:
     int historyCount = 0;
 
     //
-    float niseHP = 10000.0f;
+    float niseHP = PLAYER_HP_MAX;
     float nisehptime = 1.0f;
 
-
+    int hit = 0;
+    float hittime = 5.0f;
 };

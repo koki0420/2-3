@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "ShapeRenderer.h"
-#define PLAYERHPMAX 10000.0f
+
 Player::Player()
 {
 	Initialize();
@@ -17,7 +17,8 @@ Player::Player()
 	spriteW[0] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sword_transparent.png");
 	spriteW[1] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent.png");
 	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");
-
+	spriteHITCOUNT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hitcount.png");
+	
 	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
 	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
 	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
@@ -78,6 +79,12 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		}
 	}
 	nisehptime = max(nisehptime - elapsedTime, 0.0f);
+	hittime -= elapsedTime;
+	if (hittime < 0)
+	{
+		hittime = 0;
+		hit = 0;
+	}
 	bool isMoving = false;
 	
 	if (!isAttacking){isMoving = InputMove(elapsedTime, camera);}
@@ -225,7 +232,7 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 	float hp = playerHP + ((niseHP - playerHP) * (nisehptime));
 	//
 	spriteHPGauge->Render(dc, 60, 50, 0, 480, 32, 8, 48, 112, 32, 0, 1, 1, 1, 1);
-	spriteHP->Render(dc, 60, 50, 0, 480 * (hp / PLAYERHPMAX), 32, 8, 48, 112 * (hp / PLAYERHPMAX), 32, 0, 1, 1, 1, 1);
+	spriteHP->Render(dc, 60, 50, 0, 480 * (hp / PLAYER_HP_MAX), 32, 8, 48, 112 * (hp / PLAYER_HP_MAX), 32, 0, 1, 1, 1, 1);
 	spriteW[GetBloodGaugeIndex()]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	spriteGauge->Render(dc, 50, 82, 0, 280 , 28, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
 	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
@@ -244,7 +251,14 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 	spriteWP->Render(dc, 80, 564, 0, 280 * (bloodGauge[2] / 100), 28, 0, 48, 128 * (bloodGauge[2] / 100), 32, 0, 1, 1, 1, 1);
 	spriteW[2]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 		
-	
+	if (hit > 0)
+	{
+		for (int count = hit, i=0;count > 0;count /= 10,i++)
+		{
+			spriteHITCOUNT->Render(dc, 1100-(i*46), 600, 0, 46, 62, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, hittime/5.0);
+		}
+		
+	}
 }
 
 
@@ -302,7 +316,7 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(player.position.x, player.position.y, player.position.z);
 		DirectX::XMStoreFloat4x4(&player.transform, S * R * T);
 	}
-
+	
 	return moveLength > 0.0f;
 }
 
@@ -454,6 +468,8 @@ bool Player::CheckAttackHit(
 	{
 		//‚±‚Ì“G‚É“–‚½‚Á‚½‚±‚Æ‚ð‹L˜^‚·‚é
 		hitEnemies.insert(enemyIndex);
+		hit++;
+		hittime = 5.0f;
 		return true;
 	}
 
@@ -755,3 +771,4 @@ void Player::DrawGUI()
 		}
 	}
 }
+
