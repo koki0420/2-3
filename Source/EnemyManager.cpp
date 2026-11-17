@@ -89,3 +89,51 @@ void EnemyManager::Enemy_Set(int i, bool Alive)
 	}
 
 }
+
+void EnemyManager::Enemy_display(DirectX::XMFLOAT3 pos)
+{
+	std::vector<EnemyInfo> enemyList;
+	enemyList.reserve(enemies.size());
+
+	for (auto& enemy : enemies)
+	{
+		enemy->SetDisPlay(false);
+
+		if (!enemy->Alive())
+			continue;
+
+		auto epos = enemy->GetPos();
+
+		float dx = epos.x - pos.x;
+		float dy = epos.y - pos.y;
+		float dz = epos.z - pos.z;
+
+		float distanceSq =
+			dx * dx +
+			dy * dy +
+			dz * dz;
+
+		enemyList.push_back({ enemy.get(), distanceSq });
+
+		enemy->SetDisPlay(false);
+	}
+
+	size_t displayCount = min(enemyList.size(), size_t(70));
+
+	if (displayCount > 0 &&
+		displayCount < enemyList.size())
+	{
+		std::nth_element(
+			enemyList.begin(),
+			enemyList.begin() + displayCount,
+			enemyList.end(),
+			[](const EnemyInfo& a, const EnemyInfo& b)
+			{
+				return a.distanceSq < b.distanceSq;
+			});
+	}
+	for (size_t i = 0; i < displayCount; i++)
+	{
+		enemyList[i].enemy->SetDisPlay(true);
+	}
+}

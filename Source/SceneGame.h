@@ -84,10 +84,12 @@ private:
 	
 	int enemy_num = 0;
 
+
 	bool Boss_Dead = false;
 
 	//デバッグ用
 	int enemy_num_debug = 0;
+
 
 
 
@@ -161,5 +163,7 @@ private:
 	std::unique_ptr<Sprite> spriteHP = nullptr;
 	
 	Effect* HitEffect = nullptr;
+
+	
 	
 };
