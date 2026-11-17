@@ -92,22 +92,31 @@ void SceneGame::Finalize()
 
 void SceneGame::Update(float elapsedTime)
 {
-	EnemyManager::Instance().Target(player.GetPosition());
-	EnemyManager::Instance().Update(elapsedTime);
+
+	//敵
+	{
+		EnemyManager::Instance().Enemy_display(player.GetPosition());
+		EnemyManager::Instance().Target(player.GetPosition());
+		EnemyManager::Instance().Update(elapsedTime);
+	}
+	//ステージ
 	stage.UpdateTransform();
 
-	cameraController.SetFocus(player.GetPosition());
-
-	cameraController.SetBloodAttack(false);
-
-	cameraController.Update(elapsedTime,GetActiveWindow());
-
-	cameraController.SyncControllerToCamera(camera);
-
+	//カメラ
+	{
+		cameraController.SetFocus(player.GetPosition());
+		cameraController.SetBloodAttack(false);
+		cameraController.Update(elapsedTime, GetActiveWindow());
+		cameraController.SyncControllerToCamera(camera);
+	}
 	player.Update(elapsedTime, stage, camera);
 
-	boss.BOSS->TargetPos(player.GetPosition());
-	boss.BOSS->Update(elapsedTime);
+	//ボス
+	{
+		boss.BOSS->TargetPos(player.GetPosition());
+		boss.BOSS->Update(elapsedTime);
+	}
+
 
 	if (Boss_Dead)
 	{
