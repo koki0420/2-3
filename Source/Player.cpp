@@ -109,9 +109,9 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 			}
 		}
 
-	//エフェクト用
-	sword_Line.Update(Weapon[weapon_num].transform);
-
+		//エフェクト用
+		sword_Line.Update(Weapon[weapon_num].transform);
+	}
 
 }
 
