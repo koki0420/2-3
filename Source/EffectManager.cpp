@@ -196,7 +196,7 @@ Effect* EffectManager::GetThunderEffect()
 }
 
 
-Effekseer::Handle EffectManager::PlayEffect(Effect* effect, const DirectX::XMFLOAT3& pos, float scale)
+Effekseer::Handle EffectManager::PlayEffect(Effect* effect, const DirectX::XMFLOAT3& pos,DirectX::XMFLOAT3& rotation, float scale)
 {
 	//エフェクト制限
 	static const int MAX_EFFECTS = 300;
@@ -207,9 +207,14 @@ Effekseer::Handle EffectManager::PlayEffect(Effect* effect, const DirectX::XMFLO
 
 	Effekseer::Handle h = effect->Play(pos, scale);
 
+	if (h >= 0)
+	{
+		effekseerManager->SetRotation(h, rotation.x, rotation.y, rotation.z);
+		playingEffects.push_back({ h, effect,pos });
+	}
 
 	
-	playingEffects.push_back({ h, effect,pos });
+	
 
 	
 

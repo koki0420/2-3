@@ -55,10 +55,7 @@ void Player::Initialize()
 
 
 	//残像用
-	for (int i = 0; i < AFTER_IMAGE_COUNT; i++)
-	{
-		playerHistory[i] = player.transform;
-	}
+
 }
 
 void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
@@ -97,72 +94,36 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	UpdateAttack(elapsedTime);
 	pAnimation(elapsedTime, isMoving);
 
-	const char* rightHandName = "mixamorig:RightHand";
-
-	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(Weapon[weapon_num].scale.x, Weapon[weapon_num].scale.y, Weapon[weapon_num].scale.z);
-	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(Weapon[weapon_num].angle.x, Weapon[weapon_num].angle.y, Weapon[weapon_num].angle.z);
-	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(Weapon[weapon_num].position.x, Weapon[weapon_num].position.y, Weapon[weapon_num].position.z);
-	DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, S * R * T);
-
-	for (const Model::Node& node : player.model->GetNodes())
+	if (weapon_num < 2)
 	{
-		if (strcmp(node.name, rightHandName) == 0)
-		{
-			DirectX::XMMATRIX w_trans = DirectX::XMLoadFloat4x4(&Weapon[weapon_num].transform);
-			DirectX::XMMATRIX g_trans = DirectX::XMLoadFloat4x4(&node.globalTransform);
-			DirectX::XMMATRIX p_trans = DirectX::XMLoadFloat4x4(&player.transform);
-			w_trans = (w_trans * g_trans) * p_trans;
-			DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, w_trans);
-			break;
-		}
-	}
+		const char* rightHandName = "mixamorig:RightHand";
 
-	//エフェクト用
-	sword_Line.Update(Weapon[weapon_num].transform);
+		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(Weapon[weapon_num].scale.x, Weapon[weapon_num].scale.y, Weapon[weapon_num].scale.z);
+		DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(Weapon[weapon_num].angle.x, Weapon[weapon_num].angle.y, Weapon[weapon_num].angle.z);
+		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(Weapon[weapon_num].position.x, Weapon[weapon_num].position.y, Weapon[weapon_num].position.z);
+		DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, S * R * T);
 
-	//残像用
-	if (isAttacking)
-	{
-		for (int i = AFTER_IMAGE_COUNT - 1; i > 0; --i)
+		for (const Model::Node& node : player.model->GetNodes())
 		{
-			playerHistory[i] =
-				playerHistory[i - 1];
+			if (strcmp(node.name, rightHandName) == 0)
+			{
+				DirectX::XMMATRIX w_trans = DirectX::XMLoadFloat4x4(&Weapon[weapon_num].transform);
+				DirectX::XMMATRIX g_trans = DirectX::XMLoadFloat4x4(&node.globalTransform);
+				DirectX::XMMATRIX p_trans = DirectX::XMLoadFloat4x4(&player.transform);
+				w_trans = (w_trans * g_trans) * p_trans;
+				DirectX::XMStoreFloat4x4(&Weapon[weapon_num].transform, w_trans);
+				break;
+			}
 		}
 
-		playerHistory[0] =
-			player.transform;
-
-		historyCount++;
-
-		historyCount =
-			(std::min)(
-				historyCount,
-				AFTER_IMAGE_COUNT);
+		//エフェクト用
+		sword_Line.Update(Weapon[weapon_num].transform);
 	}
-	else
-	{
-		historyCount = 0;
-	}
+
 }
 
 void Player::Render(float elapsedTime, RenderContext rc)
 {
-	//残像描画
-	for (int i = historyCount - 1; i >= 0; --i)
-	{
-		rc.high_light = true;
-
-		float t = static_cast<float>(i) / static_cast<float>(AFTER_IMAGE_COUNT);
-
-		rc.highlightColor =
-		{
-			(1.0f - t) * 0.6f,
-			0.0f,0.0f,1.0f
-		};
-
-		Graphics::Instance().GetModelRenderer()->Render(
-			rc, playerHistory[i], player.model.get(), ShaderId::Lambert);
-	}
 
 
 
@@ -192,8 +153,10 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		{ 1, 1, 0, 1 });
 #endif
 
-	Graphics::Instance().GetModelRenderer()->Render(rc, Weapon[weapon_num].transform, Weapon[weapon_num].model.get(), ShaderId::Lambert);
-
+	if (weapon_num < 2)
+	{
+		Graphics::Instance().GetModelRenderer()->Render(rc, Weapon[weapon_num].transform, Weapon[weapon_num].model.get(), ShaderId::Lambert);
+	}
 	DirectX::XMMATRIX V = DirectX::XMLoadFloat4x4(&rc.camera->GetView());
 	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&rc.camera->GetProjection());
 	DirectX::XMFLOAT4X4 VP;
@@ -206,14 +169,14 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad)
 	{
-		Sword_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 7.0f);
+		EffectManager::Instance().PlayEffect(Sword_Effect, { player.position.x,player.position.y + 5.0f,player.position.z }, player.angle, 7.0f);
 		IsSwrod = true;
 		Blad = false;
 	}
 
 	if (animation->GetCurrentFrame() >= 20.0f && !IsFight && Blad)
 	{
-		Fight_Effect->Play({ attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, 7.0f);
+		EffectManager::Instance().PlayEffect(Fight_Effect, { attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, player.angle, 7.0f);
 		IsFight = true;
 		Blad = false;
 	}
@@ -555,7 +518,7 @@ void Player::WeaponChange()
 	else if (GetAsyncKeyState('3') & 0x8000)
 	{
 		weapon = WEAPON::Fist;
-		//weapon_num = 2;
+		weapon_num = 2;
 	}
 
 }

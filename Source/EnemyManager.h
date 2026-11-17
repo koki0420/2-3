@@ -2,6 +2,7 @@
 
 #include<vector>
 #include"Enemy.h"
+#include <algorithm>
 
 class EnemyManager
 {
@@ -36,12 +37,21 @@ public:
 	{
 		for (auto& enemy : enemies)
 		{
-			enemy->TargetPos(pos);
+			enemy->TargetPos(pos);			
 		}
 	}
 
+
+	void Enemy_display(DirectX::XMFLOAT3 pos);
+
 	
 private:
+	struct EnemyInfo
+	{
+		Enemy* enemy;
+		float distanceSq;
+	};
+
 	std::vector<std::unique_ptr<Enemy>> enemies;
 	int enemy_respawn_w = 0;
 	int enemy_respawn_h = 0;

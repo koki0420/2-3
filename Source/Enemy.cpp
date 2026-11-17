@@ -21,7 +21,6 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	timer = 0;
 	nextTimer = (float)(rand() % 10 + 1);
 
-	renderer = false;
 
 	Target = { 0.0f,0.0f,0.0f };
 }
@@ -33,7 +32,7 @@ Enemy::~Enemy()
 
 void Enemy::Update(float elapsedTime)
 {
-	if (alive)
+	if (alive&&display)
 	{
 
 		timer += elapsedTime;
@@ -46,7 +45,6 @@ void Enemy::Update(float elapsedTime)
 		float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
 		if(direction<=200)
 		{
-			renderer = true;
 			if (direction <= 100)
 			{
 				dx = Target.x - enemy.position.x;   // 0 - pos.x
@@ -111,11 +109,6 @@ void Enemy::Update(float elapsedTime)
 
 				}
 			}
-		}
-		else
-		{
-			renderer = false;
-			return;
 		}
 
 		if (walk_anime)
@@ -238,7 +231,7 @@ void Enemy::Update(float elapsedTime)
 
 void Enemy::Render(const RenderContext& immediate_context, ModelRenderer* renderer)
 {
-	if (alive&&this->renderer)renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
+	if (alive&&display)renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
 	//renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
 }
 

@@ -2,7 +2,10 @@
 
 cbuffer CbMesh : register(b1)
 {
-	float4				materialColor;
+    float4 materialColor;
+    float4 highlightColor;
+    float highlight;
+    float3 padding;
 };
 
 Texture2D DiffuseMap		: register(t0);
@@ -19,6 +22,12 @@ float4 main(VS_OUT pin) : SV_TARGET
 	power = power * 0.5 + 0.5f;
 
 	color.rgb *= lightColor.rgb * power;
+	
+	
+    if (highlight > 0.5f)
+    {
+        color.rgb = highlightColor.rgb;
+    }
 
 	return color;
 }

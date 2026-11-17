@@ -52,7 +52,7 @@ public:
 	//敵の攻撃のエフェクト用
 	static Effect* GetThunderEffect();
 
-	Effekseer::Handle PlayEffect(Effect* effect, const DirectX::XMFLOAT3& pos, float scale = 1.0f);
+	Effekseer::Handle PlayEffect(Effect* effect, const DirectX::XMFLOAT3& pos,DirectX::XMFLOAT3& rotation, float scale = 1.0f);
 
 	void StopEffect(Effekseer::Handle h);
 	Effect* CreateEffect(const char* path);
