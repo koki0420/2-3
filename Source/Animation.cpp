@@ -109,14 +109,15 @@ void Animation::UpdateAnimation(float elapsedTime)
 		if (animationSeconds <= 0)
 		{
 			animationSeconds = 0;
-			anime_time = elapsedTime;
+			//anime_time = elapsedTime;
 		}
 
 		
 
 		//ŽžŠÔŒo‰ß
-		animationSeconds += anime_time;
-		
+		//animationSeconds += anime_time;
+		animationSeconds += elapsedTime;
+
 
 		float blendRate = 1.0f;
 		if (animationSeconds < animationBlendSecondsLength)
