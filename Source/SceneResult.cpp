@@ -20,6 +20,7 @@ void SceneResult::Initialize()
 {
 	spriteTitele = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_title_128.png");
 	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_exit_128.png");
+	result = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/result.png");
 }
 void SceneResult::Finalize()
 {
@@ -61,8 +62,9 @@ void SceneResult::Update(float elapsedTime)
 void SceneResult::Render(float elapsedTime)
 {
 	ID3D11DeviceContext* dc = Graphics::Instance().GetDeviceContext();
+	result->Render(dc, 0, 0, 0, 1280, 720, 0, 1, 1, 1, 1);
+
 	spriteTitele->Render(dc, 400, 500, 0, 128, 128, 0, 0, 128, 128, 0, 1, 1, 1, 1);
 	sprite->Render(dc, 700, 500, 0, 128, 128, 0, 0, 128, 128, 0, 1, 1, 1, 1);
-
 }
 

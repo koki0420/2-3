@@ -21,5 +21,6 @@ private:
 
 	std::unique_ptr<Sprite> spriteGame = nullptr;
 	std::unique_ptr<Sprite> sprite = nullptr;
+	std::unique_ptr<Sprite> title = nullptr;
 
 };

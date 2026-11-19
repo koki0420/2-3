@@ -2,7 +2,6 @@
 #include <ctime>
 #include <imgui.h>
 
-std::shared_ptr<Model> Enemy::sharedModel = nullptr;
 
 Enemy::Enemy(DirectX::XMFLOAT3 pos)
 {

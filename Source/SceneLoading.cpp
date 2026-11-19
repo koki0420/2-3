@@ -6,7 +6,7 @@
 void SceneLoading::Initialize()
 {
 	//スプライト初期化
-	spriteLogo = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sh_arrow_cycle_01_128.png");
+	spriteLogo = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/load.png");
 
 	//スレッド開始
 	thread = std::make_unique<std::thread>(LoadingThread, this);
@@ -28,7 +28,7 @@ void SceneLoading::Finalize()
 //更新処理
 void SceneLoading::Update(float elapsedTime)
 {
-	constexpr float speed = 180;
+	constexpr float speed = 360;
 
 	angle += speed * elapsedTime;
 	timer += elapsedTime;
@@ -62,6 +62,8 @@ void SceneLoading::Render(float elapsedTime)
 	rc.deviceContext = dc;
 	rc.renderState = graphics.GetRenderState();
 
+
+	
 	// 2Dスプライト描画
 	{
 		float screenWidth = static_cast<float>(graphics.GetScreenWidth());
