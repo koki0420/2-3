@@ -47,7 +47,6 @@ private:
 	Object enemy;
 	unique_ptr<Animation> enemy_anime;
 
-	static std::shared_ptr<Model> sharedModel;
 
 	DirectX::XMFLOAT3 Target;
 

@@ -8,17 +8,11 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 {
 	enemy.position = pos;
 
-	if (!Enemy::sharedModel)
-	{
-		Enemy::sharedModel =
-			std::make_shared<Model>(
-				"Data/Model/Enemy/enemy_normal.mdl");
-	}
 	enemy.scale = { 12,12,12 };
 	enemy.position.y = -25;
-	enemy.model_share = Enemy::sharedModel;
+	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
 
-	enemy_anime = std::make_unique<Animation>(*enemy.model_share);
+	enemy_anime = std::make_unique<Animation>(*enemy.model);
 	idle_anime = true;
 	walk_anime = true;
 	attack_anime = true;
@@ -34,7 +28,6 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 
 Enemy::~Enemy()
 {
-	Enemy::sharedModel.reset();
 }
 
 void Enemy::Update(float elapsedTime)
@@ -120,7 +113,7 @@ void Enemy::Update(float elapsedTime)
 
 		if (walk_anime)
 		{
-			enemy_anime->PlayAnimation("Walking", true);
+			enemy_anime->PlayAnimation("Walking", false);
 			walk_anime = false;
 		}
 		if (!(enemy_anime->IsPlaying()))walk_anime = true;
@@ -238,7 +231,7 @@ void Enemy::Update(float elapsedTime)
 
 void Enemy::Render(const RenderContext& immediate_context, ModelRenderer* renderer)
 {
-	if (alive&&display)renderer->Render(immediate_context, enemy.transform, enemy.model_share.get(), ShaderId::Lambert);
+	if (alive && display)renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
 	//renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
 }
 

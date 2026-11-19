@@ -15,7 +15,6 @@ struct Object
 	DirectX::XMFLOAT3		scale = { 1, 1, 1 };
 	DirectX::XMFLOAT4X4		transform = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
 	std::unique_ptr<Model>	model;
-	std::shared_ptr<Model> model_share;
 
 	
 
