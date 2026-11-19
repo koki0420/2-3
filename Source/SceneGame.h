@@ -161,7 +161,7 @@ private:
 	std::unique_ptr<Sprite> SpriteOVER;
 	std::unique_ptr<Sprite> SpriteCLEAR;
 	std::unique_ptr<Sprite> spriteHP = nullptr;
-	
+	std::unique_ptr<Sprite> spriteCOUNT = nullptr;
 	Effect* HitEffect = nullptr;
 
 	

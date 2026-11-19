@@ -180,7 +180,7 @@ private:
     std::unique_ptr<Sprite> spriteWP = nullptr;
     std::unique_ptr<Sprite> spriteW[3];
     std::unique_ptr<Sprite> spriteHITCOUNT = nullptr;
-	
+	 std::unique_ptr<Sprite> spriteHIT = nullptr;
 	
 
     //debug
@@ -211,5 +211,6 @@ private:
     float nisehptime = 1.0f;
 
     int hit = 0;
+    int nisehit = 0;
     float hittime = 5.0f;
 };

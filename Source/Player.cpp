@@ -18,6 +18,7 @@ Player::Player()
 	spriteW[1] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent.png");
 	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");
 	spriteHITCOUNT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hitcount.png");
+	spriteHIT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hit_transparent .png");
 	
 	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
 	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
@@ -76,11 +77,13 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		}
 	}
 	nisehptime = max(nisehptime - elapsedTime, 0.0f);
+	nisehit = min(nisehit + 1, hit);
 	hittime -= elapsedTime;
 	if (hittime < 0)
 	{
 		hittime = 0;
 		hit = 0;
+		nisehit = 0;
 	}
 	bool isMoving = false;
 	
@@ -216,11 +219,12 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 		
 	if (hit > 0)
 	{
-		for (int count = hit, i=0;count > 0;count /= 10,i++)
+		float hitsize = (hit - nisehit) / 10.0f;
+		for (int count = nisehit, i=0;count > 0;count /= 10,i++)
 		{
-			spriteHITCOUNT->Render(dc, 1100-(i*46), 600, 0, 46, 62, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, hittime/5.0);
+			spriteHITCOUNT->Render(dc, 1100-(i*46* (hitsize+1)), 600-31* (hitsize), 0, 46* (hitsize + 1), 62*(hitsize + 1), 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, hittime/5.0);
 		}
-		
+		spriteHIT->Render(dc, 1100+46* (hitsize + 1), 618, 0, 87, 44, 0, 0, 87, 44, 0, 1, 1, 1, hittime / 5.0);
 	}
 }
 
