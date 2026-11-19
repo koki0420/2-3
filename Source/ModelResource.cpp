@@ -10,6 +10,7 @@
 #include "GpuResourceUtils.h"
 #include "ModelResource.h"
 #include <crtdbg.h>
+#include <unordered_map>
 
 const std::vector<D3D11_INPUT_ELEMENT_DESC> ModelResource::InputElementDescs =
 {
@@ -197,28 +198,62 @@ void ModelResource::Load(ID3D11Device* device, const char* filename)
 }
 
 // モデル構築
+#include <unordered_map>
+
 void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 {
+	static std::unordered_map<
+		std::string,
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+	> textureCache;
+
+	//=========================
+	// Texture
+	//=========================
 	for (Material& material : materials)
 	{
-		// 相対パスの解決
 		char filename[256];
-		::_makepath_s(filename, 256, nullptr, dirname, material.textureFilename.c_str(), nullptr);
 
-		// マルチバイト文字からワイド文字へ変換
-		wchar_t wfilename[256];
-		::MultiByteToWideChar(CP_ACP, 0, filename, -1, wfilename, 256);
+		::_makepath_s(
+			filename,
+			sizeof(filename),
+			nullptr,
+			dirname,
+			material.textureFilename.c_str(),
+			nullptr);
 
-		// テクスチャ読み込み
-		Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-		HRESULT hr = GpuResourceUtils::LoadTexture(device, filename, material.shaderResourceView.GetAddressOf());
+		auto it = textureCache.find(filename);
+
+		// キャッシュ済み
+		if (it != textureCache.end())
+		{
+			material.shaderResourceView = it->second;
+			continue;
+		}
+
+		HRESULT hr =
+			GpuResourceUtils::LoadTexture(
+				device,
+				filename,
+				material.shaderResourceView.GetAddressOf());
+
 		if (FAILED(hr))
 		{
-			hr = GpuResourceUtils::CreateDummyTexture(device, 0xFFFFFFFF, material.shaderResourceView.GetAddressOf());
+			hr = GpuResourceUtils::CreateDummyTexture(
+				device,
+				0xFFFFFFFF,
+				material.shaderResourceView.GetAddressOf());
+
 			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 		}
+
+		textureCache[filename] =
+			material.shaderResourceView;
 	}
 
+	//=========================
+	// Mesh
+	//=========================
 	for (Mesh& mesh : meshes)
 	{
 		// サブセット
@@ -227,47 +262,55 @@ void ModelResource::BuildModel(ID3D11Device* device, const char* dirname)
 			subset.material = &materials.at(subset.materialIndex);
 		}
 
-		// 頂点バッファ
+		// VertexBuffer
 		{
 			D3D11_BUFFER_DESC bufferDesc = {};
 			D3D11_SUBRESOURCE_DATA subresourceData = {};
 
-			bufferDesc.ByteWidth = static_cast<UINT>(sizeof(Vertex) * mesh.vertices.size());
-			//bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			bufferDesc.ByteWidth =
+				static_cast<UINT>(
+					sizeof(Vertex) * mesh.vertices.size());
+
 			bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 			bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-			bufferDesc.CPUAccessFlags = 0;
-			bufferDesc.MiscFlags = 0;
-			bufferDesc.StructureByteStride = 0;
-			subresourceData.pSysMem = mesh.vertices.data();
-			subresourceData.SysMemPitch = 0;
-			subresourceData.SysMemSlicePitch = 0;
 
-			HRESULT hr = device->CreateBuffer(&bufferDesc, &subresourceData, mesh.vertexBuffer.GetAddressOf());
+			subresourceData.pSysMem =
+				mesh.vertices.data();
+
+			HRESULT hr =
+				device->CreateBuffer(
+					&bufferDesc,
+					&subresourceData,
+					mesh.vertexBuffer.GetAddressOf());
+
 			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 		}
 
-		// インデックスバッファ
+		// IndexBuffer
 		{
 			D3D11_BUFFER_DESC bufferDesc = {};
 			D3D11_SUBRESOURCE_DATA subresourceData = {};
 
-			bufferDesc.ByteWidth = static_cast<UINT>(sizeof(u_int) * mesh.indices.size());
-			//bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			bufferDesc.ByteWidth =
+				static_cast<UINT>(
+					sizeof(uint32_t) * mesh.indices.size());
+
 			bufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 			bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-			bufferDesc.CPUAccessFlags = 0;
-			bufferDesc.MiscFlags = 0;
-			bufferDesc.StructureByteStride = 0;
-			subresourceData.pSysMem = mesh.indices.data();
-			subresourceData.SysMemPitch = 0; //Not use for index buffers.
-			subresourceData.SysMemSlicePitch = 0; //Not use for index buffers.
-			HRESULT hr = device->CreateBuffer(&bufferDesc, &subresourceData, mesh.indexBuffer.GetAddressOf());
+
+			subresourceData.pSysMem =
+				mesh.indices.data();
+
+			HRESULT hr =
+				device->CreateBuffer(
+					&bufferDesc,
+					&subresourceData,
+					mesh.indexBuffer.GetAddressOf());
+
 			_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 		}
 	}
 }
-
 // シリアライズ
 void ModelResource::Serialize(const char* filename)
 {
