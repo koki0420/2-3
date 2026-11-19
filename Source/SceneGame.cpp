@@ -134,6 +134,7 @@ void SceneGame::Update(float elapsedTime)
 		{
 			Respawn();
 			boss.BOSS->Boss_Chage();
+			boss.hp = 1000.0f;
 			Boss_Dead = false;
 		}
 	}
