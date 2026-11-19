@@ -93,10 +93,14 @@ void SceneGame::Finalize()
 
 void SceneGame::Update(float elapsedTime)
 {
-
+	enemy_timer += 1*elapsedTime;
 	//“G
 	{
-		EnemyManager::Instance().Enemy_display(player.GetPosition());
+		if (enemy_timer >= 1)
+		{
+			enemy_timer = 0;
+			EnemyManager::Instance().Enemy_display(player.GetPosition());
+		}
 		EnemyManager::Instance().Target(player.GetPosition());
 		EnemyManager::Instance().Update(elapsedTime);
 	}
