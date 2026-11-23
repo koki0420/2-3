@@ -152,6 +152,7 @@
     <ClInclude Include="Source\ModelRenderer.h" />
     <ClInclude Include="Source\LambertShader.h" />
     <ClInclude Include="Source\ModelResource.h" />
+    <ClInclude Include="Source\MotionBlur.h" />
     <ClInclude Include="Source\Object.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\ResourceManager.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="Source\ModelRenderer.cpp" />
     <ClCompile Include="Source\LambertShader.cpp" />
     <ClCompile Include="Source\ModelResource.cpp" />
+    <ClCompile Include="Source\MotionBlur.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
@@ -261,6 +263,26 @@
     <None Include="Shader\static_mesh.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Data\Shader\MotionBlur_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\MotionBlurComposite_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\MotionBlurDebug_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\MotionBlurVelocity_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\MotionBlurVelocity_vs.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Data\Shader\MotionBlur_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Data\Shader\Sword_Line_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>

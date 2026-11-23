@@ -533,6 +533,14 @@ bool Framework::initialize()
 		}
 	}
 	EffectManager::Instance().Initialize();
+
+	 hr = motionBlur.Initialize(Graphics::Instance().GetDevice(),SCREEN_WIDTH,SCREEN_HEIGHT);
+
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
 	return true;
 }
 //シャドウマップ描画
@@ -859,8 +867,6 @@ if (skymap_sprite)
 
 
 
-	
-	
 
 	// シーン描画
 	//scene->Render(elapsedTime);

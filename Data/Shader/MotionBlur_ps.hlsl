@@ -26,19 +26,18 @@ float4 main(VS_OUT input) : SV_TARGET
     //‘¬“x‚ª‘å‚«‚·‚¬‚éê‡‚Í§ŒÀ
     velocity = clamp(velocity, -0.05f, 0.05f);
     
-    const int MAX_SAMPLES = 16;
+    const int MAX_SAMPLES = 8;
     
     float totalWeight = 0.0f;
     
     
     for (int i = 0; i < MAX_SAMPLES;++i)
     {
-        if (i >= sampleCount)
-            break;
+        if (i >= sampleCount) break;
         
         float t = (float) i / max(sampleCount - 1, 1);
         
-        float uv = input.texcoord - velocity * t;
+        float2 uv = input.texcoord - velocity * t;
         float weight = 1.0f - t*0.5f;
         
         color += SceneTexture.Sample(LinerSampler, uv) * weight;
