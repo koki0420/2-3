@@ -47,7 +47,7 @@ void SceneGame::Initialize()
 	stage.position.y = -20;
 
 	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
-	boss.hp = 100.0f;
+	boss.hp = 1000.0f;
 
 	cameraController.SyncCameraToController(camera);
 
@@ -79,6 +79,7 @@ void SceneGame::Initialize()
 	SpriteOVER = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameover_transparent.png");//
 	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
 	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_ff4444_128.png");//
+	spriteCOUNT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hitcount.png");
 	EnemyManager::Instance().Target(player.GetPosition());
 
 	HitEffect = EffectManager::Instance().CreateEffect("Data/Effect/Hit.efkefc");
@@ -92,34 +93,48 @@ void SceneGame::Finalize()
 
 void SceneGame::Update(float elapsedTime)
 {
-	EnemyManager::Instance().Target(player.GetPosition());
-	EnemyManager::Instance().Update(elapsedTime);
+	enemy_timer += 1*elapsedTime;
+	//敵
+	{
+		if (enemy_timer >= 1)
+		{
+			enemy_timer = 0;
+			EnemyManager::Instance().Enemy_display(player.GetPosition());
+		}
+		EnemyManager::Instance().Target(player.GetPosition());
+		EnemyManager::Instance().Update(elapsedTime);
+	}
+	//ステージ
 	stage.UpdateTransform();
 
-	cameraController.SetFocus(player.GetPosition());
-
-	cameraController.SetBloodAttack(false);
-
-	cameraController.Update(elapsedTime,GetActiveWindow());
-
-	cameraController.SyncControllerToCamera(camera);
-
+	//カメラ
+	{
+		cameraController.SetFocus(player.GetPosition());
+		cameraController.SetBloodAttack(false);
+		cameraController.Update(elapsedTime, GetActiveWindow());
+		cameraController.SyncControllerToCamera(camera);
+	}
 	player.Update(elapsedTime, stage, camera);
 
-	boss.BOSS->TargetPos(player.GetPosition());
-	boss.BOSS->Update(elapsedTime);
+	//ボス
+	{
+		boss.BOSS->TargetPos(player.GetPosition());
+		boss.BOSS->Update(elapsedTime);
+	}
+
 
 	if (Boss_Dead)
 	{
 		boss.BOSS->Boss_Dead(Boss_Dead);
 		if (boss.hp <= 0)
 		{
-			boss.hp = 100.0f;
+			boss.hp = 1000.0f;
 		}
 		if (!(boss.BOSS->Boss_Alive()))
 		{
 			Respawn();
 			boss.BOSS->Boss_Chage();
+			boss.hp = 1000.0f;
 			Boss_Dead = false;
 		}
 	}
@@ -315,6 +330,13 @@ void SceneGame::Render(float elapsedTime)
 		if (boss.BOSS->Boss_Alive())
 		{
 			spriteHP->Render(dc, 360, 10, 0, 480 * (boss.hp/100), 16, 14, 48, 100 * (boss.hp / 100), 32, 0, 1, 1, 1, 1);
+		}
+		else
+		{
+			for (int count = enemy_num, i = 0;count > 0;count /= 10, i++)
+			{
+				spriteCOUNT->Render(dc, 700 - (i * 23), 30, 0, 23, 31, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, 1);
+			}
 		}
 	}
 

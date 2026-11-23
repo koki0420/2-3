@@ -285,6 +285,7 @@
     </FxCompile>
     <FxCompile Include="Data\Shader\Sword_Line_ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Data\Shader\Sword_Line_vs.hlsl" />
     <FxCompile Include="Shader\BasicPS.hlsl">

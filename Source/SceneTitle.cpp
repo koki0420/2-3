@@ -23,7 +23,7 @@ void SceneTitle::Initialize()
 {
 	spriteGame = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_capsule_start_128.png");
 	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_exit_128.png");
-
+	title= std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/title.png");
 }
 void SceneTitle::Finalize()
 {
@@ -80,8 +80,9 @@ void SceneTitle::Render(float elapsedTime)
 	// ブレンドステート設定
 	dc->OMSetBlendState(rc.renderState->GetBlendState(BlendState::Transparency), nullptr, 0xFFFFFFFF);
 	
+	title->Render(dc, 0, 0, 0, 1280, 720, 0, 1, 1, 1, 1);
 	spriteGame->Render(dc, 400, 500, 0, 128, 128, 0, 0, 128 , 128, 0, 1, 1, 1, 1);
 	sprite->Render(dc, 700, 500, 0, 128, 128, 0, 0, 128 , 128, 0, 1, 1, 1, 1);
-
+	
 }
 

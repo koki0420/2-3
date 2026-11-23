@@ -41,9 +41,12 @@ public:
 
 	bool GetKnockBack() { return knockback; }
 
+	void SetDisPlay(bool DisPlay) { display = DisPlay; }
+
 private:
 	Object enemy;
 	unique_ptr<Animation> enemy_anime;
+
 
 	DirectX::XMFLOAT3 Target;
 
@@ -56,7 +59,7 @@ private:
 
 	bool alive=true;
 	bool arrive = true;
-	bool renderer=true;
+	bool display=true;
 
 	float timer = 0;
 	float nextTimer = 0;

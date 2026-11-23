@@ -15,7 +15,6 @@
 
 #include "boss.h"
 
-#include "Player.h"
 #include "CameraController.h"
 
 // XAUDIO2
@@ -83,11 +82,14 @@ private:
 	//std::vector<std::unique_ptr<Enemy>> enemies;
 	
 	int enemy_num = 0;
+	float enemy_timer = 1;
+
 
 	bool Boss_Dead = false;
 
 	//デバッグ用
 	int enemy_num_debug = 0;
+
 
 
 
@@ -159,7 +161,9 @@ private:
 	std::unique_ptr<Sprite> SpriteOVER;
 	std::unique_ptr<Sprite> SpriteCLEAR;
 	std::unique_ptr<Sprite> spriteHP = nullptr;
-	
+	std::unique_ptr<Sprite> spriteCOUNT = nullptr;
 	Effect* HitEffect = nullptr;
+
+	
 	
 };

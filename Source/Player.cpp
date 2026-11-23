@@ -4,7 +4,7 @@
 
 #include <cmath>
 #include "ShapeRenderer.h"
-#define PLAYERHPMAX 10000.0f
+
 Player::Player()
 {
 	Initialize();
@@ -17,7 +17,9 @@ Player::Player()
 	spriteW[0] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/sword_transparent.png");
 	spriteW[1] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/scythe_transparent.png");
 	spriteW[2] = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/glove_transparent.png");
-
+	spriteHITCOUNT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hitcount.png");
+	spriteHIT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hit_transparent .png");
+	
 	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
 	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
 	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
@@ -75,6 +77,14 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		}
 	}
 	nisehptime = max(nisehptime - elapsedTime, 0.0f);
+	nisehit = min(nisehit + 1, hit);
+	hittime -= elapsedTime;
+	if (hittime < 0)
+	{
+		hittime = 0;
+		hit = 0;
+		nisehit = 0;
+	}
 	bool isMoving = false;
 	
 	if (!isAttacking){isMoving = InputMove(elapsedTime, camera);}
@@ -84,8 +94,11 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 
 	//Update
 	UpdateMusouMode(elapsedTime);
-	UpdateAttack(elapsedTime);
-	pAnimation(elapsedTime, isMoving);
+	StartAttack();
+
+	if (isAttacking)UpdateAttack(elapsedTime);
+	else pAnimation(elapsedTime, isMoving);
+
 
 	if (weapon_num < 2)
 	{
@@ -120,14 +133,8 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 
 void Player::Render(float elapsedTime, RenderContext rc)
 {
-
-
-
-
-
 	if (player.model) Graphics::Instance().GetModelRenderer()->Render(
 		rc, player.transform, player.model.get(), ShaderId::Lambert);
-
 
 	//playerÇÃìñÇΩÇËîªíËÅAçUåÇîÕàÕï`âÊ
 #ifdef _DEBUG
@@ -191,7 +198,7 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 	float hp = playerHP + ((niseHP - playerHP) * (nisehptime));
 	//
 	spriteHPGauge->Render(dc, 60, 50, 0, 480, 32, 8, 48, 112, 32, 0, 1, 1, 1, 1);
-	spriteHP->Render(dc, 60, 50, 0, 480 * (hp / PLAYERHPMAX), 32, 8, 48, 112 * (hp / PLAYERHPMAX), 32, 0, 1, 1, 1, 1);
+	spriteHP->Render(dc, 60, 50, 0, 480 * (hp / PLAYER_HP_MAX), 32, 8, 48, 112 * (hp / PLAYER_HP_MAX), 32, 0, 1, 1, 1, 1);
 	spriteW[GetBloodGaugeIndex()]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	spriteGauge->Render(dc, 50, 82, 0, 280 , 28, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
 	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
@@ -210,7 +217,15 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 	spriteWP->Render(dc, 80, 564, 0, 280 * (bloodGauge[2] / 100), 28, 0, 48, 128 * (bloodGauge[2] / 100), 32, 0, 1, 1, 1, 1);
 	spriteW[2]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 		
-	
+	if (hit > 0)
+	{
+		float hitsize = (hit - nisehit) / 10.0f;
+		for (int count = nisehit, i=0;count > 0;count /= 10,i++)
+		{
+			spriteHITCOUNT->Render(dc, 1100-(i*46* (hitsize+1)), 600-31* (hitsize), 0, 46* (hitsize + 1), 62*(hitsize + 1), 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, hittime/5.0);
+		}
+		spriteHIT->Render(dc, 1100+46* (hitsize + 1), 618, 0, 87, 44, 0, 0, 87, 44, 0, 1, 1, 1, hittime / 5.0);
+	}
 }
 
 
@@ -268,15 +283,16 @@ bool Player::InputMove(float elapsedTime, Camera camera)
 		DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(player.position.x, player.position.y, player.position.z);
 		DirectX::XMStoreFloat4x4(&player.transform, S * R * T);
 	}
-
+	
 	return moveLength > 0.0f;
 }
 
-const char* const Player::animationNames[13] =
+const char* const Player::animationNames[16] =
 {
-	"Idle","Death","Drunk_Idle","Drunk_Scythe","Drunk_Sword",
-	"Fight_Idle","Fight_Punch1","Fight_Punch2","Fight_kick",
-	"Scythe_Attack","Sword_Attack1","Sword_Attack2","Sword_Walk"
+	"Idle","Death","Drunk_Idle","Drunk_Scyth","Drunk_Swrod",
+	"Fight_Idle","Fight_Punch","Fight_Punch2","Fight_Kick",
+	"Scyth_Attack","Sword_Attack1","Sword_Attack2","Sword_Walk",
+	"Walking","Dodge","Run"
 };
 
 void Player::setState(State next, bool loop)
@@ -311,93 +327,115 @@ void Player::StartAttack()
 	const ImGuiIO io = ImGui::GetIO();
 	const bool normalPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]));
 	const bool bloodPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Left]));
-
 	if (!normalPressed && !bloodPressed)return;
 
-	//É_ÉÅÅ[ÉWÅAî{ó¶ÅAçUåÇîÕàÕèâä˙âª
-
-	pAtkDmg = PAD;
-	//pAtkDmg = PLAYER_ATTACK_DAMAGE;
 	bloodAttackMultiplier = 1.0f;
-	float AttackRadius = PLAYER_ATTACK_RADIUS;
-	float AttackDistance = PLAYER_ATTACK_DISTANCE;
-
+	
 	if (bloodPressed && !BloodAttack())
 	{
 		Blood_Attack = false;
 		return;
 	}
+	Blood_Attack = bloodPressed;
 	
-	State next;
-	float duration;//éûä‘
 	const int index = GetBloodGaugeIndex();
+	const int attackType = bloodPressed ? (IsMusou ? 2 : 1) : 0;
+	currentAttackSetting = attackSetting[index][attackType];
+
+	attackDamageMultiplier = bloodAttackMultiplier * (IsMusou ? 1.5 : 1.0f);
+	attackModeSpeedMultiplier = IsMusou ? 1.3f : 1.0f;
 
 	switch (weapon)
 	{
-	case WEAPON::Sword:
-		next = State::Sword_Attack1;
-
-		IsSwrod = false;
-
-		break;
-	case WEAPON::Scythe:
-		next = State::Scythe_Attack;
-
-		IsSlash = false;
-
-		break;
-	case WEAPON::Fist:
-		next = State::Fight_Punch1;
-		duration = 0.87f;
-
-		IsFight = false;
-
-		break;
-	default:
-		return;
+	case WEAPON::Sword:		IsSwrod = false; break;
+	case WEAPON::Scythe:	IsSlash = false; break;
+	case WEAPON::Fist:		IsFight = false; break;
+	default:return;
 	}
 
-	if (bloodPressed) 
-	{
-		AttackRadius = WeaponAtkRadius[index];
-		AttackDistance = bloodAtkDistance[index];
-	}
-	duration = WeaponDuration[index];
-
-	//ååâtçUåÇî{ó¶ÇÇ©ÇØÇÈ(ååâtçUåÇÇ≈Ç»ÇØÇÍÇŒìôî{
-	pAtkDmg *= bloodAttackMultiplier;
-	//ñ≥ëoÉÇÅ[ÉhÇ»ÇÁÇ≥ÇÁÇ…çUåÇî{ó¶ÇÇ©ÇØÇƒçUåÇë¨ìxÇè„Ç∞ÇÈ
-	if (IsMusou)pAtkDmg *= 1.5;
-	attackSpeedMultiplier = IsMusou ? 1.3f : 1.0f;
-
-	attackRadius = AttackRadius;
-	attackDuration = duration;
-	attackDistance = AttackDistance;
+	currentMotionIndex = 0;
 	isAttacking = true;
+	StartAttackMotion();
+}
+
+void Player::StartAttackMotion()
+{
+	const AttackMotion& motion = currentAttackSetting.motions[currentMotionIndex];
 	attackTime = 0.0f;
+	attackDuration = motion.duration;
+	attackSpeedMultiplier = motion.animationSpeed * attackModeSpeedMultiplier;
+	currentHitIndex = -1;
 	hitEnemies.clear();
-	setState(next, false);
+	pAtkDmg = 0.0f;
+
+	state = motion.motion;
+	animation->PlayAnimation(animationNames[static_cast<int>(state)], false);
+	animation->Update(0.0f);
 
 }
 
 void Player::UpdateAttack(float elapsedTime)
 {
-	StartAttack();
+	if (!isAttacking)return;
 
-	if (isAttacking)
+	//ÉtÉåÅ[ÉÄéûä‘Çï€ë∂
+	float remainingTime = elapsedTime;
+
+	while (isAttacking && remainingTime > 0.0f) 
 	{
-		//playerÇ™å¸Ç¢ÇƒÇ¢ÇÈï˚å¸ÇÃëOï˚Ç÷îzíu
-		attackPosition.x = player.position.x + sinf(player.angle.y) * attackDistance;
-		attackPosition.y = player.position.y + attackHeight;
-		attackPosition.z = player.position.z + cosf(player.angle.y) * attackDistance;
+		const float timeToEnd = (attackDuration - attackTime) / attackSpeedMultiplier;
+		const bool finished = remainingTime >= timeToEnd;
+		const float step = finished ? timeToEnd : remainingTime;
+		attackTime += step * attackSpeedMultiplier;
+		animation->Update(step * attackSpeedMultiplier);
+		remainingTime -= step;
 
-		attackTime += elapsedTime * attackSpeedMultiplier;
-		if (attackTime >= attackDuration)
+		if (!finished)break;
+
+		++currentMotionIndex;
+		if (currentMotionIndex >= currentAttackSetting.motionCount)
 		{
 			isAttacking = false;
-			setState(State::Idle, true);
+			Blood_Attack = false;
+			currentHitIndex = -1;
+			hitEnemies.clear();
+			pAtkDmg = 0.0f;
+			setState(IsMusou ? State::Drunk_Idle : State::Idle, true);
+			animation->Update(remainingTime);
+			return;
+		}
+		StartAttackMotion();
+	}
+
+	const AttackMotion& motion = currentAttackSetting.motions[currentMotionIndex];
+	int nextHitIndex = -1;
+	for (int i = 0;i < motion.hitCount;++i)
+	{
+		if (attackTime >= motion.hits[i].start && attackTime < motion.hits[i].end)
+		{
+			nextHitIndex = i;
+			break;
 		}
 	}
+
+	if (nextHitIndex >= 0 && nextHitIndex != currentHitIndex)
+		hitEnemies.clear();
+	currentHitIndex = nextHitIndex;
+
+	if (currentHitIndex < 0)
+	{
+		pAtkDmg = 0.0f;
+		return;
+	}
+	
+	const HitSetting& hit = motion.hits[currentHitIndex];
+	attackRadius = hit.radius;
+	attackDistance = hit.distance;
+	pAtkDmg = hit.damage * attackDamageMultiplier;
+
+	attackPosition.x = player.position.x + sinf(player.angle.y) * attackDistance;
+	attackPosition.y = player.position.y + attackHeight;
+	attackPosition.z = player.position.z + cosf(player.angle.y) * attackDistance;
 
 }
 
@@ -420,11 +458,12 @@ bool Player::CheckAttackHit(
 	{
 		//Ç±ÇÃìGÇ…ìñÇΩÇ¡ÇΩÇ±Ç∆ÇãLò^Ç∑ÇÈ
 		hitEnemies.insert(enemyIndex);
+		hit++;
+		hittime = 5.0f;
 		return true;
 	}
 
 	return false;
-
 }
 
 bool Player::IsAttackActive()const
@@ -432,8 +471,7 @@ bool Player::IsAttackActive()const
 	return !IsDead
 		&& !previewState
 		&& isAttacking
-		&& attackTime >= attackStartTime
-		&& attackTime < attackEndTime;
+		&& currentHitIndex >= 0;
 }
 
 void Player::takeDamage(float damage)
@@ -474,7 +512,6 @@ bool Player::CheckTakeAttack(
 	float dx = center.x - enemyPosition.x;
 	float dy = center.y - enemyPosition.y;
 	float dz = center.z - enemyPosition.z;
-
 
 	float radius = playerRadius + enemyRadius;
 
@@ -529,14 +566,14 @@ bool Player::BloodAttack()
 	float& gauge = bloodGauge[index];
 
 	//ÉRÉXÉgÇ™ë´ÇËÇ»ÇØÇÍÇŒï‘Ç∑
-	if (gauge < BloodCosts[index])
+	if (gauge < bloodCosts[index])
 	{
 		return false;
 	}
 
 	//ÉQÅ[ÉWÇ©ÇÁÉRÉXÉgÇà¯Ç´ÅAí èÌçUåÇÇ…ïêäÌÇ≤Ç∆ÇÃî{ó¶ÇÇ©ÇØÇÈ
-	gauge -= BloodCosts[index];
-	bloodAttackMultiplier = BloodMultipliers[index];
+	gauge -= bloodCosts[index];
+	bloodAttackMultiplier = bloodMultipliers[index];
 
 	Blad = true;
 	Blood_Attack = true;
@@ -566,8 +603,6 @@ void Player::ChangeMusouMode()
 	{
 		IsMusou = true;
 	}
-	
-
 }
 
 void Player::UpdateMusouMode(float elapsedTime)
@@ -579,7 +614,7 @@ void Player::UpdateMusouMode(float elapsedTime)
 	const int index = GetBloodGaugeIndex();
 	float& gauge = bloodGauge[GetBloodGaugeIndex()];
 
-	gauge -= BloodGaugeConsumption[index] * elapsedTime;
+	gauge -= bloodGaugeConsumption[index] * elapsedTime;
 
 	if (gauge <= 0.0f)
 	{
@@ -632,8 +667,7 @@ void Player::DrawGUI()
 	ImGui::Text("Dead: %s", IsDead ? "Yes" : "No");
 	ImGui::Text("Invincible time: %.2f", invincibleTime);
 
-	ImGui::SliderFloat("Attack damage", &pAtkDmg, 0.0f, 100.0f);
-	ImGui::SliderFloat("PAD", &PAD, 0.0f, 100.0f);
+	ImGui::Text("Attack damage: %.1f", pAtkDmg);
 	ImGui::SliderFloat("Player radius", &playerRadius, 0.1f, 10.0f);
 
 	if (ImGui::Button("Take damage 10"))
@@ -669,7 +703,7 @@ void Player::DrawGUI()
 			attackPosition.z);
 	}
 
-	
+
 	ImGui::Text("State: %s", animationNames[static_cast<int>(state)]);
 	ImGui::Text("Attacking: %s", isAttacking ? "Yes" : "No");
 	ImGui::Text("Hit enemies: %d", static_cast<int>(hitEnemies.size()));
@@ -678,22 +712,96 @@ void Player::DrawGUI()
 
 	ImGui::Checkbox("Show attack collision", &showAttackCollision);
 
-	ImGui::SliderFloat("Attack radius", &attackRadius, 1.0f, 20.0f);
-	ImGui::SliderFloat("Attack distance", &attackDistance, 0.0f, 20.0f);
-	ImGui::SliderFloat("Attack height", &attackHeight, 1.0f, 30.0f);
-	ImGui::Text("Clip duration: %.2f s", attackDuration);
+	ImGui::Text("Current hit: %d", currentHitIndex + 1);
+	ImGui::Text("Current damage: %.1f", pAtkDmg);
+	ImGui::Text("Current speed: %.2f", attackSpeedMultiplier);
 
-	ImGui::SliderFloat(
-		"Hit start", &attackStartTime, 0.0f, 2.4f);
+	// ï“èWëŒè€Çï€ë∂Ç∑ÇÈÅBé¿ç€ÇÃëïîıÇÕïœçXÇµÇ»Ç¢
+	static int editWeapon = 0;
+	static int editAttackType = 0;
 
-	ImGui::SliderFloat(
-		"Hit end", &attackEndTime, 0.0f, 2.4f);
+	const char* editWeaponNames[] = { "Sword", "Scythe", "Fist" };
+	const char* attackTypeNames[] = { "Normal", "Blood","Musou" };
 
-	// äJénéûä‘Ç™èIóπéûä‘ÇâzÇ¶Ç»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
-	if (attackStartTime > attackEndTime)
+	ImGui::Separator();
+	ImGui::Text("Attack settings");
+
+	ImGui::Combo("Edit weapon", &editWeapon,
+		editWeaponNames, IM_ARRAYSIZE(editWeaponNames));
+
+	ImGui::Combo("Attack type", &editAttackType,
+		attackTypeNames, IM_ARRAYSIZE(attackTypeNames));
+
+	// ê›íËï\ÇªÇÃÇ‡ÇÃÇï“èWÇ∑ÇÈ
+	AttackSetting& setting =
+		attackSetting[editWeapon][editAttackType];
+
+	ImGui::Text("Playing motion: %d / %d",
+		isAttacking ? currentMotionIndex + 1 : 0,
+		isAttacking ? currentAttackSetting.motionCount : 0);
+	ImGui::SliderInt("Motion count", &setting.motionCount, 1, 5);
+	if (setting.motionCount < 1)setting.motionCount = 1;
+	if (setting.motionCount > 5)setting.motionCount = 5;
+	ImGui::SliderFloat("Hit height (shared)", &attackHeight, 0.0f, 40.0f);
+
+	// Matches animationNames, using lengths from the supplied Player.mdl.
+	static const float clipDurations[16] =
 	{
-		attackStartTime = attackEndTime;
+		1.966667f, 2.966667f, 3.966667f, 1.1f, 3.133333f,
+		2.2f, 0.866667f, 2.266667f, 1.6f, 1.1f,
+		2.4f, 1.8f, 1.366667f, 1.033333f, 1.633333f, 0.6f
+	};
+	for (int m = 0; m < setting.motionCount; ++m)
+	{
+		ImGui::PushID(m);
+		ImGui::Separator();
+		ImGui::Text("Motion %d", m + 1);
+		AttackMotion& motion = setting.motions[m];
+		int selected = static_cast<int>(motion.motion);
+		if (ImGui::Combo("Animation", &selected,
+			animationNames, IM_ARRAYSIZE(animationNames)))
+		{
+			motion.motion = static_cast<State>(selected);
+			motion.duration = clipDurations[selected];
+		}
+		ImGui::SliderFloat("Duration", &motion.duration,
+			0.01f, clipDurations[static_cast<int>(motion.motion)]);
+		if (motion.duration < 0.01f)motion.duration = 0.01f;
+		const float clipLength = clipDurations[static_cast<int>(motion.motion)];
+		if (motion.duration > clipLength)motion.duration = clipLength;
+		ImGui::SliderFloat("Animation speed", &motion.animationSpeed, 0.1f, 3.0f);
+		if (motion.animationSpeed < 0.1f)motion.animationSpeed = 0.1f;
+		if (motion.animationSpeed > 3.0f)motion.animationSpeed = 3.0f;
+		ImGui::SliderInt("Hit count", &motion.hitCount, 0, 5);
+		if (motion.hitCount < 0)motion.hitCount = 0;
+		if (motion.hitCount > 5)motion.hitCount = 5;
+
+		for (int i = 0; i < motion.hitCount; ++i)
+		{
+			ImGui::PushID(i);
+			ImGui::Text("Hit %d", i + 1);
+			HitSetting& hit = motion.hits[i];
+			ImGui::SliderFloat("Start", &hit.start, 0.0f, motion.duration);
+			ImGui::SliderFloat("End", &hit.end, 0.0f, motion.duration);
+			ImGui::SliderFloat("Radius", &hit.radius, 0.1f, 50.0f);
+			ImGui::SliderFloat("Distance", &hit.distance, 0.0f, 50.0f);
+			ImGui::SliderFloat("Damage", &hit.damage, 0.0f, 500.0f);
+			if (hit.radius < 0.1f)hit.radius = 0.1f;
+			if (hit.distance < 0.0f)hit.distance = 0.0f;
+			if (hit.damage < 0.0f)hit.damage = 0.0f;
+
+			const float earliest = i == 0 ? 0.0f : motion.hits[i - 1].end;
+			if (hit.start < earliest)hit.start = earliest;
+			if (hit.start > motion.duration)hit.start = motion.duration;
+			if (hit.end < hit.start)hit.end = hit.start;
+			if (hit.end > motion.duration)hit.end = motion.duration;
+			if (hit.start == hit.end)ImGui::Text("Set End later than Start.");
+			ImGui::PopID();
+		}
+		ImGui::PopID();
 	}
+
+	ImGui::Text("Settings apply to the next attack.");
 
 	ImGui::Text("Attack active: %s",
 		IsAttackActive() ? "Yes" : "No");
@@ -721,3 +829,4 @@ void Player::DrawGUI()
 		}
 	}
 }
+

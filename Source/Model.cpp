@@ -33,7 +33,57 @@ Model::Model(const char* filename)
 	// 行列計算
 	UpdateTransform();
 }
-
+//Model::Model(const char* filename)
+//{
+//
+//	auto t0 = GetTickCount64();
+//
+//	resource = ResourceManager::Instance().LoadModelResource(filename);
+//
+//	OutputDebugStringA(
+//		("LoadModelResource = " +
+//			std::to_string(GetTickCount64() - t0) +
+//			" ms\n").c_str());
+//
+//	auto t1 = GetTickCount64();
+//
+//	// nodes作成
+//	const auto& resNodes = resource->GetNodes();
+//
+//	nodes.resize(resNodes.size());
+//
+//	for (size_t nodeIndex = 0; nodeIndex < nodes.size(); ++nodeIndex)
+//	{
+//
+//		auto&& src = resNodes.at(nodeIndex);
+//		auto&& dst = nodes.at(nodeIndex);
+//
+//		dst.name = src.name.c_str();
+//		dst.parent = src.parentIndex >= 0 ? &nodes.at(src.parentIndex) : nullptr;
+//		dst.scale = src.scale;
+//		dst.rotate = src.rotate;
+//		dst.translate = src.translate;
+//
+//		if (dst.parent != nullptr)
+//		{
+//			dst.parent->children.emplace_back(&dst);
+//		}
+//	}
+//
+//	OutputDebugStringA(
+//		("Create Nodes = " +
+//			std::to_string(GetTickCount64() - t1) +
+//			" ms\n").c_str());
+//
+//	auto t2 = GetTickCount64();
+//
+//	UpdateTransform();
+//
+//	OutputDebugStringA(
+//		("UpdateTransform = " +
+//			std::to_string(GetTickCount64() - t2) +
+//			" ms\n").c_str());
+//}
 // 変換行列計算
 void Model::UpdateTransform()
 {
