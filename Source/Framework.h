@@ -10,6 +10,8 @@
 #include <imgui_impl_win32.h>
 #include<sstream>
 
+#include "MotionBlur.h"
+
 
 
 
@@ -60,6 +62,10 @@ private:
 	POINT cursor_position;
 	float wheel{ 0 };
 	float distance{ 10.0f };
+
+	//モーションブラー
+	MotionBlur motionBlur;
+
 
 public:
 

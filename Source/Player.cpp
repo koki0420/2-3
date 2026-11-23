@@ -135,6 +135,9 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		sword_Line.Update(Weapon[weapon_num].transform);
 	}
 
+	Graphics::Instance().GetModelRenderer()->SavePreviousBoneTransforms(player.transform, player.model.get());
+
+
 }
 
 void Player::Render(float elapsedTime, RenderContext rc)

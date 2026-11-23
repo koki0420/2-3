@@ -62,7 +62,7 @@ void SceneLoading::Render(float elapsedTime)
 	rc.deviceContext = dc;
 	rc.renderState = graphics.GetRenderState();
 
-
+	graphics.Clear(0, 0, 0, 1);
 	
 	// 2Dスプライト描画
 	{
