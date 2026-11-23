@@ -26,6 +26,13 @@ public:
 	void Render(const RenderContext& rc, const DirectX::XMFLOAT4X4& worldTransform, const Model* model, ShaderId shaderId);
 
 
+	// モーションブラー用速度描画
+	void RenderVelocity(const RenderContext& rc,const DirectX::XMFLOAT4X4& worldTransform,
+		const Model* model,const DirectX::XMFLOAT4X4& previousViewProjection);
+
+	void SavePreviousBoneTransforms(const DirectX::XMFLOAT4X4& worldTransform,const Model* model);
+
+	void ResetPreviousBoneTransforms();
 
 private:
 	struct CbScene
@@ -45,4 +52,31 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	sceneConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>	skeletonConstantBuffer;
+
+	//モーションブラー
+	struct CbPreviousSkeleton
+	{
+		DirectX::XMFLOAT4X4 boneTransforms[256];
+	};
+
+	
+	struct CbMotionBlur
+	{
+		DirectX::XMFLOAT4X4 currentViewProjection;
+		DirectX::XMFLOAT4X4 previousViewProjection;
+	};
+
+	struct PreviousMeshSkeleton
+	{
+		std::vector<DirectX::XMFLOAT4X4> boneTransforms;
+	};
+	std::vector<PreviousMeshSkeleton> previousMeshSkeletons;
+
+	Microsoft::WRL::ComPtr<ID3D11VertexShader> velocityVertexShader;
+	Microsoft::WRL::ComPtr<ID3D11PixelShader>  velocityPixelShader;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> motionBlurConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> previousSkeletonConstantBuffer;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> velocityInputLayout;
+
+	bool hasPreviousSkeleton = false;
 };
