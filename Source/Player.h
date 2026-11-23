@@ -117,6 +117,21 @@ protected:
     std::unique_ptr<Animation> animation;
     void pAnimation(float elapsedTime,bool isMoving);
 
+    //回避
+    void StartDodge();
+    void UpdateDodge(float elapsedTime);
+
+    bool isDodging = false;
+    bool wasDodgePressed = false;
+
+    float dodgeTime = 0.0f;
+    float dodgeDuration = 0.5f;        // 回避にかかる時間
+    float dodgeDistance = 20.0f;       // 回避する距離
+    float dodgeInvincibleTime = 0.25f;
+
+    // 回避開始時の方向を保存する
+    DirectX::XMFLOAT3 dodgeDirection = { 0, 0, 1 };
+
 private:
     //アニメーションstate
     enum class State

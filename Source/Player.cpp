@@ -87,7 +87,16 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 	}
 	bool isMoving = false;
 	
-	if (!isAttacking){isMoving = InputMove(elapsedTime, camera);}
+	StartDodge();
+
+	if (isDodging)
+	{
+		UpdateDodge(elapsedTime);
+	}
+	else if (!isAttacking)
+	{
+		isMoving = InputMove(elapsedTime, camera);
+	}
 
 	//武器切り替え
 	WeaponChange();
@@ -303,6 +312,13 @@ void Player::setState(State next, bool loop)
 
 void Player::pAnimation(float elapsedTime,bool isMoving)
 {
+	if (isDodging)
+	{
+		const float speed = 1.63f / dodgeDuration;
+		animation->Update(elapsedTime * speed);
+		return;
+	}
+
 	if (!isAttacking && IsMusou) 
 	{
 		setState(isMoving ? State::Sword_Walk : State::Drunk_Idle, true);
@@ -319,7 +335,7 @@ void Player::pAnimation(float elapsedTime,bool isMoving)
 //攻撃開始処理
 void Player::StartAttack()
 {
-	if (isAttacking)return;
+	if (isAttacking||isDodging)return;
 
 	const ImGuiIO io = ImGui::GetIO();
 	const bool normalPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]));
@@ -524,7 +540,7 @@ bool Player::CheckTakeAttack(
 
 void Player::WeaponChange()
 {
-	if (isAttacking||IsMusou)return;
+	if (isAttacking||isDodging||IsMusou)return;
 
 	if (GetAsyncKeyState('1') & 0x8000)
 	{
@@ -617,6 +633,74 @@ void Player::UpdateMusouMode(float elapsedTime)
 	{
 		gauge = 0.0f;
 		IsMusou = false;
+	}
+}
+
+void Player::StartDodge()
+{
+	const bool pressed =
+		(GetAsyncKeyState(VK_SPACE) & 0x8000) != 0;
+
+	// 押した瞬間だけtrueになる
+	const bool triggered = pressed && !wasDodgePressed;
+	wasDodgePressed = pressed;
+
+	if (!triggered)return;
+
+	if (isDodging || isAttacking)return;
+	if (ImGui::GetIO().WantCaptureKeyboard)return;
+
+	isDodging = true;
+	dodgeTime = 0.0f;
+
+	// プレイヤーが向いている方向
+	dodgeDirection.x = sinf(player.angle.y);
+	dodgeDirection.y = 0.0f;
+	dodgeDirection.z = cosf(player.angle.y);
+
+	// 既に残っている無敵時間を短くしない
+	if (invincibleTime < dodgeInvincibleTime)
+	{
+		invincibleTime = dodgeInvincibleTime;
+	}
+
+	state = State::Dodge;
+	animation->PlayAnimation(
+		animationNames[static_cast<int>(state)], false);
+}
+
+void Player::UpdateDodge(float elapsedTime)
+{
+	if (!isDodging)return;
+
+	// 最終フレームで移動しすぎないようにする
+	const float remaining = dodgeDuration - dodgeTime;
+	const float moveTime =
+		elapsedTime < remaining ? elapsedTime : remaining;
+
+	const float speed = dodgeDistance / dodgeDuration;
+
+	player.position.x += dodgeDirection.x * speed * moveTime;
+	player.position.z += dodgeDirection.z * speed * moveTime;
+
+	dodgeTime += moveTime;
+
+	// 座標の変更を描画用の行列に反映する
+	const DirectX::XMMATRIX S = DirectX::XMMatrixScaling(
+		player.scale.x, player.scale.y, player.scale.z);
+
+	const DirectX::XMMATRIX R =
+		DirectX::XMMatrixRotationRollPitchYaw(
+			player.angle.x, player.angle.y, player.angle.z);
+
+	const DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(
+		player.position.x, player.position.y, player.position.z);
+
+	DirectX::XMStoreFloat4x4(&player.transform, S * R * T);
+
+	if (dodgeTime >= dodgeDuration)
+	{
+		isDodging = false;
 	}
 }
 
