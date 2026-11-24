@@ -27,7 +27,7 @@ ModelRenderer::ModelRenderer(ID3D11Device* device)
 	//シェーダー読み込み
 	GpuResourceUtils::LoadVertexShader(device, "Data/Shader/MotionBlurVelocity_vs.cso",
 						ModelResource::InputElementDescs.data(), static_cast<UINT>
-						(ModelResource::InputElementDescs.size()), nullptr, velocityVertexShader.GetAddressOf());
+						(ModelResource::InputElementDescs.size()), velocityInputLayout.GetAddressOf(), velocityVertexShader.GetAddressOf());
 
 	GpuResourceUtils::LoadPixelShader(device,"Data/Shader/MotionBlurVelocity_ps.cso",
 											velocityPixelShader.GetAddressOf());
@@ -163,6 +163,8 @@ void ModelRenderer::Render(const RenderContext& rc, const DirectX::XMFLOAT4X4& w
 void ModelRenderer::RenderVelocity(const RenderContext& rc, const DirectX::XMFLOAT4X4& worldTransform, const Model* model,
 	const DirectX::XMFLOAT4X4& previousViewProjection)
 {
+
+	if (!hasPreviousSkeleton)return;
 	if (model == nullptr||rc.camera==nullptr)return;
 
 	ID3D11DeviceContext* dc = rc.deviceContext;
@@ -370,6 +372,7 @@ void ModelRenderer::SavePreviousBoneTransforms(const DirectX::XMFLOAT4X4& worldT
 		
 		}
 	}
+	hasPreviousSkeleton = true;
 }
 
 void ModelRenderer::ResetPreviousBoneTransforms()

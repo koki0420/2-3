@@ -71,6 +71,21 @@ public:
 
 	void Graphics::Resize(UINT width, UINT height);
 
+	ID3D11RenderTargetView* GetRenderTargetView()
+	{
+		return renderTargetView.Get();
+	}
+
+	ID3D11DepthStencilView* GetDepthStencilView()
+	{
+		return depthStencilView.Get();
+	}
+
+	const D3D11_VIEWPORT& GetViewport() const
+	{
+		return viewport;
+	}
+
 private:
 	HWND											hWnd = nullptr;
 	Microsoft::WRL::ComPtr<ID3D11Device>			device;

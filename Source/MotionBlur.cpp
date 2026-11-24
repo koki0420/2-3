@@ -1,5 +1,6 @@
 #include "MotionBlur.h"
 #include "GpuResourceUtils.h"
+#include "Graphics.h"
 
 HRESULT MotionBlur::Initialize(ID3D11Device* device, UINT width, UINT height)
 {
@@ -59,6 +60,29 @@ HRESULT MotionBlur::Initialize(ID3D11Device* device, UINT width, UINT height)
 
     if (FAILED(hr))return hr;
 
+
+
+    hr = GpuResourceUtils::LoadPixelShader(
+        device,
+        "Data/Shader/MotionBlurHistory_ps.cso",
+        historyPS.GetAddressOf());
+
+    if (FAILED(hr))
+        return hr;
+
+    D3D11_BUFFER_DESC historyBufferDesc{};
+    historyBufferDesc.ByteWidth = sizeof(CbHistory);
+    historyBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    historyBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+    hr = device->CreateBuffer(
+        &historyBufferDesc,
+        nullptr,
+        historyConstantBuffer.GetAddressOf());
+
+    if (FAILED(hr))
+        return hr;
+
     return S_OK;
 }
 
@@ -86,6 +110,16 @@ HRESULT MotionBlur::Resize(ID3D11Device* device, UINT width, UINT height)
     blurSRV.Reset();
     blurTexture.Reset();
 
+    for (int i = 0; i < 2; ++i)
+    {
+        historyRTV[i].Reset();
+        historySRV[i].Reset();
+        historyTexture[i].Reset();
+    }
+
+    historyReadIndex = 0;
+    historyValid = false;
+
 
     screenWidth = width;
     screenHeight = height;
@@ -95,33 +129,60 @@ HRESULT MotionBlur::Resize(ID3D11Device* device, UINT width, UINT height)
 
 void MotionBlur::BeginPlayerColorPass(ID3D11DeviceContext* dc)
 {
-    ID3D11RenderTargetView* rtv = playerColorRTV.Get();
+    if (dc == nullptr) return;
 
-    dc->OMSetRenderTargets(1, &rtv, depthDSV.Get());
+    ID3D11RenderTargetView* rtv = playerColorRTV.Get();
 
     float clearColor[4] = {};
 
+    
+
+    dc->OMSetRenderTargets(1, &rtv, Graphics::Instance().GetDepthStencilView());
+
     dc->ClearRenderTargetView(rtv, clearColor);
 
-    dc->ClearDepthStencilView(
-        depthDSV.Get(),
-        D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f,0);
+
+    // 深度テストあり・書き込みなし
+    dc->OMSetDepthStencilState(
+        Graphics::Instance().GetRenderState()
+        ->GetDepthStencilState(DepthState::TestOnly),0);
+
+    dc->OMSetBlendState(
+        Graphics::Instance().GetRenderState()
+        ->GetBlendState(BlendState::Opaque),
+        nullptr,0xFFFFFFFF);
 
 }
 
 void MotionBlur::BeginVelocityPass(ID3D11DeviceContext* dc)
 {
+    if (dc == nullptr) return;
+
     ID3D11RenderTargetView* rtv = velocityRTV.Get();
 
-    dc->OMSetRenderTargets(1, &rtv, depthDSV.Get());
+    dc->OMSetRenderTargets(
+        1, &rtv,Graphics::Instance().GetDepthStencilView());
 
     const float clearColor[4] = {};
 
-    dc->ClearRenderTargetView(rtv, clearColor);
+    dc->ClearRenderTargetView(
+        rtv,
+        clearColor);
+
+    dc->OMSetDepthStencilState(
+        Graphics::Instance().GetRenderState()
+        ->GetDepthStencilState(DepthState::TestOnly),
+        0);
+
+    dc->OMSetBlendState(
+        Graphics::Instance().GetRenderState()
+        ->GetBlendState(BlendState::Opaque),
+        nullptr,
+        0xFFFFFFFF);
 
 }
 
-void MotionBlur::Execute(ID3D11DeviceContext* dc)
+void MotionBlur::Execute(ID3D11DeviceContext* dc, float elapsedTime)
 {
 
     if (dc == nullptr)return;
@@ -202,6 +263,73 @@ void MotionBlur::Execute(ID3D11DeviceContext* dc)
     ID3D11ShaderResourceView* nullSRVs[2]{};
 
     dc->PSSetShaderResources(0, 2, nullSRVs);
+
+
+
+    // 現在のブラー描画で使ったSRVを解除
+    ID3D11ShaderResourceView* nullSrvs[2]{};
+    dc->PSSetShaderResources(0, 2, nullSrvs);
+
+    // 最初のフレームは、前履歴を透明にしてから読む
+    if (!historyValid)
+    {
+        const float transparent[4]{};
+        dc->ClearRenderTargetView(
+            historyRTV[historyReadIndex].Get(),
+            transparent);
+    }
+
+    const UINT writeIndex = 1 - historyReadIndex;
+
+    // 読み込み中の履歴とは別のRTVに書く
+    ID3D11RenderTargetView* historyTarget =
+        historyRTV[writeIndex].Get();
+
+    dc->OMSetRenderTargets(1, &historyTarget, nullptr);
+
+    dc->OMSetBlendState(
+        Graphics::Instance().GetRenderState()
+        ->GetBlendState(BlendState::Opaque),
+        nullptr,
+        0xFFFFFFFF);
+
+    dc->VSSetShader(fullscreenVS.Get(), nullptr, 0);
+    dc->PSSetShader(historyPS.Get(), nullptr, 0);
+    dc->IASetInputLayout(nullptr);
+    dc->IASetPrimitiveTopology(
+        D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    CbHistory cbHistory{};
+    cbHistory.decay = expf(-elapsedTime / 0.18f);
+
+    dc->UpdateSubresource(
+        historyConstantBuffer.Get(),
+        0,
+        nullptr,
+        &cbHistory,
+        0,
+        0);
+
+    ID3D11Buffer* historyCB =
+        historyConstantBuffer.Get();
+
+    dc->PSSetConstantBuffers(0, 1, &historyCB);
+
+    ID3D11ShaderResourceView* historyInputs[] =
+    {
+        blurSRV.Get(),
+        historySRV[historyReadIndex].Get()
+    };
+
+    dc->PSSetShaderResources(0, 2, historyInputs);
+    dc->PSSetSamplers(0, 1, &sampler);
+    dc->Draw(3, 0);
+
+    // 読み込み解除してから次フレームの読み取り先を切り替える
+    dc->PSSetShaderResources(0, 2, nullSrvs);
+
+    historyReadIndex = writeIndex;
+    historyValid = true;
 }
 
 
@@ -217,9 +345,21 @@ void MotionBlur::Composite(ID3D11DeviceContext* dc, ID3D11RenderTargetView* dest
 
     dc->RSSetViewports(1, &viewport);
 
+
+    // 深度テストを無効化
+    dc->OMSetDepthStencilState(
+        Graphics::Instance().GetRenderState()
+        ->GetDepthStencilState(DepthState::NoTestNoWrite), 0);
+
+    // アルファブレンド
+    dc->OMSetBlendState(
+        Graphics::Instance().GetRenderState()
+        ->GetBlendState(BlendState::Transparency),
+        nullptr, 0xFFFFFFFF);
+
     // SRV設定
     ID3D11ShaderResourceView* srv =
-        blurSRV.Get();
+        historySRV[historyReadIndex].Get();
 
     dc->PSSetShaderResources(
         0,1,&srv);
@@ -316,6 +456,10 @@ HRESULT MotionBlur::CreateRenderTargets(ID3D11Device* device, UINT width, UINT h
         depthTexture.Get(),
         nullptr,depthDSV.GetAddressOf());
 
+
+    if (FAILED(hr))
+        return hr;
+
     desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 
     hr = device->CreateTexture2D(
@@ -338,6 +482,22 @@ HRESULT MotionBlur::CreateRenderTargets(ID3D11Device* device, UINT width, UINT h
 
     if (FAILED(hr))
         return hr;
+
+    //履歴用テクスチャ
+    for (int i = 0; i < 2; ++i)
+    {
+        hr = device->CreateTexture2D(
+            &desc, nullptr, historyTexture[i].GetAddressOf());
+        if (FAILED(hr)) return hr;
+
+        hr = device->CreateRenderTargetView(
+            historyTexture[i].Get(), nullptr, historyRTV[i].GetAddressOf());
+        if (FAILED(hr)) return hr;
+
+        hr = device->CreateShaderResourceView(
+            historyTexture[i].Get(), nullptr, historySRV[i].GetAddressOf());
+        if (FAILED(hr)) return hr;
+    }
 
 
     return S_OK;

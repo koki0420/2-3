@@ -5,6 +5,17 @@
 
 class MotionBlur
 {
+
+public:
+	static MotionBlur& Instance()
+	{
+		static MotionBlur instance;
+		return instance;
+	}
+
+	MotionBlur(const MotionBlur&) = delete;
+	MotionBlur& operator=(const MotionBlur&) = delete;
+
 public:
 	MotionBlur() = default;
 	~MotionBlur() = default;
@@ -22,7 +33,7 @@ public:
 	void BeginVelocityPass(ID3D11DeviceContext* dc);
 
 	//モーションブラー実行
-	void Execute(ID3D11DeviceContext* dc);
+	void Execute(ID3D11DeviceContext* dc, float elapsedTime);
 
 	//前フレーム情報更新
 	void UdatePreviousFrame();
@@ -42,6 +53,12 @@ private:
 		float blurStrength;
 		DirectX::XMFLOAT2 texelSize;
 		int sampleCount;
+	};
+
+	struct CbHistory
+	{
+		float decay;
+		float padding[3];
 	};
 
 
@@ -82,4 +99,15 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11BlendState> compositeBlendState;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader> compositePS;
+
+	//履歴テクスチャ
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> historyTexture[2];
+	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> historyRTV[2];
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> historySRV[2];
+
+	Microsoft::WRL::ComPtr<ID3D11PixelShader> historyPS;
+	Microsoft::WRL::ComPtr<ID3D11Buffer> historyConstantBuffer;
+
+	UINT historyReadIndex = 0;
+	bool historyValid = false;
 };

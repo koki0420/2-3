@@ -136,7 +136,7 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		sword_Line.Update(Weapon[weapon_num].transform);
 	}
 
-	Graphics::Instance().GetModelRenderer()->SavePreviousBoneTransforms(player.transform, player.model.get());
+	
 
 
 }
@@ -187,14 +187,14 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 20.0f && !IsFight && Blad)
+	if (animation->GetCurrentFrame() >= 0.0f && !IsFight && Blad)
 	{
 		EffectManager::Instance().PlayEffect(Fight_Effect, { attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, player.angle, 7.0f);
 		IsFight = true;
 		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 15.0f && !IsSlash && Blad)
+	if (animation->GetCurrentFrame() >= 0.0f && !IsSlash && Blad)
 	{
 		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 6.0f);
 		IsSlash = true;
@@ -358,8 +358,6 @@ void Player::StartAttack()
 	const bool normalPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]));
 	const bool bloodPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Left]));
 	if (!normalPressed && !bloodPressed)return;
-
-	bloodAttackMultiplier = 1.0f;
 	
 	if (bloodPressed && !BloodAttack())
 	{
@@ -372,7 +370,6 @@ void Player::StartAttack()
 	const int attackType = bloodPressed ? (IsMusou ? 2 : 1) : 0;
 	currentAttackSetting = attackSetting[index][attackType];
 
-	attackDamageMultiplier = bloodAttackMultiplier * (IsMusou ? 1.5 : 1.0f);
 	attackModeSpeedMultiplier = IsMusou ? 1.3f : 1.0f;
 
 	switch (weapon)
@@ -461,7 +458,7 @@ void Player::UpdateAttack(float elapsedTime)
 	const HitSetting& hit = motion.hits[currentHitIndex];
 	attackRadius = hit.radius;
 	attackDistance = hit.distance;
-	pAtkDmg = hit.damage * attackDamageMultiplier;
+	pAtkDmg = hit.damage;
 
 	attackPosition.x = player.position.x + sinf(player.angle.y) * attackDistance;
 	attackPosition.y = player.position.y + attackHeight;
@@ -589,21 +586,46 @@ void Player::AddBlood(float amount)
 
 }
 
+void Player::RenderColorPass(RenderContext& rc)
+{
+	if (!player.model)return;
+
+	Graphics::Instance().GetModelRenderer()->Render(
+		rc,
+		player.transform,
+		player.model.get(),
+		ShaderId::Lambert);
+}
+
+void Player::RenderVelocityPass(const RenderContext& rc, const DirectX::XMFLOAT4X4& previousViewProjection)
+{
+	if (!player.model) return;
+
+	Graphics::Instance().GetModelRenderer()->RenderVelocity(
+		rc,
+		player.transform,
+		player.model.get(),
+		previousViewProjection);
+}
+
 bool Player::BloodAttack()
 {
 	//現在何の武器を使っているかを取得
 	const int index = GetBloodGaugeIndex();
 	float& gauge = bloodGauge[index];
 
-	//コストが足りなければ返す
-	if (gauge < bloodCosts[index])
+	if(IsMusou){}
+	else
 	{
-		return false;
+		//コストが足りなければ返す
+		if (gauge < bloodCosts[index])
+		{
+			return false;
+		}
+		//ゲージからコストを引く
+		gauge -= bloodCosts[index];
+		
 	}
-
-	//ゲージからコストを引き、通常攻撃に武器ごとの倍率をかける
-	gauge -= bloodCosts[index];
-	bloodAttackMultiplier = bloodMultipliers[index];
 
 	Blad = true;
 	Blood_Attack = true;
