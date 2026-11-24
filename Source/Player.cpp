@@ -23,6 +23,7 @@ Player::Player()
 	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
 	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
 	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
+	Drunk_Sword = EffectManager::Instance().CreateEffect("Data/Effect/Drunk_Sword.efkefc");
 
 	IsSwrod = true;
 	IsFight = true;
@@ -179,7 +180,7 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 	}
 
-	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad)
+	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad&&!IsMusou)
 	{
 		EffectManager::Instance().PlayEffect(Sword_Effect, { player.position.x,player.position.y + 5.0f,player.position.z }, player.angle, 7.0f);
 		IsSwrod = true;
@@ -197,6 +198,13 @@ void Player::Render(float elapsedTime, RenderContext rc)
 	{
 		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 6.0f);
 		IsSlash = true;
+		Blad = false;
+	}
+
+	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad && IsMusou)
+	{
+		EffectManager::Instance().PlayEffect(Drunk_Sword, { player.position.x,player.position.y + 5.0f,player.position.z }, player.angle, 7.0f);
+		IsSwrod = true;
 		Blad = false;
 	}
 }
