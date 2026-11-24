@@ -18,7 +18,7 @@
 #include "audio.h"
 #include "AudioResource.h"
 
-
+#define BOSS_MAX 1000
 
 
 SceneGame::SceneGame()
@@ -47,7 +47,7 @@ void SceneGame::Initialize()
 	stage.position.y = -20;
 
 	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 0 });
-	boss.hp = 1000.0f;
+	boss.hp = BOSS_MAX;
 
 	cameraController.SyncCameraToController(camera);
 
@@ -128,13 +128,13 @@ void SceneGame::Update(float elapsedTime)
 		boss.BOSS->Boss_Dead(Boss_Dead);
 		if (boss.hp <= 0)
 		{
-			boss.hp = 1000.0f;
+			boss.hp = BOSS_MAX;
 		}
 		if (!(boss.BOSS->Boss_Alive()))
 		{
 			Respawn();
 			boss.BOSS->Boss_Chage();
-			boss.hp = 1000.0f;
+			boss.hp = BOSS_MAX;
 			Boss_Dead = false;
 		}
 	}
@@ -152,10 +152,20 @@ void SceneGame::Update(float elapsedTime)
 
 	//ìGÇÃèàóù
 	{
+		
 		enemy_num = 0;
 		for (size_t i = 0;i < enemies.size();++i)
 		{
 			auto& target = enemies[i];
+			for (int i = 0;i < 3;i += 1)
+			{
+				if (target.enemy->GetBlood(i))
+				{
+					player.AddBlood(5.0f);
+					target.enemy->SetBlood(i, false);
+				}
+				
+			}
 			//ìGÇ÷ÇÃÉ_ÉÅÅ[ÉW
 			if (!target.enemy->Alive())
 			{
@@ -172,10 +182,9 @@ void SceneGame::Update(float elapsedTime)
 				if (target.hp <= 0.0f)
 				{
 					DefeatEnemy(i);
-					player.AddBlood(10.0f);
-
 				}
 			}
+			
 
 			//ìGÇ©ÇÁÇÃçUåÇ
 
@@ -207,7 +216,7 @@ void SceneGame::Update(float elapsedTime)
 
 				if (boss.hp <= 0.0f)
 				{
-					if (Boss_Dead == false)boss.hp = 1000.0f;
+					if (Boss_Dead == false)boss.hp = BOSS_MAX;
 					Boss_Dead = true;
 				}
 			}
@@ -329,7 +338,7 @@ void SceneGame::Render(float elapsedTime)
 		}
 		if (boss.BOSS->Boss_Alive())
 		{
-			spriteHP->Render(dc, 360, 10, 0, 480 * (boss.hp/100), 16, 14, 48, 100 * (boss.hp / 100), 32, 0, 1, 1, 1, 1);
+			spriteHP->Render(dc, 360, 10, 0, 480 * (boss.hp/BOSS_MAX), 16, 14, 48, 100 * (boss.hp / BOSS_MAX), 32, 0, 1, 1, 1, 1);
 		}
 		else
 		{
