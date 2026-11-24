@@ -186,14 +186,14 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 20.0f && !IsFight && Blad)
+	if (animation->GetCurrentFrame() >= 0.0f && !IsFight && Blad)
 	{
 		EffectManager::Instance().PlayEffect(Fight_Effect, { attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, player.angle, 7.0f);
 		IsFight = true;
 		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 15.0f && !IsSlash && Blad)
+	if (animation->GetCurrentFrame() >= 0.0f && !IsSlash && Blad)
 	{
 		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 6.0f);
 		IsSlash = true;
