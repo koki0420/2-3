@@ -46,8 +46,8 @@ void SceneGame::Initialize()
 
 	stage.position.y = -20;
 
-	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 100 });
-	boss.hp = 100.0f;
+	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 0 });
+	boss.hp = 1000.0f;
 
 	cameraController.SyncCameraToController(camera);
 
@@ -93,10 +93,14 @@ void SceneGame::Finalize()
 
 void SceneGame::Update(float elapsedTime)
 {
-
+	enemy_timer += 1*elapsedTime;
 	//“G
 	{
-		EnemyManager::Instance().Enemy_display(player.GetPosition());
+		if (enemy_timer >= 1)
+		{
+			enemy_timer = 0;
+			EnemyManager::Instance().Enemy_display(player.GetPosition());
+		}
 		EnemyManager::Instance().Target(player.GetPosition());
 		EnemyManager::Instance().Update(elapsedTime);
 	}
@@ -124,12 +128,13 @@ void SceneGame::Update(float elapsedTime)
 		boss.BOSS->Boss_Dead(Boss_Dead);
 		if (boss.hp <= 0)
 		{
-			boss.hp = 100.0f;
+			boss.hp = 1000.0f;
 		}
 		if (!(boss.BOSS->Boss_Alive()))
 		{
 			Respawn();
 			boss.BOSS->Boss_Chage();
+			boss.hp = 1000.0f;
 			Boss_Dead = false;
 		}
 	}

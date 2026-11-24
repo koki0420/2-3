@@ -14,8 +14,8 @@ VS_OUT main(uint vertexID : SV_VertexID)
     
     output.position = float4(
         uv.x * 2.0f - 1.0f,
-        1.0f -uv.y * 2.0f,
-        0.0f,1.0f);
+        1.0f - uv.y * 2.0f,
+        0.0f, 1.0f);
     
     return output;
 
