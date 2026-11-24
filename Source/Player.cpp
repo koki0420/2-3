@@ -20,6 +20,7 @@ Player::Player()
 	spriteHITCOUNT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hitcount.png");
 	spriteHIT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hit_transparent .png");
 	
+	
 	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
 	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
 	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
@@ -200,34 +201,40 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		Blad = false;
 	}
 }
-	
 
 void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 {
+
+	float screenWidth = static_cast<float>(Graphics::Instance().GetScreenWidth())/1280;
+	float screenHeight = static_cast<float>(Graphics::Instance().GetScreenHeight())/720;
+
 	float hp = playerHP + ((niseHP - playerHP) * (nisehptime));
 	//
-	spriteHPGauge->Render(dc, 60, 50, 0, 480, 32, 8, 48, 112, 32, 0, 1, 1, 1, 1);
-	spriteHP->Render(dc, 60, 50, 0, 480 * (hp / PLAYER_HP_MAX), 32, 8, 48, 112 * (hp / PLAYER_HP_MAX), 32, 0, 1, 1, 1, 1);
-	spriteW[GetBloodGaugeIndex()]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-	spriteGauge->Render(dc, 50, 82, 0, 280 , 28, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
+	spriteHPGauge->Render(dc, 60* screenWidth, 50* screenHeight, 0, 480* screenWidth, 32*screenHeight, 8, 48, 112, 32, 0, 1, 1, 1, 1);
+	spriteHP->Render(dc, 60*screenWidth, 50 * screenHeight, 0,( 480 * (hp / PLAYER_HP_MAX))* screenWidth, 32 * screenHeight, 8, 48, 112 * (hp / PLAYER_HP_MAX), 32, 0, 1, 1, 1, 1);
+	spriteW[GetBloodGaugeIndex()]->Render(dc, 10* screenWidth, 50 * screenHeight, 0, 56* screenWidth, 56 * screenHeight, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+	spriteGauge->Render(dc, 50 * screenWidth, 82 * screenHeight, 0, 280 * screenWidth, 28 * screenHeight, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
+	spriteWP->Render(dc, 50* screenWidth, 82 * screenHeight, 0,( 280 * (bloodGauge[GetBloodGaugeIndex()] / 100))* screenWidth, 28 * screenHeight, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
 
 	
 	
 		
 	for (int i = 0;i < 3;i++)
 	{
+		spriteHITCOUNT->Render(dc, 40 * screenWidth, (500 + 32 * i) * screenHeight, 0, 23 * screenWidth, 31 * screenHeight, 46 * (i + 1), 0, 46, 62, 0, 1, 1, 1, 1.0);
 		if (GetBloodGaugeIndex() == i)
 		{
-			spriteGauge->Render(dc, 80, 500 + 32 * i, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-			spriteWP->Render(dc, 80, 500 + 32 * i, 0, 280 * (bloodGauge[i] / 100), 28, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 1);
-			spriteW[i]->Render(dc, 60, 500 + 32 * i, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+
+			spriteGauge->Render(dc, 80*screenWidth, (500 + 32 * i) * screenHeight, 0, 280 * screenWidth, 28 * screenHeight, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+			spriteWP->Render(dc, 80 * screenWidth, (500 + 32 * i) * screenHeight, 0,( 280 * (bloodGauge[i] / 100)) * screenWidth, 28 * screenHeight, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 1);
+			spriteW[i]->Render(dc, 60 * screenWidth, (500 + 32 * i) * screenHeight, 0, 28 * screenWidth, 28 * screenHeight, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 		}
 		else
 		{
-			spriteGauge->Render(dc, 80, 500 + 32 * i, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 0.5);
-			spriteWP->Render(dc, 80, 500 + 32 * i, 0, 280 * (bloodGauge[i] / 100), 28, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 0.5);
-			spriteW[i]->Render(dc, 60, 500 + 32 * i, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+			
+			spriteGauge->Render(dc, 80 * screenWidth, (500 + 32 * i) * screenHeight, 0, 280 * screenWidth, 28 * screenHeight, 0, 48, 128, 32, 0, 1, 1, 1, 0.5);
+			spriteWP->Render(dc, 80 * screenWidth, (500 + 32 * i) * screenHeight, 0, (280 * (bloodGauge[i] / 100)) * screenWidth, 28 * screenHeight, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 0.5);
+			spriteW[i]->Render(dc, 60 * screenWidth, (500 + 32 * i) * screenHeight, 0, 28 * screenWidth, 28 * screenHeight, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 		}
 		
 
@@ -238,9 +245,9 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 		float hitsize = (hit - nisehit) / 10.0f;
 		for (int count = nisehit, i=0;count > 0;count /= 10,i++)
 		{
-			spriteHITCOUNT->Render(dc, 1100-(i*46* (hitsize+1)), 600-31* (hitsize), 0, 46* (hitsize + 1), 62*(hitsize + 1), 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, hittime/5.0);
+			spriteHITCOUNT->Render(dc, (1100 - (i * 46 * (hitsize + 1))) * screenWidth, (600 - 31 * (hitsize)) * screenHeight, 0, (46 * (hitsize + 1)) * screenWidth, (62 * (hitsize + 1)) * screenHeight, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, hittime / 5.0);
 		}
-		spriteHIT->Render(dc, 1100+46* (hitsize + 1), 618, 0, 87, 44, 0, 0, 87, 44, 0, 1, 1, 1, hittime / 5.0);
+		spriteHIT->Render(dc,( 1100+46* (hitsize + 1)) * screenWidth, 618 * screenHeight, 0, 87 * screenWidth, 44 * screenHeight, 0, 0, 87, 44, 0, 1, 1, 1, hittime / 5.0);
 	}
 }
 

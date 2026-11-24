@@ -245,7 +245,7 @@ void SceneGame::Update(float elapsedTime)
 
 	if (boss.BOSS->Clear())
 	{
-		if(clearTimer>2)
+		if(clearTimer>3)
 		{
 			SceneManager::Instance().ChangeScene(new SceneResult);
 		}
@@ -317,25 +317,26 @@ void SceneGame::Render(float elapsedTime)
 	}
 
 	{
-		
+		float screenWidth = static_cast<float>(Graphics::Instance().GetScreenWidth()) / 1280;
+		float screenHeight = static_cast<float>(Graphics::Instance().GetScreenHeight()) / 720;
 		player.UIRender(elapsedTime, dc);
 		if (boss.BOSS->Clear())
 		{
-			SpriteCLEAR->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+			SpriteCLEAR->Render(dc, 320 * screenWidth, 300 * screenHeight, 0, 600 * screenWidth, 100 * screenHeight, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
 		if (player.GetPlayerHP() <= 0)
 		{
-			SpriteOVER->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+			SpriteOVER->Render(dc, 320 * screenWidth, 300 * screenHeight, 0, 600 * screenWidth, 100 * screenHeight, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
 		if (boss.BOSS->Boss_Alive())
 		{
-			spriteHP->Render(dc, 360, 10, 0, 480 * (boss.hp/100), 16, 14, 48, 100 * (boss.hp / 100), 32, 0, 1, 1, 1, 1);
+			spriteHP->Render(dc, 360 * screenWidth, 10 * screenHeight, 0, (480 * (boss.hp / 1000)) * screenWidth, 16 * screenHeight, 14, 48, 100 * (boss.hp / 1000), 32, 0, 1, 1, 1, 1);
 		}
 		else
 		{
 			for (int count = enemy_num, i = 0;count > 0;count /= 10, i++)
 			{
-				spriteCOUNT->Render(dc, 700 - (i * 23), 30, 0, 23, 31, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, 1);
+				spriteCOUNT->Render(dc, (665 - (i * 23))* screenWidth, 30* screenHeight, 0, 23* screenWidth, 31* screenHeight, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, 1);
 			}
 		}
 	}
