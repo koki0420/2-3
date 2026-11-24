@@ -165,5 +165,8 @@ private:
 	Effect* HitEffect = nullptr;
 
 	
+	//モーションブラー用
+	DirectX::XMFLOAT4X4 previousViewProjection{};
+	bool hasPreviousViewProjection = false;
 	
 };

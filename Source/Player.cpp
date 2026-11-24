@@ -126,7 +126,7 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		sword_Line.Update(Weapon[weapon_num].transform);
 	}
 
-	Graphics::Instance().GetModelRenderer()->SavePreviousBoneTransforms(player.transform, player.model.get());
+	
 
 
 }
@@ -557,6 +557,28 @@ void Player::AddBlood(float amount)
 		gauge = 100.0f;
 	}
 
+}
+
+void Player::RenderColorPass(RenderContext& rc)
+{
+	if (!player.model)return;
+
+	Graphics::Instance().GetModelRenderer()->Render(
+		rc,
+		player.transform,
+		player.model.get(),
+		ShaderId::Lambert);
+}
+
+void Player::RenderVelocityPass(const RenderContext& rc, const DirectX::XMFLOAT4X4& previousViewProjection)
+{
+	if (!player.model) return;
+
+	Graphics::Instance().GetModelRenderer()->RenderVelocity(
+		rc,
+		player.transform,
+		player.model.get(),
+		previousViewProjection);
 }
 
 bool Player::BloodAttack()
