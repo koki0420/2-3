@@ -126,7 +126,7 @@ protected:
 
     float dodgeTime = 0.0f;
     float dodgeDuration = 0.5f;        // âÒîÇ…Ç©Ç©ÇÈéûä‘
-    float dodgeDistance = 20.0f;       // âÒîÇ∑ÇÈãóó£
+    float dodgeDistance = 50.0f;       // âÒîÇ∑ÇÈãóó£
     float dodgeInvincibleTime = 0.25f;
 
     // âÒîäJénéûÇÃï˚å¸Çï€ë∂Ç∑ÇÈ
@@ -169,11 +169,11 @@ private:
     //ååâtÉQÅ[ÉW
     float bloodGauge[3] = {};//0:Sword,1:Scythe,2:Fist
     //ååâtçUåÇÉRÉXÉg
-    float bloodCosts[3] = { 5.0f,10.0f,2.5f };
+    float bloodCosts[3] = { 10.0f,15.0f,5.0f };
     //ñ≥ëoÉÇÅ[ÉhÇ≈ÇÃååâtè¡îÔó 
-    float bloodGaugeConsumption[3] = { 0,0,0 };// { 10.0f,12.0f,2.5f };
+    float bloodGaugeConsumption[3] = { 10.0f,15.0f,5.0f };// { 10.0f,12.0f,2.5f };
 
-    //çUåÇîªíËàÍÇ¬ÇÃê›íËÅAÉ_ÉÅÅ[ÉWÇ…ÇÕååâtçUåÇÇ‚ñ≥ëoèÛë‘ÇÃî{ó¶ÇìKópÇ∑ÇÈ
+    //çUåÇîªíËàÍÇ¬ÇÃê›íË
     struct HitSetting
     {
         float start = 0.15f;
@@ -211,11 +211,11 @@ private:
             {1,/*ÉAÉjÉÅÅ[ÉVÉáÉìêî */
                 {
                     {
-                        State::Sword_Attack1,2.4f,1.0f,3,/*motion,duration,motionSpeed,îªíËâÒêî*/
+                        State::Sword_Attack1,2.2f,1.0f,3,/*motion,duration,motionSpeed,îªíËâÒêî*/
                         {
-                            {0.3f, 0.6f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE},/*start,end,radius,distance,damage*/
-                            {0.9f, 1.2f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE},
-                            {1.5f, 1.9f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.3f, 0.6f, 12.5f, 10.0f, 30.0f},/*start,end,radius,distance,damage*/
+                            {0.9f, 1.2f, 13.5f, 10.0f, 30.0f},
+                            {1.5f, 1.9f, 15.0f, 10.0f, 35.0f}
                         }
                     }
                 }
@@ -224,11 +224,11 @@ private:
             {1, 
                 {
                     {
-                        State::Sword_Attack1, 2.4f, 1.3f, 3,
+                        State::Sword_Attack1, 2.2f, 1.3f, 3,
                         {
-                            {0.3f, 0.6f, 15.0f, 20.0f, PLAYER_ATTACK_DAMAGE},
-                            {0.9f, 1.2f, 15.0f, 20.0f, PLAYER_ATTACK_DAMAGE},
-                            {1.5f, 1.9f, 15.0f, 20.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.3f, 0.6f, 20.0f, 10.0f, 35.0f},
+                            {0.9f, 1.2f, 22.5f, 10.0f, 35.0f},
+                            {1.5f, 1.9f, 25.0f, 10.0f, 35.0f}
                         }
                     }
                 }
@@ -237,11 +237,11 @@ private:
             {1, 
                 {
                     {
-                        State::Drunk_Sword, 3.13f, 1.0f, 3,
+                        State::Drunk_Sword, 3.1f, 1.0f, 3,
                         {
-                            {0.3f, 0.8f, 30.0f, 20.0f, PLAYER_ATTACK_DAMAGE},
-                            {1.0f, 1.5f, 30.0f, 20.0f, PLAYER_ATTACK_DAMAGE},
-                            {1.8f, 2.5f, 30.0f, 20.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.3f, 0.8f, 30.0f, 15.0f, 45.0f},
+                            {1.0f, 1.5f, 34.0f, 15.0f, 50.0f},
+                            {1.8f, 2.5f, 35.0f, 15.0f, 50.0f}
                         }
                     }
                 }
@@ -253,9 +253,9 @@ private:
             {1, 
                 {
                     {
-                        State::Scythe_Attack, 1.1f, 1.0f, 1,
+                        State::Scythe_Attack, 1.0f, 1.0f, 1,
                         {
-                            {0.3f, 0.7f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.3f, 0.7f, 20.0f, 5.0f, 30.0f}
                         }
                     }
                 }
@@ -264,9 +264,9 @@ private:
             {1,
                 {
                     {
-                        State::Scythe_Attack, 1.1f, 1.2f, 1,
+                        State::Scythe_Attack, 1.0f, 1.2f, 1,
                         {
-                            {0.3f, 0.7f, 35.0f, 0.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.4f, 0.7f, 40.0f, 0.0f, 50.0f}
                         }
                     }
                 }
@@ -275,9 +275,11 @@ private:
             {1,
                 {
                     {
-                        State::Drunk_Scyth, 1.1f, 1.0f, 1,
+                        State::Drunk_Scyth, 1.0f, 1.0f, 3,
                         {
-                            {0.3f, 0.7f, 40.0f, 0.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.2f, 0.425f, 15.0f, 0.0f, 75.0f},
+                            {0.375f, 0.575f, 30.0f, 0.0f, 50.0f},
+                            {0.525f, 0.7f, 45.0f, 0.0f, 30.0f}
                         }
                     }
                 }
@@ -289,9 +291,9 @@ private:
             {1, 
                 {
                     {
-                        State::Fight_Punch, 0.87f, 1.0f, 1,
+                        State::Fight_Punch, 0.8f, 1.0f, 1,
                         {
-                            {0.15f, 0.3f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.35f, 0.45f, 15.0f, 10.0f, 35.0f}
                         }
                     }
                 }  
@@ -300,10 +302,10 @@ private:
             {1, 
                 {
                     {
-                        State::Fight_Punch, 0.87f, 1.5f, 2,
+                        State::Fight_Punch, 0.8f, 1.5f, 2,
                         {
-                            {0.15f, 0.3f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE},
-                            {0.5f, 0.7f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.35f, 0.4f, 15.0f, 5.0f, 30.0f},
+                            {0.4f, 0.7f, 15.0f, 15.0f, 35.0f}
                         }
                     }
                 }
@@ -312,15 +314,17 @@ private:
             {2,
                 {
                     {
-                        State::Fight_Punch,0.87f,1.0f,1,
+                        State::Fight_Punch,0.85f,1.0f,1,
                         {
-                            {0.15f,0.3f,10.0f,10.0f,PLAYER_ATTACK_DAMAGE}
+                            {0.35f,0.5f,15.0f,10.0f,40.0f}
                         }
                     },
                     {
-                        State::Fight_kick,1.6f,1.0f,1,
+                        State::Fight_kick,1.2f,1.0f,3,
                         {
-                            {0.15f,0.5f,15.0f,10.0f,PLAYER_ATTACK_DAMAGE}
+                            {0.125f,0.25f,15.0f,10.0f,50.0f},
+                            {0.2f,0.35f,15.0f,20.0f,45.0f},
+                            {0.3f,0.45f,15.0f,30.0f,40.0f}
                         }
                     },
                 },            
@@ -331,14 +335,14 @@ private:
     AttackSetting currentAttackSetting{};
     int currentMotionIndex = 0;
     int currentHitIndex = -1;
-    float attackDamageMultiplier = 1.0f;
+    //float attackDamageMultiplier = 1.0f;
     float attackModeSpeedMultiplier = 1.0f;
     //ååâtçUåÇî{ó¶
-    float bloodMultipliers[3] = { 1.8f,2.0f,5.0f };
+    //float bloodMultipliers[3] = { 1.8f,2.0f,5.0f };
     //ñ≥ëoÉÇÅ[Éh
     bool IsMusou = false;
     //çUåÇî{ó¶
-    float bloodAttackMultiplier = 1.0f;
+    // float bloodAttackMultiplier = 1.0f;
     //çUåÇÇÃçƒê∂î{ó¶
     float attackSpeedMultiplier = 1.0f;
     
