@@ -19,6 +19,8 @@
 #include "texture.h"
 #include <static_mesh.h>
 
+#include"AudioResource.h"
+
 // 同期間隔設定
 static const int syncInterval = 1;
 
@@ -36,7 +38,7 @@ Framework::Framework(HWND hWnd)
 	SceneManager::Instance().ChangeScene(new SceneTitle);
 
 
-	/*audio_device::initialize();*/
+	audio_device::initialize();
 
 	
 	
@@ -533,13 +535,14 @@ bool Framework::initialize()
 		}
 	}
 	EffectManager::Instance().Initialize();
+	AudioResource::audio_buffers[0] = std::make_shared<audio_buffer>(L"Data/Sounds/Click.wav");
+	
 
-	 hr = motionBlur.Initialize(Graphics::Instance().GetDevice(),SCREEN_WIDTH,SCREEN_HEIGHT);
+	hr = MotionBlur::Instance().Initialize(Graphics::Instance().GetDevice(),
+							SCREEN_WIDTH,SCREEN_HEIGHT);
 
-	if (FAILED(hr))
-	{
-		return hr;
-	}
+	if (FAILED(hr)) return false;
+
 
 	return true;
 }
@@ -1076,5 +1079,12 @@ void Framework::ToggleFullscreen()
 	UINT h = rc.bottom - rc.top;
 
 	Graphics::Instance().Resize(w, h);
+
+	HRESULT hr = MotionBlur::Instance().Resize(
+		Graphics::Instance().GetDevice(),
+		w,
+		h);
+
+	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 }
 

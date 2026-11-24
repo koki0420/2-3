@@ -8,8 +8,8 @@ struct VS_OUT
 float2 main(VS_OUT input) : SV_TARGET
 {
       // Wが極端に小さい場合は速度をゼロにする
-    if (abs(input.currentClip.w) < 0.0001f ||
-        abs(input.previousClip.w) < 0.0001f)
+    if (abs(input.currentClip.w) <= 0.0001f ||
+        abs(input.previousClip.w) <= 0.0001f)
     {
         return float2(0.0f, 0.0f);
     }
@@ -22,7 +22,7 @@ float2 main(VS_OUT input) : SV_TARGET
     float2 previousNdc = input.previousClip.xy / input.previousClip.w;
 
     // スクリーン空間の速度
-    float2 velocity = currentNdc - previousNdc;
+   float2 velocity = currentNdc - previousNdc;
 
     // NDCからUV単位へ変換
     velocity *= 0.5f;

@@ -135,7 +135,7 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		sword_Line.Update(Weapon[weapon_num].transform);
 	}
 
-	Graphics::Instance().GetModelRenderer()->SavePreviousBoneTransforms(player.transform, player.model.get());
+	
 
 
 }
@@ -213,19 +213,26 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
 
 	
-	spriteGauge->Render(dc, 80, 500, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 500, 0, 280 * (bloodGauge[0] / 100), 28, 0, 48, 128 * (bloodGauge[0] / 100), 32, 0, 1, 1, 1, 1);
-	spriteW[0]->Render(dc, 60, 500, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 	
-
-	spriteGauge->Render(dc, 80, 532, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 532, 0, 280 * (bloodGauge[1] / 100), 28, 0, 48, 128 * (bloodGauge[1] / 100), 32, 0, 1, 1, 1, 1);
-	spriteW[1]->Render(dc, 60, 532, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-	
-	spriteGauge->Render(dc, 80, 564, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 80, 564, 0, 280 * (bloodGauge[2] / 100), 28, 0, 48, 128 * (bloodGauge[2] / 100), 32, 0, 1, 1, 1, 1);
-	spriteW[2]->Render(dc, 60, 564, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 		
+	for (int i = 0;i < 3;i++)
+	{
+		if (GetBloodGaugeIndex() == i)
+		{
+			spriteGauge->Render(dc, 80, 500 + 32 * i, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+			spriteWP->Render(dc, 80, 500 + 32 * i, 0, 280 * (bloodGauge[i] / 100), 28, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 1);
+			spriteW[i]->Render(dc, 60, 500 + 32 * i, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+		}
+		else
+		{
+			spriteGauge->Render(dc, 80, 500 + 32 * i, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 0.5);
+			spriteWP->Render(dc, 80, 500 + 32 * i, 0, 280 * (bloodGauge[i] / 100), 28, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 0.5);
+			spriteW[i]->Render(dc, 60, 500 + 32 * i, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+		}
+		
+
+	}
+
 	if (hit > 0)
 	{
 		float hitsize = (hit - nisehit) / 10.0f;
@@ -570,6 +577,28 @@ void Player::AddBlood(float amount)
 		gauge = 100.0f;
 	}
 
+}
+
+void Player::RenderColorPass(RenderContext& rc)
+{
+	if (!player.model)return;
+
+	Graphics::Instance().GetModelRenderer()->Render(
+		rc,
+		player.transform,
+		player.model.get(),
+		ShaderId::Lambert);
+}
+
+void Player::RenderVelocityPass(const RenderContext& rc, const DirectX::XMFLOAT4X4& previousViewProjection)
+{
+	if (!player.model) return;
+
+	Graphics::Instance().GetModelRenderer()->RenderVelocity(
+		rc,
+		player.transform,
+		player.model.get(),
+		previousViewProjection);
 }
 
 bool Player::BloodAttack()

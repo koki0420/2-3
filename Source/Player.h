@@ -62,6 +62,20 @@ public:
 
     float GetBloddCosts(int weapon) { return bloodCosts[weapon]; }
 
+
+
+    // プレイヤーカラー描画
+    void RenderColorPass(RenderContext& rc);
+
+    // プレイヤー速度描画
+    void RenderVelocityPass(
+        const RenderContext& rc,
+        const DirectX::XMFLOAT4X4& previousViewProjection);
+
+    const DirectX::XMFLOAT4X4& GetTransform() const{ return player.transform;}
+
+    const Model* GetModel() const{ return player.model.get();}
+
 protected:
     //プレイヤー
     Object player;
