@@ -21,12 +21,15 @@ SceneTitle::~SceneTitle()
 }
 void SceneTitle::Initialize()
 {
+	
 	spriteGame = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_capsule_start_128.png");
 	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_exit_128.png");
 	title= std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/title.png");
+	Click = std::make_unique< audio_source_voice>(AudioResource::audio_buffers[0]);
 }
 void SceneTitle::Finalize()
 {
+	Click->stop();
 }
 void SceneTitle::Update(float elapsedTime)
 {
@@ -52,13 +55,13 @@ void SceneTitle::Update(float elapsedTime)
 	{
 		if (mx >= 400 && mx <= 528 && prev)
 		{
-			
+			Click->play();
 			SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
 			
 		}
 		if (mx >= 700 && mx <= 828 && prev)
 		{
-			
+			Click->play();
 			PostMessage(Graphics::Instance().GetWindowHandle(), WM_CLOSE, 0, 0);
 		}
 

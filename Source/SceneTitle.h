@@ -3,7 +3,8 @@
 #include "Scene.h"
 #include "Graphics.h"
 #include<Sprite.h>
-
+#include"audio.h"
+#include"AudioResource.h"
 class SceneTitle :public Scene
 {
 public:
@@ -22,5 +23,6 @@ private:
 	std::unique_ptr<Sprite> spriteGame = nullptr;
 	std::unique_ptr<Sprite> sprite = nullptr;
 	std::unique_ptr<Sprite> title = nullptr;
+	std::unique_ptr<audio_source_voice> Click = nullptr;
 
 };

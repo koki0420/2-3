@@ -2,13 +2,18 @@
 
 #include"Scene.h"
 
+
 //シーンマネージャー
 class SceneManager
 {
 private:
 	//コンストラクタをprivateにすることで、
 	//インスタンスの取得方法をInstance()関数に限る
-	SceneManager(){}
+	SceneManager()
+	{
+		
+	}
+
 	~SceneManager(){}
 
 public:

@@ -21,6 +21,8 @@ void SceneResult::Initialize()
 	spriteTitele = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_title_128.png");
 	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ic_input_key-wide-filled_exit_128.png");
 	result = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/result.png");
+
+	Click = std::make_unique< audio_source_voice>(AudioResource::audio_buffers[0]);
 }
 void SceneResult::Finalize()
 {
@@ -47,13 +49,13 @@ void SceneResult::Update(float elapsedTime)
 	{
 		if (mx >= 400 && mx <= 528 )
 		{
-			
+			Click->play();
 			SceneManager::Instance().ChangeScene(new SceneTitle);
 
 		}
 		if (mx >= 700 && mx <= 828)
 		{
-
+			Click->play();
 			PostMessage(Graphics::Instance().GetWindowHandle(), WM_CLOSE, 0, 0);
 		}
 	}
