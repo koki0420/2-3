@@ -20,9 +20,11 @@ Player::Player()
 	spriteHITCOUNT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hitcount.png");
 	spriteHIT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hit_transparent .png");
 	
+	
 	Sword_Effect = EffectManager::Instance().CreateEffect("Data/Effect/player_Sword.efkefc");
 	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
 	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
+	Drunk_Sword = EffectManager::Instance().CreateEffect("Data/Effect/Drunk_Sword.efkefc");
 
 	IsSwrod = true;
 	IsFight = true;
@@ -135,7 +137,7 @@ void Player::Update(float elapsedTime, Object& stage, const Camera& camera)
 		sword_Line.Update(Weapon[weapon_num].transform);
 	}
 
-	Graphics::Instance().GetModelRenderer()->SavePreviousBoneTransforms(player.transform, player.model.get());
+	
 
 
 }
@@ -179,55 +181,68 @@ void Player::Render(float elapsedTime, RenderContext rc)
 
 	}
 
-	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad)
+	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad&&!IsMusou)
 	{
 		EffectManager::Instance().PlayEffect(Sword_Effect, { player.position.x,player.position.y + 5.0f,player.position.z }, player.angle, 7.0f);
 		IsSwrod = true;
 		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 20.0f && !IsFight && Blad)
+	if (animation->GetCurrentFrame() >= 0.0f && !IsFight && Blad)
 	{
 		EffectManager::Instance().PlayEffect(Fight_Effect, { attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, player.angle, 7.0f);
 		IsFight = true;
 		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 15.0f && !IsSlash && Blad)
+	if (animation->GetCurrentFrame() >= 0.0f && !IsSlash && Blad)
 	{
 		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 6.0f);
 		IsSlash = true;
 		Blad = false;
 	}
+
+	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad && IsMusou)
+	{
+		EffectManager::Instance().PlayEffect(Drunk_Sword, { player.position.x,player.position.y + 5.0f,player.position.z }, player.angle, 7.0f);
+		IsSwrod = true;
+		Blad = false;
+	}
 }
-	
 
 void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 {
+
+	float screenWidth = static_cast<float>(Graphics::Instance().GetScreenWidth())/1280;
+	float screenHeight = static_cast<float>(Graphics::Instance().GetScreenHeight())/720;
+
 	float hp = playerHP + ((niseHP - playerHP) * (nisehptime));
 	//
-	spriteHPGauge->Render(dc, 60, 50, 0, 480, 32, 8, 48, 112, 32, 0, 1, 1, 1, 1);
-	spriteHP->Render(dc, 60, 50, 0, 480 * (hp / PLAYER_HP_MAX), 32, 8, 48, 112 * (hp / PLAYER_HP_MAX), 32, 0, 1, 1, 1, 1);
-	spriteW[GetBloodGaugeIndex()]->Render(dc, 10, 50, 0, 56, 56, 0, 0, 134, 134, 0, 1, 1, 1, 1);
-	spriteGauge->Render(dc, 50, 82, 0, 280 , 28, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
-	spriteWP->Render(dc, 50, 82, 0, 280 * (bloodGauge[GetBloodGaugeIndex()] / 100), 28, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
+	spriteHPGauge->Render(dc, 60* screenWidth, 50* screenHeight, 0, 480* screenWidth, 32*screenHeight, 8, 48, 112, 32, 0, 1, 1, 1, 1);
+	spriteHP->Render(dc, 60*screenWidth, 50 * screenHeight, 0,( 480 * (hp / PLAYER_HP_MAX))* screenWidth, 32 * screenHeight, 8, 48, 112 * (hp / PLAYER_HP_MAX), 32, 0, 1, 1, 1, 1);
+	spriteW[GetBloodGaugeIndex()]->Render(dc, 10* screenWidth, 50 * screenHeight, 0, 56* screenWidth, 56 * screenHeight, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+	spriteGauge->Render(dc, 50 * screenWidth, 82 * screenHeight, 0, 280 * screenWidth, 28 * screenHeight, 0, 48, 128 , 32, 0, 1, 1, 1, 1);
+	spriteWP->Render(dc, 50* screenWidth, 82 * screenHeight, 0,( 280 * (bloodGauge[GetBloodGaugeIndex()] / 100))* screenWidth, 28 * screenHeight, 0, 48, 128 * (bloodGauge[GetBloodGaugeIndex()] / 100), 32, 0, 1, 1, 1, 1);
 
 	
 	
 		
 	for (int i = 0;i < 3;i++)
 	{
+		spriteHITCOUNT->Render(dc, 40 * screenWidth, (500 + 32 * i) * screenHeight, 0, 23 * screenWidth, 31 * screenHeight, 46 * (i + 1), 0, 46, 62, 0, 1, 1, 1, 1.0);
 		if (GetBloodGaugeIndex() == i)
 		{
-			spriteGauge->Render(dc, 80, 500 + 32 * i, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 1);
-			spriteWP->Render(dc, 80, 500 + 32 * i, 0, 280 * (bloodGauge[i] / 100), 28, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 1);
-			spriteW[i]->Render(dc, 60, 500 + 32 * i, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+
+			spriteGauge->Render(dc, 80*screenWidth, (500 + 32 * i) * screenHeight, 0, 280 * screenWidth, 28 * screenHeight, 0, 48, 128, 32, 0, 1, 1, 1, 1);
+			spriteWP->Render(dc, 80 * screenWidth, (500 + 32 * i) * screenHeight, 0,( 280 * (bloodGauge[i] / 100)) * screenWidth, 28 * screenHeight, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 1);
+			spriteW[i]->Render(dc, 60 * screenWidth, (500 + 32 * i) * screenHeight, 0, 28 * screenWidth, 28 * screenHeight, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 		}
 		else
 		{
-			spriteGauge->Render(dc, 80, 500 + 32 * i, 0, 280, 28, 0, 48, 128, 32, 0, 1, 1, 1, 0.5);
-			spriteWP->Render(dc, 80, 500 + 32 * i, 0, 280 * (bloodGauge[i] / 100), 28, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 0.5);
-			spriteW[i]->Render(dc, 60, 500 + 32 * i, 0, 28, 28, 0, 0, 134, 134, 0, 1, 1, 1, 1);
+			
+			spriteGauge->Render(dc, 80 * screenWidth, (500 + 32 * i) * screenHeight, 0, 280 * screenWidth, 28 * screenHeight, 0, 48, 128, 32, 0, 1, 1, 1, 0.5);
+			spriteWP->Render(dc, 80 * screenWidth, (500 + 32 * i) * screenHeight, 0, (280 * (bloodGauge[i] / 100)) * screenWidth, 28 * screenHeight, 0, 48, 128 * (bloodGauge[i] / 100), 32, 0, 1, 1, 1, 0.5);
+			spriteW[i]->Render(dc, 60 * screenWidth, (500 + 32 * i) * screenHeight, 0, 28 * screenWidth, 28 * screenHeight, 0, 0, 134, 134, 0, 1, 1, 1, 1);
 		}
 		
 
@@ -238,9 +253,9 @@ void Player::UIRender(float elapsedTime, ID3D11DeviceContext* dc)
 		float hitsize = (hit - nisehit) / 10.0f;
 		for (int count = nisehit, i=0;count > 0;count /= 10,i++)
 		{
-			spriteHITCOUNT->Render(dc, 1100-(i*46* (hitsize+1)), 600-31* (hitsize), 0, 46* (hitsize + 1), 62*(hitsize + 1), 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, hittime/5.0);
+			spriteHITCOUNT->Render(dc, (1100 - (i * 46 * (hitsize + 1))) * screenWidth, (600 - 31 * (hitsize)) * screenHeight, 0, (46 * (hitsize + 1)) * screenWidth, (62 * (hitsize + 1)) * screenHeight, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, hittime / 5.0);
 		}
-		spriteHIT->Render(dc, 1100+46* (hitsize + 1), 618, 0, 87, 44, 0, 0, 87, 44, 0, 1, 1, 1, hittime / 5.0);
+		spriteHIT->Render(dc,( 1100+46* (hitsize + 1)) * screenWidth, 618 * screenHeight, 0, 87 * screenWidth, 44 * screenHeight, 0, 0, 87, 44, 0, 1, 1, 1, hittime / 5.0);
 	}
 }
 
@@ -351,8 +366,6 @@ void Player::StartAttack()
 	const bool normalPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Right]));
 	const bool bloodPressed = (!io.WantCaptureMouse && (io.MouseDown[ImGuiMouseButton_Left]));
 	if (!normalPressed && !bloodPressed)return;
-
-	bloodAttackMultiplier = 1.0f;
 	
 	if (bloodPressed && !BloodAttack())
 	{
@@ -365,7 +378,6 @@ void Player::StartAttack()
 	const int attackType = bloodPressed ? (IsMusou ? 2 : 1) : 0;
 	currentAttackSetting = attackSetting[index][attackType];
 
-	attackDamageMultiplier = bloodAttackMultiplier * (IsMusou ? 1.5 : 1.0f);
 	attackModeSpeedMultiplier = IsMusou ? 1.3f : 1.0f;
 
 	switch (weapon)
@@ -454,7 +466,7 @@ void Player::UpdateAttack(float elapsedTime)
 	const HitSetting& hit = motion.hits[currentHitIndex];
 	attackRadius = hit.radius;
 	attackDistance = hit.distance;
-	pAtkDmg = hit.damage * attackDamageMultiplier;
+	pAtkDmg = hit.damage;
 
 	attackPosition.x = player.position.x + sinf(player.angle.y) * attackDistance;
 	attackPosition.y = player.position.y + attackHeight;
@@ -582,21 +594,46 @@ void Player::AddBlood(float amount)
 
 }
 
+void Player::RenderColorPass(RenderContext& rc)
+{
+	if (!player.model)return;
+
+	Graphics::Instance().GetModelRenderer()->Render(
+		rc,
+		player.transform,
+		player.model.get(),
+		ShaderId::Lambert);
+}
+
+void Player::RenderVelocityPass(const RenderContext& rc, const DirectX::XMFLOAT4X4& previousViewProjection)
+{
+	if (!player.model) return;
+
+	Graphics::Instance().GetModelRenderer()->RenderVelocity(
+		rc,
+		player.transform,
+		player.model.get(),
+		previousViewProjection);
+}
+
 bool Player::BloodAttack()
 {
 	//現在何の武器を使っているかを取得
 	const int index = GetBloodGaugeIndex();
 	float& gauge = bloodGauge[index];
 
-	//コストが足りなければ返す
-	if (gauge < bloodCosts[index])
+	if(IsMusou){}
+	else
 	{
-		return false;
+		//コストが足りなければ返す
+		if (gauge < bloodCosts[index])
+		{
+			return false;
+		}
+		//ゲージからコストを引く
+		gauge -= bloodCosts[index];
+		
 	}
-
-	//ゲージからコストを引き、通常攻撃に武器ごとの倍率をかける
-	gauge -= bloodCosts[index];
-	bloodAttackMultiplier = bloodMultipliers[index];
 
 	Blad = true;
 	Blood_Attack = true;

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -263,6 +263,10 @@
     <None Include="Shader\static_mesh.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Data\Shader\MotionBlurHistory_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
     <FxCompile Include="Data\Shader\MotionBlur_vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
     </FxCompile>
@@ -287,7 +291,10 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="Data\Shader\Sword_Line_vs.hlsl" />
+    <FxCompile Include="Data\Shader\Sword_Line_vs.hlsl">
+      <ShaderType>Vertex</ShaderType>
+      <ObjectFileOutput>$(ProjectDir)Data\Shader\Sword_Line_vs.cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="Shader\BasicPS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
@@ -366,9 +373,8 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="Shader\skymap_vs.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)Data\Shader\skymap_vs.cso</ObjectFileOutput>
+      <ShaderType>Vertex</ShaderType>
+      <ObjectFileOutput>$(ProjectDir)Data\Shader\skymap_vs.cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Shader\SpritePS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>

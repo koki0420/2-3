@@ -17,6 +17,20 @@ HRESULT create_vs_from_cso(ID3D11Device* device, const char* cso_name, ID3D11Ver
 
 	HRESULT hr{ S_OK };
 	hr = device->CreateVertexShader(cso_data.get(), cso_sz, nullptr, vertex_shader);
+
+	if (FAILED(hr))
+	{
+		wchar_t message[512];
+		swprintf_s(
+			message, _countof(message),
+			L"CSO: %S\nHRESULT: 0x%08X",
+			cso_name,
+			static_cast<unsigned>(hr));
+
+		_ASSERT_EXPR(false, message);
+	}
+
+
 	_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
 	if (input_layout)
@@ -33,6 +47,7 @@ HRESULT create_ps_from_cso(ID3D11Device* device, const char* cso_name, ID3D11Pix
 	{
 		FILE* fp{ nullptr };
 		fopen_s(&fp, cso_name, "rb");
+
 		_ASSERT_EXPR_A(fp, "CSO File not found");
 
 		fseek(fp, 0, SEEK_END);
@@ -45,6 +60,21 @@ HRESULT create_ps_from_cso(ID3D11Device* device, const char* cso_name, ID3D11Pix
 
 		HRESULT hr{ S_OK };
 		hr = device->CreatePixelShader(cso_data.get(), cso_sz, nullptr, pixel_shader);
+
+
+		if (FAILED(hr))
+		{
+			wchar_t message[512];
+			swprintf_s(
+				message, _countof(message),
+				L"CSO: %S\nHRESULT: 0x%08X",
+				cso_name,
+				static_cast<unsigned>(hr));
+
+			_ASSERT_EXPR(false, message);
+		}
+
+
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 
 		return hr;

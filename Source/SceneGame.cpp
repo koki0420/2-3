@@ -83,6 +83,14 @@ void SceneGame::Initialize()
 	EnemyManager::Instance().Target(player.GetPosition());
 
 	HitEffect = EffectManager::Instance().CreateEffect("Data/Effect/Hit.efkefc");
+
+
+	DirectX::XMStoreFloat4x4(
+		&previousViewProjection,
+		DirectX::XMLoadFloat4x4(&camera.GetView()) *
+		DirectX::XMLoadFloat4x4(&camera.GetProjection()));
+
+	hasPreviousViewProjection = false;
 }	
 
 void SceneGame::Finalize()
@@ -254,7 +262,7 @@ void SceneGame::Update(float elapsedTime)
 
 	if (boss.BOSS->Clear())
 	{
-		if(clearTimer>2)
+		if(clearTimer>3)
 		{
 			SceneManager::Instance().ChangeScene(new SceneResult);
 		}
@@ -272,6 +280,14 @@ void SceneGame::Update(float elapsedTime)
 
 void SceneGame::Render(float elapsedTime)
 {
+	DirectX::XMFLOAT4X4 currentViewProjection{};
+
+	DirectX::XMStoreFloat4x4(&currentViewProjection,
+		DirectX::XMLoadFloat4x4(&camera.GetView()) *
+		DirectX::XMLoadFloat4x4(&camera.GetProjection()));
+
+
+
 	ID3D11DeviceContext* dc = Graphics::Instance().GetDeviceContext();
 	RenderState* renderState = Graphics::Instance().GetRenderState();
 	ModelRenderer* modelRenderer = Graphics::Instance().GetModelRenderer();
@@ -297,6 +313,53 @@ void SceneGame::Render(float elapsedTime)
 
 	rc.highlightColor = { 0.1, 0.1, 0.2, 1 };
 	EnemyManager::Instance().Render(rc, modelRenderer);
+
+	
+	//モーションブラー用
+	//プレイヤーカラー描画
+	MotionBlur::Instance().BeginPlayerColorPass(dc);
+
+	player.RenderColorPass(rc);
+
+	//速度バッファ
+	MotionBlur::Instance().BeginVelocityPass(dc);
+
+	player.RenderVelocityPass(rc, previousViewProjection);
+
+	// 次のフレームで比較できるよう、現在の骨格を保存
+	modelRenderer->SavePreviousBoneTransforms(
+		player.GetTransform(),player.GetModel());
+
+	MotionBlur::Instance().Execute(dc,elapsedTime);
+
+	MotionBlur::Instance().Composite(dc,Graphics::Instance()
+		.GetRenderTargetView(),Graphics::Instance().GetViewport());
+
+	//深度バッファ修正
+	Graphics::Instance().SetRenderTargets();
+
+	// 前フレームのボーン行列を更新
+	if (!hasPreviousViewProjection)
+	{
+		previousViewProjection = currentViewProjection;
+
+		// 初回のボーン履歴を初期化
+		modelRenderer->SavePreviousBoneTransforms(
+			player.GetTransform(),
+			player.GetModel());
+
+		hasPreviousViewProjection = true;
+	}
+
+	dc->OMSetBlendState(
+		renderState->GetBlendState(BlendState::Opaque),
+		nullptr,
+		0xFFFFFFFF);
+
+	dc->OMSetDepthStencilState(
+		renderState->GetDepthStencilState(DepthState::TestAndWrite),
+		0);
+
 
 	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetProjection());
 
@@ -326,15 +389,16 @@ void SceneGame::Render(float elapsedTime)
 	}
 
 	{
-		
+		float screenWidth = static_cast<float>(Graphics::Instance().GetScreenWidth()) / 1280;
+		float screenHeight = static_cast<float>(Graphics::Instance().GetScreenHeight()) / 720;
 		player.UIRender(elapsedTime, dc);
 		if (boss.BOSS->Clear())
 		{
-			SpriteCLEAR->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+			SpriteCLEAR->Render(dc, 320 * screenWidth, 300 * screenHeight, 0, 600 * screenWidth, 100 * screenHeight, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
 		if (player.GetPlayerHP() <= 0)
 		{
-			SpriteOVER->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+			SpriteOVER->Render(dc, 320 * screenWidth, 300 * screenHeight, 0, 600 * screenWidth, 100 * screenHeight, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
 		if (boss.BOSS->Boss_Alive())
 		{
@@ -344,12 +408,15 @@ void SceneGame::Render(float elapsedTime)
 		{
 			for (int count = enemy_num, i = 0;count > 0;count /= 10, i++)
 			{
-				spriteCOUNT->Render(dc, 700 - (i * 23), 30, 0, 23, 31, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, 1);
+				spriteCOUNT->Render(dc, (665 - (i * 23))* screenWidth, 30* screenHeight, 0, 23* screenWidth, 31* screenHeight, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, 1);
 			}
 		}
 	}
 
-
+	DirectX::XMStoreFloat4x4(
+		&previousViewProjection,
+		DirectX::XMLoadFloat4x4(&camera.GetView()) *
+		DirectX::XMLoadFloat4x4(&camera.GetProjection()));
 }
 
 void SceneGame::DrawGUI()

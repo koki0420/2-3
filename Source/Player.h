@@ -62,6 +62,20 @@ public:
 
     float GetBloddCosts(int weapon) { return bloodCosts[weapon]; }
 
+
+
+    // プレイヤーカラー描画
+    void RenderColorPass(RenderContext& rc);
+
+    // プレイヤー速度描画
+    void RenderVelocityPass(
+        const RenderContext& rc,
+        const DirectX::XMFLOAT4X4& previousViewProjection);
+
+    const DirectX::XMFLOAT4X4& GetTransform() const{ return player.transform;}
+
+    const Model* GetModel() const{ return player.model.get();}
+
 protected:
     //プレイヤー
     Object player;
@@ -126,7 +140,7 @@ protected:
 
     float dodgeTime = 0.0f;
     float dodgeDuration = 0.5f;        // 回避にかかる時間
-    float dodgeDistance = 20.0f;       // 回避する距離
+    float dodgeDistance = 50.0f;       // 回避する距離
     float dodgeInvincibleTime = 0.25f;
 
     // 回避開始時の方向を保存する
@@ -169,11 +183,11 @@ private:
     //血液ゲージ
     float bloodGauge[3] = {};//0:Sword,1:Scythe,2:Fist
     //血液攻撃コスト
-    float bloodCosts[3] = { 5.0f,10.0f,2.5f };
+    float bloodCosts[3] = { 10.0f,15.0f,5.0f };
     //無双モードでの血液消費量
-    float bloodGaugeConsumption[3] = { 0,0,0 };// { 10.0f,12.0f,2.5f };
+    float bloodGaugeConsumption[3] = { 10.0f,15.0f,5.0f };// { 10.0f,12.0f,2.5f };
 
-    //攻撃判定一つの設定、ダメージには血液攻撃や無双状態の倍率を適用する
+    //攻撃判定一つの設定
     struct HitSetting
     {
         float start = 0.15f;
@@ -211,11 +225,11 @@ private:
             {1,/*アニメーション数 */
                 {
                     {
-                        State::Sword_Attack1,2.4f,1.0f,3,/*motion,duration,motionSpeed,判定回数*/
+                        State::Sword_Attack1,2.2f,1.0f,3,/*motion,duration,motionSpeed,判定回数*/
                         {
-                            {0.3f, 0.6f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE},/*start,end,radius,distance,damage*/
-                            {0.9f, 1.2f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE},
-                            {1.5f, 1.9f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.3f, 0.6f, 12.5f, 10.0f, 30.0f},/*start,end,radius,distance,damage*/
+                            {0.9f, 1.2f, 13.5f, 10.0f, 30.0f},
+                            {1.5f, 1.9f, 15.0f, 10.0f, 35.0f}
                         }
                     }
                 }
@@ -224,11 +238,11 @@ private:
             {1, 
                 {
                     {
-                        State::Sword_Attack1, 2.4f, 1.3f, 3,
+                        State::Sword_Attack1, 2.2f, 1.3f, 3,
                         {
-                            {0.3f, 0.6f, 15.0f, 20.0f, PLAYER_ATTACK_DAMAGE},
-                            {0.9f, 1.2f, 15.0f, 20.0f, PLAYER_ATTACK_DAMAGE},
-                            {1.5f, 1.9f, 15.0f, 20.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.3f, 0.6f, 20.0f, 10.0f, 35.0f},
+                            {0.9f, 1.2f, 22.5f, 10.0f, 35.0f},
+                            {1.5f, 1.9f, 25.0f, 10.0f, 35.0f}
                         }
                     }
                 }
@@ -237,11 +251,11 @@ private:
             {1, 
                 {
                     {
-                        State::Drunk_Sword, 3.13f, 1.0f, 3,
+                        State::Drunk_Sword, 3.1f, 1.0f, 3,
                         {
-                            {0.3f, 0.8f, 30.0f, 20.0f, PLAYER_ATTACK_DAMAGE},
-                            {1.0f, 1.5f, 30.0f, 20.0f, PLAYER_ATTACK_DAMAGE},
-                            {1.8f, 2.5f, 30.0f, 20.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.3f, 0.8f, 30.0f, 15.0f, 45.0f},
+                            {1.0f, 1.5f, 34.0f, 15.0f, 50.0f},
+                            {1.8f, 2.5f, 35.0f, 15.0f, 50.0f}
                         }
                     }
                 }
@@ -253,9 +267,9 @@ private:
             {1, 
                 {
                     {
-                        State::Scythe_Attack, 1.1f, 1.0f, 1,
+                        State::Scythe_Attack, 1.0f, 1.0f, 1,
                         {
-                            {0.3f, 0.7f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.3f, 0.7f, 20.0f, 5.0f, 30.0f}
                         }
                     }
                 }
@@ -264,9 +278,9 @@ private:
             {1,
                 {
                     {
-                        State::Scythe_Attack, 1.1f, 1.2f, 1,
+                        State::Scythe_Attack, 1.0f, 1.2f, 1,
                         {
-                            {0.3f, 0.7f, 35.0f, 0.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.4f, 0.7f, 40.0f, 0.0f, 50.0f}
                         }
                     }
                 }
@@ -275,9 +289,11 @@ private:
             {1,
                 {
                     {
-                        State::Drunk_Scyth, 1.1f, 1.0f, 1,
+                        State::Drunk_Scyth, 1.0f, 1.0f, 3,
                         {
-                            {0.3f, 0.7f, 40.0f, 0.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.2f, 0.425f, 15.0f, 0.0f, 75.0f},
+                            {0.375f, 0.575f, 30.0f, 0.0f, 50.0f},
+                            {0.525f, 0.7f, 45.0f, 0.0f, 30.0f}
                         }
                     }
                 }
@@ -289,9 +305,9 @@ private:
             {1, 
                 {
                     {
-                        State::Fight_Punch, 0.87f, 1.0f, 1,
+                        State::Fight_Punch, 0.8f, 1.0f, 1,
                         {
-                            {0.15f, 0.3f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.35f, 0.45f, 15.0f, 10.0f, 35.0f}
                         }
                     }
                 }  
@@ -300,10 +316,10 @@ private:
             {1, 
                 {
                     {
-                        State::Fight_Punch, 0.87f, 1.5f, 2,
+                        State::Fight_Punch, 0.8f, 1.5f, 2,
                         {
-                            {0.15f, 0.3f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE},
-                            {0.5f, 0.7f, 10.0f, 10.0f, PLAYER_ATTACK_DAMAGE}
+                            {0.35f, 0.4f, 15.0f, 5.0f, 30.0f},
+                            {0.4f, 0.7f, 15.0f, 15.0f, 35.0f}
                         }
                     }
                 }
@@ -312,15 +328,17 @@ private:
             {2,
                 {
                     {
-                        State::Fight_Punch,0.87f,1.0f,1,
+                        State::Fight_Punch,0.85f,1.0f,1,
                         {
-                            {0.15f,0.3f,10.0f,10.0f,PLAYER_ATTACK_DAMAGE}
+                            {0.35f,0.5f,15.0f,10.0f,40.0f}
                         }
                     },
                     {
-                        State::Fight_kick,1.6f,1.0f,1,
+                        State::Fight_kick,1.2f,1.0f,3,
                         {
-                            {0.15f,0.5f,15.0f,10.0f,PLAYER_ATTACK_DAMAGE}
+                            {0.125f,0.25f,15.0f,10.0f,50.0f},
+                            {0.2f,0.35f,15.0f,20.0f,45.0f},
+                            {0.3f,0.45f,15.0f,30.0f,40.0f}
                         }
                     },
                 },            
@@ -331,14 +349,14 @@ private:
     AttackSetting currentAttackSetting{};
     int currentMotionIndex = 0;
     int currentHitIndex = -1;
-    float attackDamageMultiplier = 1.0f;
+    //float attackDamageMultiplier = 1.0f;
     float attackModeSpeedMultiplier = 1.0f;
     //血液攻撃倍率
-    float bloodMultipliers[3] = { 1.8f,2.0f,5.0f };
+    //float bloodMultipliers[3] = { 1.8f,2.0f,5.0f };
     //無双モード
     bool IsMusou = false;
     //攻撃倍率
-    float bloodAttackMultiplier = 1.0f;
+    // float bloodAttackMultiplier = 1.0f;
     //攻撃の再生倍率
     float attackSpeedMultiplier = 1.0f;
     
@@ -366,6 +384,7 @@ private:
     Effect* Sword_Effect = nullptr;
     Effect* Fight_Effect = nullptr;
     Effect* Slash_Effect = nullptr;
+    Effect* Drunk_Sword = nullptr;
 
     bool IsSwrod;
     bool IsFight;

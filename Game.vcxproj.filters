@@ -97,7 +97,9 @@
     <FxCompile Include="Data\Shader\MotionBlurDebug_ps.hlsl">
       <Filter>シェーダー</Filter>
     </FxCompile>
-
+    <FxCompile Include="Data\Shader\MotionBlurHistory_ps.hlsl">
+      <Filter>シェーダー</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Animation.cpp">
