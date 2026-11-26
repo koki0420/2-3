@@ -414,6 +414,7 @@ private:
     Effect* Sword_Effect = nullptr;
     Effect* Fight_Effect = nullptr;
     Effect* Slash_Effect = nullptr;
+    Effect* Drunk_Sword = nullptr;
 
     bool IsSwrod;
     bool IsFight;

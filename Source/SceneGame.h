@@ -162,6 +162,9 @@ private:
 	std::unique_ptr<Sprite> SpriteCLEAR;
 	std::unique_ptr<Sprite> spriteHP = nullptr;
 	std::unique_ptr<Sprite> spriteCOUNT = nullptr;
+	std::unique_ptr<Sprite> spritekey = nullptr;
+	std::unique_ptr<Sprite> sprite = nullptr;
+	std::unique_ptr<Sprite> spritemouse = nullptr;
 	Effect* HitEffect = nullptr;
 
 	

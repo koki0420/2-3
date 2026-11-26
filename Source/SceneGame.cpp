@@ -18,7 +18,7 @@
 #include "audio.h"
 #include "AudioResource.h"
 
-
+#define BOSS_MAX 1000
 
 
 SceneGame::SceneGame()
@@ -47,7 +47,7 @@ void SceneGame::Initialize()
 	stage.position.y = -20;
 
 	boss.BOSS=std::make_unique<Boss>(DirectX::XMFLOAT3{ 0, 0, 0 });
-	boss.hp = 1000.0f;
+	boss.hp = BOSS_MAX;
 
 	cameraController.SyncCameraToController(camera);
 
@@ -80,6 +80,10 @@ void SceneGame::Initialize()
 	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
 	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_ff4444_128.png");//
 	spriteCOUNT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hitcount.png");
+	spritekey = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ìßâﬂPNG (1).png");
+	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ìßâﬂPNG.png");
+	spritemouse = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/ìßâﬂPNG (2) .png");
+
 	EnemyManager::Instance().Target(player.GetPosition());
 
 	HitEffect = EffectManager::Instance().CreateEffect("Data/Effect/Hit.efkefc");
@@ -136,13 +140,13 @@ void SceneGame::Update(float elapsedTime)
 		boss.BOSS->Boss_Dead(Boss_Dead);
 		if (boss.hp <= 0)
 		{
-			boss.hp = 1000.0f;
+			boss.hp = BOSS_MAX;
 		}
 		if (!(boss.BOSS->Boss_Alive()))
 		{
 			Respawn();
 			boss.BOSS->Boss_Chage();
-			boss.hp = 1000.0f;
+			boss.hp = BOSS_MAX;
 			Boss_Dead = false;
 		}
 	}
@@ -160,10 +164,21 @@ void SceneGame::Update(float elapsedTime)
 
 	//ìGÇÃèàóù
 	{
+		
 		enemy_num = 0;
 		for (size_t i = 0;i < enemies.size();++i)
 		{
 			auto& target = enemies[i];
+			//ååâtÉQÉbÉgÅIÅI
+			for (int i = 0;i < 3;i += 1)
+			{
+				if (target.enemy->GetBlood(i))
+				{
+					player.AddBlood(5.0f);
+					target.enemy->SetBlood(i, false);
+				}
+				
+			}
 			//ìGÇ÷ÇÃÉ_ÉÅÅ[ÉW
 			if (!target.enemy->Alive())
 			{
@@ -180,10 +195,9 @@ void SceneGame::Update(float elapsedTime)
 				if (target.hp <= 0.0f)
 				{
 					DefeatEnemy(i);
-					player.AddBlood(10.0f);
-
 				}
 			}
+			
 
 			//ìGÇ©ÇÁÇÃçUåÇ
 
@@ -215,7 +229,7 @@ void SceneGame::Update(float elapsedTime)
 
 				if (boss.hp <= 0.0f)
 				{
-					if (Boss_Dead == false)boss.hp = 1000.0f;
+					if (Boss_Dead == false)boss.hp = BOSS_MAX;
 					Boss_Dead = true;
 				}
 			}
@@ -253,7 +267,7 @@ void SceneGame::Update(float elapsedTime)
 
 	if (boss.BOSS->Clear())
 	{
-		if(clearTimer>2)
+		if(clearTimer>3)
 		{
 			SceneManager::Instance().ChangeScene(new SceneResult);
 		}
@@ -380,25 +394,39 @@ void SceneGame::Render(float elapsedTime)
 	}
 
 	{
+		float screenWidth = static_cast<float>(Graphics::Instance().GetScreenWidth()) / 1280;
+		float screenHeight = static_cast<float>(Graphics::Instance().GetScreenHeight()) / 720;
 		
+		spritekey->Render(dc, 1210 * screenWidth, 500 * screenHeight, 0, 15 * screenWidth, 30 * screenHeight,0,70,30,60, 0, 1, 1, 1, 1);
+		sprite->Render(dc,1240 * screenWidth, 500 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,40,120,25, 0, 1, 1, 1, 1);
+		spritekey->Render(dc, 1180 * screenWidth, 550 * screenHeight, 0, 45 * screenWidth, 30 * screenHeight,0,0,100,60, 0, 1, 1, 1, 1);
+		sprite->Render(dc,1240 * screenWidth, 550 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,10,120,30, 0, 1, 1, 1, 1);
+
+		
+		spritemouse->Render(dc, 1200 * screenWidth, 400 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight,0,0,67,105, 0, 1, 1, 1, 1);
+		sprite->Render(dc, 1240 * screenWidth, 400 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,70 ,120,30, 0, 1, 1, 1, 1);
+		spritemouse->Render(dc, 1200 * screenWidth, 450 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight,0,135, 67, 105, 0, 1, 1, 1, 1);
+		sprite->Render(dc, 1220 * screenWidth, 450 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight, 0, 100, 120, 30, 0, 1, 1, 1, 1);
+		
+
 		player.UIRender(elapsedTime, dc);
 		if (boss.BOSS->Clear())
 		{
-			SpriteCLEAR->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+			SpriteCLEAR->Render(dc, 320 * screenWidth, 300 * screenHeight, 0, 600 * screenWidth, 100 * screenHeight, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
 		if (player.GetPlayerHP() <= 0)
 		{
-			SpriteOVER->Render(dc, 320, 300, 0, 600, 100, 0, 1, 1, 1, min(1, clearTimer / 2));
+			SpriteOVER->Render(dc, 320 * screenWidth, 300 * screenHeight, 0, 600 * screenWidth, 100 * screenHeight, 0, 1, 1, 1, min(1, clearTimer / 2));
 		}
 		if (boss.BOSS->Boss_Alive())
 		{
-			spriteHP->Render(dc, 360, 10, 0, 480 * (boss.hp/100), 16, 14, 48, 100 * (boss.hp / 100), 32, 0, 1, 1, 1, 1);
+			spriteHP->Render(dc, 360, 10, 0, 480 * (boss.hp/BOSS_MAX), 16, 14, 48, 100 * (boss.hp / BOSS_MAX), 32, 0, 1, 1, 1, 1);
 		}
 		else
 		{
 			for (int count = enemy_num, i = 0;count > 0;count /= 10, i++)
 			{
-				spriteCOUNT->Render(dc, 700 - (i * 23), 30, 0, 23, 31, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, 1);
+				spriteCOUNT->Render(dc, (665 - (i * 23))* screenWidth, 30* screenHeight, 0, 23* screenWidth, 31* screenHeight, 46 * (count % 10), 0, 46, 62, 0, 1, 1, 1, 1);
 			}
 		}
 	}

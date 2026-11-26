@@ -6,6 +6,7 @@
 
 #include "Effect.h"
 #include "EffectManager.h"
+#include <Sprite.h>
 
 //エネミー
 class Enemy
@@ -33,6 +34,7 @@ public:
 	void TargetPos(DirectX::XMFLOAT3 pos)
 	{
 		Target = pos;
+		Target.y = -15;
 	}
 
 	Animation* GetEnemyAnimation() { return enemy_anime.get(); }
@@ -43,9 +45,16 @@ public:
 
 	void SetDisPlay(bool DisPlay) { display = DisPlay; }
 
+	bool GetBlood(int index) { return Blood_Get[index]; }
+
+	void SetBlood(int index,bool b) { Blood_Get[index] = b; }
+
 private:
 	Object enemy;
+	Object Blood[3];
 	unique_ptr<Animation> enemy_anime;
+	bool Blood_Get[3];
+	bool Blood_Display[3];
 
 
 	DirectX::XMFLOAT3 Target;
@@ -60,6 +69,8 @@ private:
 	bool alive=true;
 	bool arrive = true;
 	bool display=true;
+
+	float Blood_timer[3] ;
 
 	float timer = 0;
 	float nextTimer = 0;
