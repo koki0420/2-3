@@ -25,6 +25,8 @@ Player::Player()
 	Fight_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Smash.efkefc");
 	Slash_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Slash.efkefc");
 	Drunk_Sword = EffectManager::Instance().CreateEffect("Data/Effect/Drunk_Sword.efkefc");
+	Drunk_Fight = EffectManager::Instance().CreateEffect("Data/Effect/Kick.efkefc");
+	Drunk_Aura = EffectManager::Instance().CreateEffect("Data/Effect/Drunk_aura.efkefc");
 
 	IsSwrod = true;
 	IsFight = true;
@@ -175,10 +177,32 @@ void Player::Render(float elapsedTime, RenderContext rc)
 	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&rc.camera->GetProjection());
 	DirectX::XMFLOAT4X4 VP;
 	DirectX::XMStoreFloat4x4(&VP, V * P);
-	if (isAttacking)
+
+	if (IsMusou && auraHandle >= 0)
+	{
+		EffectManager::Instance().SetEffectPosition(
+			auraHandle,
+			player.position
+		);
+	}
+
+	if (isAttacking&&IsFight)
 	{
 		sword_Line.Render(Graphics::Instance().GetDeviceContext(), VP);
 
+	}
+
+	if (IsMusou && auraHandle < 0)
+	{
+		auraHandle=EffectManager::Instance().PlayEffect(Drunk_Aura,{ player.position.x,player.position.y ,player.position.z }, player.angle, 7.0f);
+	}
+	else
+	{
+		if (auraHandle >= 0)
+		{
+			EffectManager::Instance().StopEffect(auraHandle);
+			auraHandle = -1;
+		}
 	}
 
 	if (animation->GetCurrentFrame() >= 0 && !IsSwrod && Blad&&!IsMusou)
@@ -188,14 +212,14 @@ void Player::Render(float elapsedTime, RenderContext rc)
 		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 0.0f && !IsFight && Blad)
+	if (animation->GetCurrentFrame() >= 0.0f && !IsFight && Blad&&!IsMusou )
 	{
-		EffectManager::Instance().PlayEffect(Fight_Effect, { attackPosition.x,attackPosition.y ,attackPosition.z + 10.0f }, player.angle, 7.0f);
+		EffectManager::Instance().PlayEffect(Fight_Effect, { attackPosition.x,attackPosition.y ,attackPosition.z }, player.angle, 7.0f);
 		IsFight = true;
 		Blad = false;
 	}
 
-	if (animation->GetCurrentFrame() >= 0.0f && !IsSlash && Blad)
+	if (animation->GetCurrentFrame() >= 0.0f && !IsSlash && Blad&&!IsMusou)
 	{
 		Slash_Effect->Play({ player.position.x,player.position.y + 5.0f,player.position.z }, 6.0f);
 		IsSlash = true;
@@ -206,6 +230,13 @@ void Player::Render(float elapsedTime, RenderContext rc)
 	{
 		EffectManager::Instance().PlayEffect(Drunk_Sword, { player.position.x,player.position.y + 5.0f,player.position.z }, player.angle, 7.0f);
 		IsSwrod = true;
+		Blad = false;
+	}
+
+	if (animation->GetCurrentFrame() >= 45 && !IsFight && Blad && IsMusou)
+	{
+		EffectManager::Instance().PlayEffect(Drunk_Fight, { player.position.x,player.position.y+20.0f,player.position.z }, player.angle, 8.0f);
+		IsFight = true;
 		Blad = false;
 	}
 }

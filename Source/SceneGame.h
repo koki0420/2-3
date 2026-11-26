@@ -49,6 +49,8 @@ public:
 
 	void Respawn();
 
+	
+
 private:
 	
 	Camera								camera;

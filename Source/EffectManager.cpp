@@ -201,7 +201,7 @@ Effekseer::Handle EffectManager::PlayEffect(Effect* effect, const DirectX::XMFLO
 	//エフェクト制限
 	static const int MAX_EFFECTS = 300;
 
-	if (playingEffects.size() > MAX_EFFECTS)
+	if (playingEffects.size() >= MAX_EFFECTS)
 		return -1;
 
 
@@ -221,3 +221,20 @@ Effekseer::Handle EffectManager::PlayEffect(Effect* effect, const DirectX::XMFLO
 
 	return h;
 }
+
+
+void EffectManager::SetEffectPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position)
+{
+
+	if(handle < 0) return;
+
+	if (!effekseerManager->Exists(handle)) return;
+
+	effekseerManager->SetLocation(
+		handle,
+		position.x,
+		position.y,
+		position.z
+	);
+}
+

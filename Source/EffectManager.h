@@ -57,6 +57,9 @@ public:
 	void StopEffect(Effekseer::Handle h);
 	Effect* CreateEffect(const char* path);
 
+
+	void SetEffectPosition(Effekseer::Handle handle, const DirectX::XMFLOAT3& position);
+
 private:
 	Effekseer::ManagerRef          effekseerManager;
 	EffekseerRenderer::RendererRef effekseerRenderer;

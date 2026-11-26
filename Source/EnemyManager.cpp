@@ -137,3 +137,6 @@ void EnemyManager::Enemy_display(DirectX::XMFLOAT3 pos)
 		enemyList[i].enemy->SetDisPlay(true);
 	}
 }
+
+
+

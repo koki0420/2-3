@@ -76,6 +76,8 @@ public:
 
     const Model* GetModel() const{ return player.model.get();}
 
+    bool GetIsMusou() { return IsMusou; };
+
 protected:
     //ÉvÉåÉCÉÑÅ[
     Object player;
@@ -385,10 +387,13 @@ private:
     Effect* Fight_Effect = nullptr;
     Effect* Slash_Effect = nullptr;
     Effect* Drunk_Sword = nullptr;
+    Effect* Drunk_Fight = nullptr;
+    Effect* Drunk_Aura = nullptr;
 
     bool IsSwrod;
     bool IsFight;
     bool IsSlash;
+    Effekseer::Handle auraHandle = -1;
 
     bool Blad = false;
 

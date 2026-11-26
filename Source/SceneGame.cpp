@@ -369,6 +369,10 @@ void SceneGame::Render(float elapsedTime)
 
 
 	rc.highlightColor = { 0.2, 0.2, 0.2, 1 };
+	if (player.GetIsMusou())
+	{
+		rc.highlightColor = { 1.0f, 0, 0, 1 };
+	}
 	player.Render(elapsedTime, rc);
 
 	rc.highlightColor = { 0.5, 0.0, 0.5, 1 };

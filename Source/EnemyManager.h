@@ -44,6 +44,8 @@ public:
 
 	void Enemy_display(DirectX::XMFLOAT3 pos);
 
+
+
 	
 private:
 	struct EnemyInfo
