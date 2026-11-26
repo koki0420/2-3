@@ -11,11 +11,21 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	enemy.position.y = -25;
 	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
 
+	for (int i = 0;i < 3;i += 1)
+	{
+		Blood[i].scale = { 0.01f,0.01f,0.01f };
+		Blood[i].position = pos;
+		Blood[i].model = std::make_unique<Model>("Data/Model/Enemy/Blood.mdl");
+		Blood_Get[i] = false;
+		Blood_Display[i] = true;
+	}
+
 	enemy_anime = std::make_unique<Animation>(*enemy.model);
 	idle_anime = true;
 	walk_anime = true;
 	attack_anime = true;
 	death_anime = true;
+
 
 	alive = true;
 	timer = 0;
@@ -31,186 +41,228 @@ Enemy::~Enemy()
 
 void Enemy::Update(float elapsedTime)
 {
-	if (alive&&display)
+	if (alive)
 	{
-
-		timer += elapsedTime;
-		float direction = DirectX::XMVectorGetX
-		(DirectX::XMVector3Length
-		(DirectX::XMVectorSubtract
-		(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&enemy.position))));
-
-		float dx = arrive_position.x - enemy.position.x;   // 0 - pos.x
-		float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
-		if(direction<=400)
+		if (display)
 		{
-			if (direction <= 100)
+			for (int i = 0;i < 3;i += 1)
 			{
-				dx = Target.x - enemy.position.x;   // 0 - pos.x
-				dz = Target.z - enemy.position.z;   // 0 - pos.z
-				if (direction <= 30)
+				Blood_Get[i] = false;
+				Blood[i].position = enemy.position;
+				Blood[i].position.y = -15;
+				Blood[i].UpdateTransform();
+			}
+			timer += elapsedTime;
+			float direction = DirectX::XMVectorGetX
+			(DirectX::XMVector3Length
+			(DirectX::XMVectorSubtract
+			(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&enemy.position))));
+
+			float dx = arrive_position.x - enemy.position.x;   // 0 - pos.x
+			float dz = arrive_position.z - enemy.position.z;   // 0 - pos.z
+			if (direction <= 400)
+			{
+				if (direction <= 100)
 				{
-					arrive_position = Target;
-					if (attack_anime)
+					dx = Target.x - enemy.position.x;   // 0 - pos.x
+					dz = Target.z - enemy.position.z;   // 0 - pos.z
+					if (direction <= 30)
 					{
-						enemy_anime->PlayAnimation("Punch", false);
-						attack_anime = false;
+						arrive_position = Target;
+						if (attack_anime)
+						{
+							enemy_anime->PlayAnimation("Punch", false);
+							attack_anime = false;
+						}
+						else
+						{
+							if (idle_anime)
+							{
+								enemy_anime->PlayAnimation("Idle", true);
+								idle_anime = false;
+							}
+
+							timer += elapsedTime;
+
+							if (timer >= nextTimer)
+							{
+								attack_anime = true;
+
+								timer = 0.0f;
+								nextTimer = (float)(rand() % 10 + 1);
+							}
+							if (!(enemy_anime->IsPlaying()))idle_anime = true;
+						}
+
 					}
 					else
 					{
-						if (idle_anime)
-						{
-							enemy_anime->PlayAnimation("Idle", true);
-							idle_anime = false;
-						}
-
-						timer += elapsedTime;
-
-						if (timer >= nextTimer)
-						{
-							attack_anime = true;
-
-							timer = 0.0f;
-							nextTimer = (float)(rand() % 10 + 1);
-						}
-						if (!(enemy_anime->IsPlaying()))idle_anime = true;
+						arrive_position = Target;
+						arrive_position.y = -25;
 					}
 
 				}
 				else
 				{
-					arrive_position = Target;
-					arrive_position.y = -25;
-				}
-
-			}
-			else
-			{
-				if (arrive)
-				{
-					arrive_position.x = enemy.position.x + (float)(rand() % 100 - 50) * 10;
-					arrive_position.y = enemy.position.y;
-					arrive_position.z = enemy.position.z + (float)(rand() % 100 - 50) * 10;
-					//
-
-					arrive = false;
-				}
-				else
-				{
-					float arrive_direction = DirectX::XMVectorGetX
-					(DirectX::XMVector3Length
-					(DirectX::XMVectorSubtract
-					(DirectX::XMLoadFloat3(&arrive_position), DirectX::XMLoadFloat3(&enemy.position))));
-					if (arrive_direction <= 50)
+					if (arrive)
 					{
-						arrive = true;
-					}
+						arrive_position.x = enemy.position.x + (float)(rand() % 100 - 50) * 10;
+						arrive_position.y = enemy.position.y;
+						arrive_position.z = enemy.position.z + (float)(rand() % 100 - 50) * 10;
+						//
 
+						arrive = false;
+					}
+					else
+					{
+						float arrive_direction = DirectX::XMVectorGetX
+						(DirectX::XMVector3Length
+						(DirectX::XMVectorSubtract
+						(DirectX::XMLoadFloat3(&arrive_position), DirectX::XMLoadFloat3(&enemy.position))));
+						if (arrive_direction <= 50)
+						{
+							arrive = true;
+						}
+
+					}
 				}
 			}
-		}
 
-		if (walk_anime)
-		{
-			enemy_anime->PlayAnimation("Walking", false);
-			walk_anime = false;
-		}
-		if (!(enemy_anime->IsPlaying()))walk_anime = true;
-
-
-		if (arrive_position.x >= 250)arrive_position.x = 250;
-		if (arrive_position.x <= -250)arrive_position.x = -250;
-		if (arrive_position.z >= 250)arrive_position.z = 250;
-		if (arrive_position.z <= -250)arrive_position.z = -250;
-
-
-		//エネミーの行動
-		{
-			DirectX::XMVECTOR diff =
-				DirectX::XMVectorSubtract
-				(DirectX::XMLoadFloat3(&arrive_position), DirectX::XMLoadFloat3(&enemy.position));
-
-			diff = DirectX::XMVector3Normalize(diff);
-
-
-			DirectX::XMVECTOR new_pos = DirectX::XMVectorAdd
-			(DirectX::XMLoadFloat3(&enemy.position),
-				DirectX::XMVectorScale(diff, 0.1f));
-			DirectX::XMStoreFloat3(&enemy.position, new_pos);
-			if (knockback)
+			if (walk_anime)
 			{
+				enemy_anime->PlayAnimation("Walking", false);
+				walk_anime = false;
+			}
+			if (!(enemy_anime->IsPlaying()))walk_anime = true;
+
+
+			if (arrive_position.x >= 250)arrive_position.x = 250;
+			if (arrive_position.x <= -250)arrive_position.x = -250;
+			if (arrive_position.z >= 250)arrive_position.z = 250;
+			if (arrive_position.z <= -250)arrive_position.z = -250;
+
+
+			//エネミーの行動
+			{
+				DirectX::XMVECTOR diff =
+					DirectX::XMVectorSubtract
+					(DirectX::XMLoadFloat3(&arrive_position), DirectX::XMLoadFloat3(&enemy.position));
+
+				diff = DirectX::XMVector3Normalize(diff);
+
+
 				DirectX::XMVECTOR new_pos = DirectX::XMVectorAdd
 				(DirectX::XMLoadFloat3(&enemy.position),
-					DirectX::XMVectorScale(diff, -knockback_length));
+					DirectX::XMVectorScale(diff, 0.1f));
 				DirectX::XMStoreFloat3(&enemy.position, new_pos);
-				knockback_length -= 0.1f;
-				if (knockback_length <= 0)knockback = false;
+				if (knockback)
+				{
+					DirectX::XMVECTOR new_pos = DirectX::XMVectorAdd
+					(DirectX::XMLoadFloat3(&enemy.position),
+						DirectX::XMVectorScale(diff, -knockback_length));
+					DirectX::XMStoreFloat3(&enemy.position, new_pos);
+					knockback_length -= 0.1f;
+					if (knockback_length <= 0)knockback = false;
+				}
+				else
+				{
+					knockback_length = 1.0f;
+				}
 			}
-			else
+
+
+			DirectX::XMVECTOR e_pos = DirectX::XMLoadFloat3(&enemy.position);
+			DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&Target);
+
+
+			DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(pos, e_pos);
+
+			float distSq =
+				DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(diff));
+
+			constexpr float radius = 15.0f;
+			constexpr float radiusSq = radius * radius;
+
+			if (distSq <= radiusSq)
 			{
-				knockback_length = 2.0f;
+				float direction = sqrtf(distSq);
+				// 正規化（方向ベクトル）
+				DirectX::XMVECTOR dir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(pos, e_pos));
+
+				// めり込み量
+				float overlap = (radius - direction) * 0.5f;
+
+				// 押し返し
+				DirectX::XMVECTOR offset = DirectX::XMVectorScale(dir, overlap);
+
+				e_pos = DirectX::XMVectorSubtract(e_pos, offset);
+
+				// 書き戻し
+				DirectX::XMFLOAT3 newPos1;
+				DirectX::XMStoreFloat3(&newPos1, e_pos);
+
+				enemy.position = newPos1;
+
 			}
+
+
+			// Y軸回転（Yaw）
+			{
+				//enemy.angle.y = atan2f(dx, dz);
+				float targetAngle = atan2f(dx, dz);
+
+				float dif = targetAngle - enemy.angle.y;
+
+				while (dif > DirectX::XM_PI)  dif -= DirectX::XM_2PI;
+				while (dif < -DirectX::XM_PI) dif += DirectX::XM_2PI;
+
+				float turnSpeed = 3.0f * elapsedTime; // rad/s
+
+				if (fabsf(dif) < turnSpeed)
+				{
+					enemy.angle.y = targetAngle;
+				}
+				else
+				{
+					enemy.angle.y += (dif > 0.0f) ? turnSpeed : -turnSpeed;
+				}
+			}
+			enemy.UpdateTransform();
+			enemy_anime->Update(elapsedTime);
+		}
+	}
+	else
+	{
+		if (Blood[0].position.y > -20)
+		{
+			Blood[0].position.x += 0.3f;
+			Blood[0].position.y -= 0.5f;
+		}
+		if (Blood[1].position.y > -20)
+		{
+			Blood[1].position.x -= 0.3f;
+			Blood[1].position.y -= 0.5f;
+		}
+		if (Blood[2].position.y > -20)
+		{
+			Blood[2].position.x -= 0.3f;
+			Blood[2].position.z -= 0.3f;
+			Blood[2].position.y -= 0.5f;
 		}
 		
-
-		DirectX::XMVECTOR e_pos = DirectX::XMLoadFloat3(&enemy.position);
-		DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&Target);
-
-
-		DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(pos, e_pos);
-
-		float distSq =
-			DirectX::XMVectorGetX(DirectX::XMVector3LengthSq(diff));
-
-		constexpr float radius = 15.0f;
-		constexpr float radiusSq = radius * radius;
-
-		if (distSq <= radiusSq)
+		for (int i = 0;i < 3;i += 1)
 		{
-			float direction = sqrtf(distSq);
-			// 正規化（方向ベクトル）
-			DirectX::XMVECTOR dir = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(pos, e_pos));
-
-			// めり込み量
-			float overlap = (radius - direction) * 0.5f;
-
-			// 押し返し
-			DirectX::XMVECTOR offset = DirectX::XMVectorScale(dir, overlap);
-
-			e_pos= DirectX::XMVectorSubtract(e_pos, offset);
-
-			// 書き戻し
-			DirectX::XMFLOAT3 newPos1;
-			DirectX::XMStoreFloat3(&newPos1, e_pos);
-	
-			enemy.position=newPos1;
-
-		}
-
-	
-		// Y軸回転（Yaw）
-		{
-			//enemy.angle.y = atan2f(dx, dz);
-			float targetAngle = atan2f(dx, dz);
-
-			float dif = targetAngle - enemy.angle.y;
-
-			while (dif > DirectX::XM_PI)  dif -= DirectX::XM_2PI;
-			while (dif < -DirectX::XM_PI) dif += DirectX::XM_2PI;
-
-			float turnSpeed = 3.0f * elapsedTime; // rad/s
-
-			if (fabsf(dif) < turnSpeed)
+			Blood[i].UpdateTransform();
+			if (!(Blood_Get[i])&&Blood_Display[i])
 			{
-				enemy.angle.y = targetAngle;
+				if (DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&Blood[i].position), DirectX::XMLoadFloat3(&Target)))) <= 10.5f)
+				{
+					Blood_Display[i] = false;
+					Blood_Get[i] = true;
+				}
 			}
-			else
-			{
-				enemy.angle.y += (dif > 0.0f) ? turnSpeed : -turnSpeed;
-			}
+			
 		}
-		enemy.UpdateTransform();
-		enemy_anime->Update(elapsedTime);
 	}
 	if (!(death_anime) && !(enemy_anime->IsPlaying("Death")))
 	{
@@ -230,19 +282,34 @@ void Enemy::Update(float elapsedTime)
 
 void Enemy::Render(const RenderContext& immediate_context, ModelRenderer* renderer)
 {
-	if (alive && display)renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
+	if (alive)
+	{
+		if (display)renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
+	}
+	else
+	{
+		for (int i = 0;i < 3;i += 1)
+		{
+			if(Blood_Display[i])renderer->Render(immediate_context, Blood[i].transform, Blood[i].model.get(), ShaderId::Lambert);
+		}
+	}
 	//renderer->Render(immediate_context, enemy.transform, enemy.model.get(), ShaderId::Lambert);
 }
 
-void Enemy::enemy_set(bool alive)
-{
-	if (!(alive))
+	void Enemy::enemy_set(bool alive)
 	{
-		if (death_anime)
+		if (!(alive))
 		{
-			enemy_anime->PlayAnimation("Death", false);
-			death_anime = false;
+			if (death_anime)
+			{
+				for (int i = 0;i < 3;i += 1)
+				{
+					Blood[i].position = enemy.position;
+					Blood[i].position.y = -15;
+				}
+				enemy_anime->PlayAnimation("Death", false);
+				death_anime = false;
+			}
 		}
+		else this->alive = true;
 	}
-	else this->alive = true;
-}
