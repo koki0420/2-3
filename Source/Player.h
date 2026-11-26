@@ -12,11 +12,13 @@
 #include "Sword_Line.h"
 #include "Effect.h"
 #include "EffectManager.h"
+#include <random>
 
 #define PLAYER_HP_MAX 10000//
 #define PLAYER_ATTACK_DAMAGE 34//初期値
 #define PLAYER_ATTACK_RADIUS 10//初期値
 #define PLAYER_ATTACK_DISTANCE 10//初期値
+#define BLOOD_GAUGE_MAX 100
 
 class Player
 {
@@ -57,6 +59,8 @@ public:
 
     //血液獲得
     void AddBlood(float amount);
+    //撃破時の血液獲得
+    void AddRandomBlood();
 
     bool GetBlood() { return Blood_Attack; }
 
@@ -139,7 +143,7 @@ protected:
     bool wasDodgePressed = false;
 
     float dodgeTime = 0.0f;
-    float dodgeDuration = 0.5f;        // 回避にかかる時間
+    float dodgeDuration = 0.45f;        // 回避にかかる時間
     float dodgeDistance = 50.0f;       // 回避する距離
     float dodgeInvincibleTime = 0.25f;
 
@@ -185,7 +189,7 @@ private:
     //血液攻撃コスト
     float bloodCosts[3] = { 10.0f,15.0f,5.0f };
     //無双モードでの血液消費量
-    float bloodGaugeConsumption[3] = { 10.0f,15.0f,5.0f };// { 10.0f,12.0f,2.5f };
+    float bloodGaugeConsumption[3] = { 2.5f,3.3f,2.0f };// { 10.0f,12.0f,2.5f };
 
     //攻撃判定一つの設定
     struct HitSetting
@@ -195,6 +199,8 @@ private:
         float radius = 10.0f;
         float distance = 10.0f;
         float damage = PLAYER_ATTACK_DAMAGE;
+
+        float sideOffset = 0.0f;//正なら右、負なら左
     };
 
     //1つのアニメーションに、複数の攻撃判定を含めるように
@@ -204,7 +210,7 @@ private:
         float duration = 1.0f;
         float animationSpeed = 1.0f;
         int hitCount = 1;//攻撃判定を出す回数
-        HitSetting hits[5]{};
+        HitSetting hits[10]{};
     };
 
     //攻撃時、アニメーションが順番に再生される
@@ -225,11 +231,19 @@ private:
             {1,/*アニメーション数 */
                 {
                     {
-                        State::Sword_Attack1,2.2f,1.0f,3,/*motion,duration,motionSpeed,判定回数*/
+                        State::Sword_Attack1,2.2f,1.0f,9,/*motion,duration,motionSpeed,判定回数*/
                         {
-                            {0.3f, 0.6f, 12.5f, 10.0f, 30.0f},/*start,end,radius,distance,damage*/
-                            {0.9f, 1.2f, 13.5f, 10.0f, 30.0f},
-                            {1.5f, 1.9f, 15.0f, 10.0f, 35.0f}
+                            {0.35f, 0.45f, 10.0f, 8.0f, 20.0f,15.0f},/*start,end,radius,distance,damage,sideOffset*/
+                            {0.45f, 0.55f, 12.0f, 10.0f, 20.0f},
+                            {0.55f, 0.65f, 10.0f, 8.0f, 20.0f,-15.0f},
+
+                            {0.95f, 1.05f, 10.0f, 8.0f, 20.0f,-15.0f},
+                            {1.05f, 1.15f, 12.0f, 10.0f, 20.0f},
+                            {1.15f, 1.25f, 10.0f, 8.0f, 20.0f,15.0f},
+
+                            {1.55f, 1.65f, 10.0f, 8.0f, 20.0f,15.0f},
+                            {1.65f, 1.75f, 12.0f, 10.0f, 20.0f},
+                            {1.75f, 1.85f, 10.0f, 8.0f, 20.0f,-15.0f}
                         }
                     }
                 }
@@ -238,11 +252,19 @@ private:
             {1, 
                 {
                     {
-                        State::Sword_Attack1, 2.2f, 1.3f, 3,
+                        State::Sword_Attack1, 2.2f, 1.3f, 9,
                         {
-                            {0.3f, 0.6f, 20.0f, 10.0f, 35.0f},
-                            {0.9f, 1.2f, 22.5f, 10.0f, 35.0f},
-                            {1.5f, 1.9f, 25.0f, 10.0f, 35.0f}
+                            {0.35f, 0.45f, 18.0f, 8.0f, 35.0f,20.0f},
+                            {0.45f, 0.55f, 20.0f, 10.0f, 35.0f},
+                            {0.55f, 0.65f, 18.0f, 8.0f, 35.0f,-20.0f},
+
+                            {0.95f, 1.05f, 18.0f, 8.0f, 35.0f,-20.0f},
+                            {1.05f, 1.15f, 20.0f, 10.0f, 35.0f},
+                            {1.15f, 1.25f, 18.0f, 8.0f, 35.0f,20.0f},
+
+                            {1.55f, 1.65f, 18.0f, 8.0f, 35.0f,20.0f},
+                            {1.65f, 1.75f, 20.0f, 10.0f, 35.0f},
+                            {1.75f, 1.85f, 18.0f, 8.0f, 35.0f,-20.0f}
                         }
                     }
                 }
@@ -264,6 +286,7 @@ private:
 
         //鎌
         {
+            //通常
             {1, 
                 {
                     {
@@ -274,7 +297,7 @@ private:
                     }
                 }
             },
-
+            //血液
             {1,
                 {
                     {
@@ -285,15 +308,17 @@ private:
                     }
                 }
             },
-
+            //無双
             {1,
                 {
                     {
-                        State::Drunk_Scyth, 1.0f, 1.0f, 3,
+                        State::Drunk_Scyth, 1.0f, 1.0f, 5,
                         {
-                            {0.2f, 0.425f, 15.0f, 0.0f, 75.0f},
-                            {0.375f, 0.575f, 30.0f, 0.0f, 50.0f},
-                            {0.525f, 0.7f, 45.0f, 0.0f, 30.0f}
+                            {0.2f, 0.3f, 15.0f, 0.0f, 20.0f},
+                            {0.3f, 0.4f, 25.0f, 0.0f, 20.0f},
+                            {0.4f, 0.5f, 35.0f, 0.0f, 20.0f},
+                            {0.5f, 0.6f, 45.0f, 0.0f, 20.0f},
+                            {0.6f, 0.7f, 55.0f, 0.0f, 20.0f},
                         }
                     }
                 }
@@ -302,6 +327,7 @@ private:
 
         //拳
         {
+            //通常
             {1, 
                 {
                     {
@@ -312,19 +338,19 @@ private:
                     }
                 }  
             },
-
+            //血液
             {1, 
                 {
                     {
-                        State::Fight_Punch, 0.8f, 1.5f, 2,
+                        State::Fight_Punch2, 0.8f, 1.5f, 2,
                         {
                             {0.35f, 0.4f, 15.0f, 5.0f, 30.0f},
-                            {0.4f, 0.7f, 15.0f, 15.0f, 35.0f}
+                            {0.4f, 0.7f, 15.0f, 20.0f, 35.0f}
                         }
                     }
                 }
             },
-
+            //無双
             {2,
                 {
                     {
@@ -336,9 +362,9 @@ private:
                     {
                         State::Fight_kick,1.2f,1.0f,3,
                         {
-                            {0.125f,0.25f,15.0f,10.0f,50.0f},
-                            {0.2f,0.35f,15.0f,20.0f,45.0f},
-                            {0.3f,0.45f,15.0f,30.0f,40.0f}
+                            {0.125f,0.25f,15.0f,10.0f,20.0f},
+                            {0.2f,0.35f,15.0f,20.0f,20.0f},
+                            {0.3f,0.45f,20.0f,35.0f,80.0f}
                         }
                     },
                 },            
@@ -361,6 +387,10 @@ private:
     float attackSpeedMultiplier = 1.0f;
     
     bool Blood_Attack = false;
+
+    //血ゲージ回復量
+    int bloodRecoveryMin = 5;//最小
+    int bloodRecoveryMax = 15;//最大
 
     //UI
     std::unique_ptr<Sprite> spriteGauge = nullptr;

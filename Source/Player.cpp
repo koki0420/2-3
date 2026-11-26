@@ -453,9 +453,16 @@ void Player::UpdateAttack(float elapsedTime)
 	attackDistance = hit.distance;
 	pAtkDmg = hit.damage;
 
-	attackPosition.x = player.position.x + sinf(player.angle.y) * attackDistance;
+	const float frontX = sinf(player.angle.y);
+	const float frontZ = cosf(player.angle.y);
+
+	//プレイヤーから見た右方向
+	const float rightX = frontZ;
+	const float rightZ = -frontX;
+
+	attackPosition.x = player.position.x + frontX * attackDistance + rightX * hit.sideOffset;
 	attackPosition.y = player.position.y + attackHeight;
-	attackPosition.z = player.position.z + cosf(player.angle.y) * attackDistance;
+	attackPosition.z = player.position.z + frontZ * attackDistance + rightZ * hit.sideOffset;
 
 }
 
@@ -569,12 +576,13 @@ void Player::WeaponChange()
 
 void Player::AddBlood(float amount)
 {
+	if (IsMusou)return;
 	float& gauge = bloodGauge[GetBloodGaugeIndex()];
 	gauge += amount;
 
-	if (gauge > 100.0f)
+	if (gauge > BLOOD_GAUGE_MAX)
 	{
-		gauge = 100.0f;
+		gauge = BLOOD_GAUGE_MAX;
 	}
 
 }
@@ -736,6 +744,33 @@ void Player::UpdateDodge(float elapsedTime)
 	}
 }
 
+void Player::AddRandomBlood()
+{
+	//乱数生成器
+	static std::mt19937 randomEngine{ std::random_device{}() };
+	const int equipped = GetBloodGaugeIndex();
+
+	//使用中の武器は20%、残りは40%
+	int weights[3] = { 40,40,40 };
+	weights[equipped] = 20;
+
+	std::discrete_distribution<int> weaponLottery(weights, weights + 3);
+
+	const int selected = weaponLottery(randomEngine);
+
+	//回復量設定補正
+	if (bloodRecoveryMin < 0)bloodRecoveryMin = 0;
+	if (bloodRecoveryMax < bloodRecoveryMin)bloodRecoveryMax = bloodRecoveryMin;
+
+	//抽選
+	std::uniform_int_distribution<int> amountLottery(bloodRecoveryMin, bloodRecoveryMax);
+
+	const int amount = amountLottery(randomEngine);
+	float& gauge = bloodGauge[selected];
+	gauge += static_cast<float>(amount);
+	if (gauge > BLOOD_GAUGE_MAX)gauge = BLOOD_GAUGE_MAX;
+}
+
 ///////////////////////////////////////////////////////
 void Player::DrawGUI()
 {
@@ -775,6 +810,23 @@ void Player::DrawGUI()
 	if (ImGui::Button("Reset blood"))
 	{
 		bloodGauge[equipped] = 0.0f;
+	}
+
+	ImGui::Separator();
+	ImGui::Text("Blood recovery");
+
+	ImGui::InputInt("Minimum recovery", &bloodRecoveryMin);
+	ImGui::InputInt("Maximum recovery", &bloodRecoveryMax);
+
+	if (bloodRecoveryMin < 0)
+		bloodRecoveryMin = 0;
+
+	if (bloodRecoveryMax < bloodRecoveryMin)
+		bloodRecoveryMax = bloodRecoveryMin;
+
+	if (ImGui::Button("Test random recovery"))
+	{
+		AddRandomBlood();
 	}
 
 	ImGui::Text("Dead: %s", IsDead ? "Yes" : "No");
@@ -885,9 +937,9 @@ void Player::DrawGUI()
 		ImGui::SliderFloat("Animation speed", &motion.animationSpeed, 0.1f, 3.0f);
 		if (motion.animationSpeed < 0.1f)motion.animationSpeed = 0.1f;
 		if (motion.animationSpeed > 3.0f)motion.animationSpeed = 3.0f;
-		ImGui::SliderInt("Hit count", &motion.hitCount, 0, 5);
+		ImGui::SliderInt("Hit count", &motion.hitCount, 0, 10);
 		if (motion.hitCount < 0)motion.hitCount = 0;
-		if (motion.hitCount > 5)motion.hitCount = 5;
+		if (motion.hitCount > 10)motion.hitCount = 10;
 
 		for (int i = 0; i < motion.hitCount; ++i)
 		{
@@ -897,10 +949,11 @@ void Player::DrawGUI()
 			ImGui::SliderFloat("Start", &hit.start, 0.0f, motion.duration);
 			ImGui::SliderFloat("End", &hit.end, 0.0f, motion.duration);
 			ImGui::SliderFloat("Radius", &hit.radius, 0.1f, 50.0f);
-			ImGui::SliderFloat("Distance", &hit.distance, 0.0f, 50.0f);
+			ImGui::SliderFloat("Distance", &hit.distance, -50.0f, 50.0f);
+			ImGui::SliderFloat("Side offset", &hit.sideOffset, -50.0f, 50.0f);
 			ImGui::SliderFloat("Damage", &hit.damage, 0.0f, 500.0f);
 			if (hit.radius < 0.1f)hit.radius = 0.1f;
-			if (hit.distance < 0.0f)hit.distance = 0.0f;
+			//if (hit.distance < 0.0f)hit.distance = 0.0f;
 			if (hit.damage < 0.0f)hit.damage = 0.0f;
 
 			const float earliest = i == 0 ? 0.0f : motion.hits[i - 1].end;
