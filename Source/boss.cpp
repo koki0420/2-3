@@ -18,7 +18,7 @@ Boss::Boss(DirectX::XMFLOAT3 pos)
 	weapon.model = std::make_unique<Model>("Data/Model/Weapon/Sword.mdl");
 
 	middle_boss.position = pos;
-	middle_boss.position.y = -15;
+	middle_boss.position.y = -30;
 	middle_boss.scale = { 0.5f,0.5f,0.5f };
 	middle_boss.model = std::make_unique<Model>("Data/Model/Enemy/enemy_midle.mdl");
 
