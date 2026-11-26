@@ -402,10 +402,9 @@ void SceneGame::Render(float elapsedTime)
 		spritekey->Render(dc, 1180 * screenWidth, 550 * screenHeight, 0, 45 * screenWidth, 30 * screenHeight,0,0,100,60, 0, 1, 1, 1, 1);
 		sprite->Render(dc,1240 * screenWidth, 550 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,10,120,30, 0, 1, 1, 1, 1);
 
-		
-		spritemouse->Render(dc, 1200 * screenWidth, 400 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight,0,0,67,105, 0, 1, 1, 1, 1);
+		spritemouse->Render(dc, 1200 * screenWidth, 400 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight, 0, 135, 67, 105, 0, 1, 1, 1, 1);
 		sprite->Render(dc, 1240 * screenWidth, 400 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,70 ,120,30, 0, 1, 1, 1, 1);
-		spritemouse->Render(dc, 1200 * screenWidth, 450 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight,0,135, 67, 105, 0, 1, 1, 1, 1);
+		spritemouse->Render(dc, 1200 * screenWidth, 450 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight, 0, 0, 67, 105, 0, 1, 1, 1, 1);
 		sprite->Render(dc, 1220 * screenWidth, 450 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight, 0, 100, 120, 30, 0, 1, 1, 1, 1);
 		
 
