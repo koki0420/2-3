@@ -75,8 +75,6 @@ private:
 	float timer = 0;
 	float nextTimer = 0;
 
-
-
 	bool knockback = false;
 	float knockback_length = 2.0f;
 

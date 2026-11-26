@@ -138,10 +138,7 @@ void SceneGame::Update(float elapsedTime)
 	if (Boss_Dead)
 	{
 		boss.BOSS->Boss_Dead(Boss_Dead);
-		if (boss.hp <= 0)
-		{
-			boss.hp = BOSS_MAX;
-		}
+		
 		if (!(boss.BOSS->Boss_Alive()))
 		{
 			Respawn();
@@ -229,7 +226,6 @@ void SceneGame::Update(float elapsedTime)
 
 				if (boss.hp <= 0.0f)
 				{
-					if (Boss_Dead == false)boss.hp = BOSS_MAX;
 					Boss_Dead = true;
 				}
 			}
