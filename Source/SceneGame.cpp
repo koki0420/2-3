@@ -80,6 +80,10 @@ void SceneGame::Initialize()
 	SpriteCLEAR = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gameclear_smooth_transparent.png");//
 	spriteHP = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/gauge_bar_blue-gold_01_ff4444_128.png");//
 	spriteCOUNT = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/hitcount.png");
+	spritekey = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/“§‰ßPNG (1).png");
+	sprite = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/“§‰ßPNG.png");
+	spritemouse = std::make_unique<Sprite>(Graphics::Instance().GetDevice(), "Data/Sprite/“§‰ßPNG (2) .png");
+
 	EnemyManager::Instance().Target(player.GetPosition());
 
 	HitEffect = EffectManager::Instance().CreateEffect("Data/Effect/Hit.efkefc");
@@ -392,6 +396,19 @@ void SceneGame::Render(float elapsedTime)
 	{
 		float screenWidth = static_cast<float>(Graphics::Instance().GetScreenWidth()) / 1280;
 		float screenHeight = static_cast<float>(Graphics::Instance().GetScreenHeight()) / 720;
+		
+		spritekey->Render(dc, 1210 * screenWidth, 500 * screenHeight, 0, 15 * screenWidth, 30 * screenHeight,0,70,30,60, 0, 1, 1, 1, 1);
+		sprite->Render(dc,1240 * screenWidth, 500 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,40,120,25, 0, 1, 1, 1, 1);
+		spritekey->Render(dc, 1180 * screenWidth, 550 * screenHeight, 0, 45 * screenWidth, 30 * screenHeight,0,0,100,60, 0, 1, 1, 1, 1);
+		sprite->Render(dc,1240 * screenWidth, 550 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,10,120,30, 0, 1, 1, 1, 1);
+
+		
+		spritemouse->Render(dc, 1200 * screenWidth, 400 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight,0,0,67,105, 0, 1, 1, 1, 1);
+		sprite->Render(dc, 1240 * screenWidth, 400 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,70 ,120,30, 0, 1, 1, 1, 1);
+		spritemouse->Render(dc, 1200 * screenWidth, 450 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight,0,135, 67, 105, 0, 1, 1, 1, 1);
+		sprite->Render(dc, 1220 * screenWidth, 450 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight, 0, 100, 120, 30, 0, 1, 1, 1, 1);
+		
+
 		player.UIRender(elapsedTime, dc);
 		if (boss.BOSS->Clear())
 		{
