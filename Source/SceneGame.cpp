@@ -169,6 +169,7 @@ void SceneGame::Update(float elapsedTime)
 		for (size_t i = 0;i < enemies.size();++i)
 		{
 			auto& target = enemies[i];
+			//ŒŒ‰tƒQƒbƒgII
 			for (int i = 0;i < 3;i += 1)
 			{
 				if (target.enemy->GetBlood(i))

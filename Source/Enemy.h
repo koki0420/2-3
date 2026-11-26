@@ -34,6 +34,7 @@ public:
 	void TargetPos(DirectX::XMFLOAT3 pos)
 	{
 		Target = pos;
+		Target.y = -15;
 	}
 
 	Animation* GetEnemyAnimation() { return enemy_anime.get(); }
@@ -68,6 +69,8 @@ private:
 	bool alive=true;
 	bool arrive = true;
 	bool display=true;
+
+	float Blood_timer[3] ;
 
 	float timer = 0;
 	float nextTimer = 0;
