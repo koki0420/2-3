@@ -1,6 +1,7 @@
 #include"enemy.h"
 #include <ctime>
 #include <imgui.h>
+#include <algorithm>
 
 
 Enemy::Enemy(DirectX::XMFLOAT3 pos)
@@ -10,6 +11,7 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	enemy.scale = { 12,12,12 };
 	enemy.position.y = -25;
 	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
+
 
 	for (int i = 0;i < 3;i += 1)
 	{
@@ -263,9 +265,12 @@ void Enemy::Update(float elapsedTime)
 				DirectX::XMVECTOR Blood_Target = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&Blood[i].position));
 				if (Blood[i].position.y <= -15)
 				{
+					float t = std::clamp(Blood_timer[i] / 1.0f, 0.0f, 1.0f);
+
 					DirectX::XMVECTOR Blood_Target_dir = DirectX::XMVector3Normalize(Blood_Target);	
-					DirectX::XMStoreFloat3(&Blood[i].position,DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&Blood[i].position), DirectX::XMVectorScale(Blood_Target_dir, Blood_timer[i]* Blood_timer[i]* Blood_timer[i]* Blood_timer[i])));
+					DirectX::XMStoreFloat3(&Blood[i].position,DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&Blood[i].position), DirectX::XMVectorScale(Blood_Target_dir, t* t* t* t)));
 					Blood_timer[i] += elapsedTime;
+
 				}
 				if (DirectX::XMVectorGetX(DirectX::XMVector3Length(Blood_Target)) <= 1.0f)
 				{
