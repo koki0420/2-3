@@ -138,10 +138,7 @@ void SceneGame::Update(float elapsedTime)
 	if (Boss_Dead)
 	{
 		boss.BOSS->Boss_Dead(Boss_Dead);
-		if (boss.hp <= 0)
-		{
-			boss.hp = BOSS_MAX;
-		}
+		
 		if (!(boss.BOSS->Boss_Alive()))
 		{
 			Respawn();
@@ -169,6 +166,7 @@ void SceneGame::Update(float elapsedTime)
 		for (size_t i = 0;i < enemies.size();++i)
 		{
 			auto& target = enemies[i];
+			//ŒŒ‰tƒQƒbƒgII
 			for (int i = 0;i < 3;i += 1)
 			{
 				if (target.enemy->GetBlood(i))
@@ -228,7 +226,6 @@ void SceneGame::Update(float elapsedTime)
 
 				if (boss.hp <= 0.0f)
 				{
-					if (Boss_Dead == false)boss.hp = BOSS_MAX;
 					Boss_Dead = true;
 				}
 			}
@@ -405,10 +402,9 @@ void SceneGame::Render(float elapsedTime)
 		spritekey->Render(dc, 1180 * screenWidth, 550 * screenHeight, 0, 45 * screenWidth, 30 * screenHeight,0,0,100,60, 0, 1, 1, 1, 1);
 		sprite->Render(dc,1240 * screenWidth, 550 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,10,120,30, 0, 1, 1, 1, 1);
 
-		
-		spritemouse->Render(dc, 1200 * screenWidth, 400 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight,0,0,67,105, 0, 1, 1, 1, 1);
+		spritemouse->Render(dc, 1200 * screenWidth, 400 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight, 0, 135, 67, 105, 0, 1, 1, 1, 1);
 		sprite->Render(dc, 1240 * screenWidth, 400 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight,0,70 ,120,30, 0, 1, 1, 1, 1);
-		spritemouse->Render(dc, 1200 * screenWidth, 450 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight,0,135, 67, 105, 0, 1, 1, 1, 1);
+		spritemouse->Render(dc, 1200 * screenWidth, 450 * screenHeight, 0, 24 * screenWidth, 32 * screenHeight, 0, 0, 67, 105, 0, 1, 1, 1, 1);
 		sprite->Render(dc, 1220 * screenWidth, 450 * screenHeight, 0, 60 * screenWidth, 40 * screenHeight, 0, 100, 120, 30, 0, 1, 1, 1, 1);
 		
 

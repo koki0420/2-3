@@ -1,6 +1,7 @@
 #include"enemy.h"
 #include <ctime>
 #include <imgui.h>
+#include <algorithm>
 
 
 Enemy::Enemy(DirectX::XMFLOAT3 pos)
@@ -11,13 +12,15 @@ Enemy::Enemy(DirectX::XMFLOAT3 pos)
 	enemy.position.y = -25;
 	enemy.model = std::make_unique<Model>("Data/Model/Enemy/enemy_normal.mdl");
 
+
 	for (int i = 0;i < 3;i += 1)
 	{
-		Blood[i].scale = { 0.01f,0.01f,0.01f };
+		Blood[i].scale = { 0.005f,0.005f,0.005f };
 		Blood[i].position = pos;
 		Blood[i].model = std::make_unique<Model>("Data/Model/Enemy/Blood.mdl");
 		Blood_Get[i] = false;
 		Blood_Display[i] = true;
+		Blood_timer[i] = 0;
 	}
 
 	enemy_anime = std::make_unique<Animation>(*enemy.model);
@@ -41,15 +44,17 @@ Enemy::~Enemy()
 
 void Enemy::Update(float elapsedTime)
 {
+	//エネミーが生きていたら
 	if (alive)
 	{
+		//エネミーが表示されていたら
 		if (display)
 		{
 			for (int i = 0;i < 3;i += 1)
 			{
 				Blood_Get[i] = false;
 				Blood[i].position = enemy.position;
-				Blood[i].position.y = -15;
+				Blood[i].position.y = -5;
 				Blood[i].UpdateTransform();
 			}
 			timer += elapsedTime;
@@ -231,34 +236,47 @@ void Enemy::Update(float elapsedTime)
 			enemy_anime->Update(elapsedTime);
 		}
 	}
+	//ドロップ血液の処理
 	else
 	{
-		if (Blood[0].position.y > -20)
+		if (Blood[0].position.y > -15)
 		{
 			Blood[0].position.x += 0.3f;
 			Blood[0].position.y -= 0.5f;
 		}
-		if (Blood[1].position.y > -20)
+		if (Blood[1].position.y > -15)
 		{
 			Blood[1].position.x -= 0.3f;
 			Blood[1].position.y -= 0.5f;
 		}
-		if (Blood[2].position.y > -20)
+		if (Blood[2].position.y > -15)
 		{
 			Blood[2].position.x -= 0.3f;
 			Blood[2].position.z -= 0.3f;
 			Blood[2].position.y -= 0.5f;
 		}
 		
+		
 		for (int i = 0;i < 3;i += 1)
 		{
 			Blood[i].UpdateTransform();
 			if (!(Blood_Get[i])&&Blood_Display[i])
 			{
-				if (DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&Blood[i].position), DirectX::XMLoadFloat3(&Target)))) <= 10.5f)
+				DirectX::XMVECTOR Blood_Target = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&Target), DirectX::XMLoadFloat3(&Blood[i].position));
+				if (Blood[i].position.y <= -15)
+				{
+					float t = std::clamp(Blood_timer[i] / 1.0f, 0.0f, 1.0f);
+
+					DirectX::XMVECTOR Blood_Target_dir = DirectX::XMVector3Normalize(Blood_Target);	
+					DirectX::XMStoreFloat3(&Blood[i].position,DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&Blood[i].position), DirectX::XMVectorScale(Blood_Target_dir, t* t* t* t)));
+					Blood_timer[i] += elapsedTime;
+
+				}
+				if (DirectX::XMVectorGetX(DirectX::XMVector3Length(Blood_Target)) <= 1.0f)
 				{
 					Blood_Display[i] = false;
 					Blood_Get[i] = true;
+					Blood_timer[i] = 0;
 				}
 			}
 			
@@ -306,6 +324,9 @@ void Enemy::Render(const RenderContext& immediate_context, ModelRenderer* render
 				{
 					Blood[i].position = enemy.position;
 					Blood[i].position.y = -15;
+					Blood_Display[i] = true;
+					Blood_Get[i] = false;
+					Blood_timer[i] = 0;
 				}
 				enemy_anime->PlayAnimation("Death", false);
 				death_anime = false;
