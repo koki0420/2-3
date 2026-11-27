@@ -419,6 +419,7 @@ private:
     Effect* Drunk_Sword = nullptr;
     Effect* Drunk_Fight = nullptr;
     Effect* Drunk_Aura = nullptr;
+    Effect* Drunk_Finish = nullptr;
 
     bool IsSwrod;
     bool IsFight;

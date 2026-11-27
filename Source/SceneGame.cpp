@@ -87,6 +87,7 @@ void SceneGame::Initialize()
 	EnemyManager::Instance().Target(player.GetPosition());
 
 	HitEffect = EffectManager::Instance().CreateEffect("Data/Effect/Hit.efkefc");
+	GetBlad_Effect = EffectManager::Instance().CreateEffect("Data/Effect/Blad.efkefc");
 
 
 	DirectX::XMStoreFloat4x4(
@@ -161,6 +162,7 @@ void SceneGame::Update(float elapsedTime)
 
 	//敵の処理
 	{
+		DirectX::XMFLOAT3 EffectPlayer = player.GetPosition();
 		
 		enemy_num = 0;
 		for (size_t i = 0;i < enemies.size();++i)
@@ -173,6 +175,11 @@ void SceneGame::Update(float elapsedTime)
 				{
 					player.AddBlood(5.0f);
 					target.enemy->SetBlood(i, false);
+
+					//ゲットエフェクト
+					EffectManager::Instance().PlayEffect(GetBlad_Effect, 
+						{EffectPlayer.x,EffectPlayer.y+5.0f,EffectPlayer.z}, player.GetAngle(), 10.0f);
+
 				}
 				
 			}
@@ -188,7 +195,7 @@ void SceneGame::Update(float elapsedTime)
 				target.hp -= player.GetPAtkDmg();
 				cameraController.SetBloodAttack(player.GetBlood());
 				DirectX::XMFLOAT3 epos = target.enemy->GetPos();
-				HitEffect->Play({ epos.x,epos.y + 10.0f,epos.z }, 5.0f);
+				HitEffect->Play({ epos.x,epos.y + 10.0f,epos.z }, 10.0f);
 				if (target.hp <= 0.0f)
 				{
 					DefeatEnemy(i);
@@ -362,7 +369,7 @@ void SceneGame::Render(float elapsedTime)
 		0);
 
 
-	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetProjection());
+	
 
 
 	rc.highlightColor = { 0.2, 0.2, 0.2, 1 };
@@ -382,6 +389,7 @@ void SceneGame::Render(float elapsedTime)
 		rc.camera->GetProjection()
 	);
 
+	EffectManager::Instance().Render(rc.camera->GetView(), rc.camera->GetProjection());
 
 	if (showEnemyHitBoxes)
 	{

@@ -167,8 +167,10 @@ private:
 	std::unique_ptr<Sprite> spritekey = nullptr;
 	std::unique_ptr<Sprite> sprite = nullptr;
 	std::unique_ptr<Sprite> spritemouse = nullptr;
-	Effect* HitEffect = nullptr;
 
+
+	Effect* HitEffect = nullptr;
+	Effect* GetBlad_Effect = nullptr;
 	
 	//モーションブラー用
 	DirectX::XMFLOAT4X4 previousViewProjection{};
